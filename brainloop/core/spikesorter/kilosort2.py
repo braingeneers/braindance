@@ -4001,7 +4001,7 @@ Then, you have 3 options to setup the plugin:
     2. Add the following lines of code BEFORE importing this module, spikeinterface, or h5py:
             import os
             os.environ['HDF5_PLUGIN_PATH'] = '/your/path/to/custom/hdf5/plugin/'  # '/your/path/to/custom/hdf5/plugin/' is the folder containing the decompression file
-    3. Add the code from option 2 to the first lines of BrainDance/braindance/core/spikesorter/kilosort2.py
+    3. Add the code from option 2 to the very first lines of brainloop/core/spikesorter/kilosort2.py
 
 *This message was adapted from SpikeInterface
 """)

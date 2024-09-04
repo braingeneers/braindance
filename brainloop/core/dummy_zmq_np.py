@@ -4,7 +4,7 @@ import time
 import random
 import numpy as np
 
-from braindance.analysis import data_loader
+from brainloop.analysis import data_loader
 
 from collections import namedtuple
 
@@ -49,12 +49,6 @@ def run(data_path, random_events=True):
         frame_data = np.arange(total_time_steps)
         frame_data = np.tile(frame_data, (n_channels, 1))
         frame_data = frame_data.astype(np.float32)
-        
-        # Traces stored as (num_channels, num_frames) in .npy file
-        # frame_data = np.load("/data/MEAprojects/primary_mouse/patch_ground_truth/200724/2602/rt_sort/dl_model/230101/cell2/scaled_traces.npy", mmap_mode="r")
-        # frame_data = np.load("/data/MEAprojects/BrainDance/braindance/core/data/test_rt_sort2/dl_model/scaled_traces.npy", mmap_mode="r")
-        # n_channels = frame_data.shape[0]
-        # frame_data = frame_data[:, :total_time_steps].astype(np.float32)
     else:
         if str(data_path).endswith(".h5"):
             total_time_steps = 20000*20

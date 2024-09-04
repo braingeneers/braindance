@@ -1,8 +1,8 @@
-from braindance.core.spikedetector.model import ModelSpikeSorter
+from brainloop.core.spikedetector.model import ModelSpikeSorter
 import torch
 
 try:
-    import torch_tensorrt9
+    import torch_tensorrt
     model_path = '../core/spikedetector/model_256ch.pt'
     print("Using TensorRT")
 except ImportError:

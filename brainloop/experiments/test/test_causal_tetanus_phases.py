@@ -1,9 +1,9 @@
-from braindance.core.maxwell_env import MaxwellEnv
-from braindance.core.params import maxwell_params
-from braindance.core.phases import PhaseManager, NeuralSweepPhase, RecordPhase, FrequencyStimPhase
-from braindance.core.phases_analysis import HeatmapPhase, FootprintPhase
-from braindance.analysis.data_loader import AnalysisDAO
-from braindance.core.trainer import generate_tetanus_pattern
+from brainloop.core.maxwell_env import MaxwellEnv
+from brainloop.core.params import maxwell_params
+from brainloop.core.phases import PhaseManager, NeuralSweepPhase, RecordPhase, FrequencyStimPhase
+from brainloop.core.phases_analysis import HeatmapPhase, FootprintPhase
+from brainloop.analysis.data_loader import AnalysisDAO
+from brainloop.core.trainer import generate_tetanus_pattern
 
 import numpy as np
 

@@ -1,56 +1,35 @@
 import torch
 from torch import nn
+
+try: 
+    import torch_tensorrt
+    TENSORRT = True
+except ModuleNotFoundError:
+    TENSORRT = False
+    # print("Cannot import torch_tensorrt")
+
 import numpy as np
 from scipy.signal import find_peaks
-# import utils, plot, data
-from braindance.core.spikedetector import utils, plot, data, meta
 import matplotlib.pyplot as plt
 from pathlib import Path
 import json
 import time
 
-# class InceptionBlock(nn.Module):
-#     def __init__(self, in_channels, out_1x1, red_3x3, out_3x3, red_5x5, out_5x5, out_1x1pool):
-#         super(InceptionBlock, self).__init__()
-#
-#         self.branch1 = ConvBlock(in_channels, out_1x1, kernel_size=1)
-#         self.branch2 = nn.Sequential(
-#             ConvBlock(in_channels, red_3x3, kernel_size=1),
-#             ConvBlock(red_3x3, out_3x3, kernel_size=3, padding=1)
-#         )
-#         self.branch3 = nn.Sequential(
-#             ConvBlock(in_channels, red_5x5, kernel_size=1),
-#             ConvBlock(red_5x5, out_5x5, kernel_size=5, padding=2)
-#         )
-#         self.branch4 = nn.Sequential(
-#             nn.MaxPool2d(kernel_size=3, stride=1, padding=1),
-#             ConvBlock(in_channels, out_1x1pool, kernel_size=1)
-#         )
-#
-#     def forward(self, x):
-#         return torch.cat((self.branch1(x), self.branch2(x), self.branch3(x), self.branch4(x)), 1)
-
-
-# class ConvBlock(nn.Module):
-#     def __init__(self, in_channels, out_channels, **conv_kwargs):
-#         super(ConvBlock, self).__init__()
-#         self.relu = nn.PReLU()
-#         self.conv = nn.Conv1d(in_channels, out_channels, **conv_kwargs)
-#
-#     def forward(self, x):
-#         return self.relu(self.conv(x))
+from brainloop.core.spikedetector import utils, plot
 
 
 class ModelSpikeSorter(nn.Module):
     """DL model for spike sorting"""
 
     # Performance report when multiple waveforms can appear per sample
-    _perf_report = "{}: Loss: {:.3f} | WF Detected: {:.1f}% | Accuracy: {:.1f}% | Recall: {:.1f}% | Precision: {:.1f}% | F1 Score: {:.1f}% | Loc MAD: {:.2f} frames = {:.4f} ms"
+    # _perf_report = "{}: Loss: {:.3f} | WF Detected: {:.1f}% | Accuracy: {:.1f}% | Recall: {:.1f}% | Precision: {:.1f}% | F1 Score: {:.1f}% | Loc MAD: {:.2f} frames = {:.4f} ms"
+    _perf_report = "{}: Loss: {:.3f} | Accuracy: {:.1f}% | Recall: {:.1f}% | Precision: {:.1f}% | F1 Score: {:.1f}% | Loc MAD: {:.2f} frames = {:.4f} ms"
+    compiled_name = "compiled.ts"
 
     def __init__(self, num_channels_in: int,
                  sample_size: int, buffer_front_sample: int, buffer_end_sample: int,
                  loc_prob_thresh: float = 35, buffer_front_loc: int = 0, buffer_end_loc: int = 0,
-                 input_scale = 1,
+                 input_scale=0.01, samp_freq=None,
                  device: str = "cuda", dtype=torch.float16,
                  architecture_params=None):
         """
@@ -72,7 +51,10 @@ class ModelSpikeSorter(nn.Module):
             Model will predict the probability of a spike occurring in [buffer_front_sample - buffer_front_loc, sample_size - buffer_end_sample + buffer_end_loc)
 
         :param input_scale:
-            Multiply input by this factor after subtracting mean
+            Multiply input by this factor after subtracting median
+            
+        :param samp_freq:
+            Needed in method perf to measure performance. Is None by default for backwards compatibility with models that are already trained and tested
 
         :param device: str
             Device to run model ("cpu" for CPU and "cuda:0" for GPU)
@@ -95,144 +77,22 @@ class ModelSpikeSorter(nn.Module):
         self.buffer_end_loc = buffer_end_loc
 
         # Cache for plotting localization
-        self.loc_first_frame = self.buffer_front_sample - self.buffer_front_loc  # First frame in input that has a probability score for localization
+        # First frame in input that has a probability score for localization
+        self.loc_first_frame = self.buffer_front_sample - self.buffer_front_loc
         self.loc_last_frame = sample_size - buffer_end_sample + buffer_end_loc - 1  # Last frame in input that has a probability score for localization
 
         # Number of locations where model predicts a spike
         assert buffer_front_loc == buffer_end_loc == 0, "num_output_locs may not be implemented correctly if these are not equal to 0"
-        self.num_output_locs = (sample_size - buffer_end_sample + buffer_end_loc) - (buffer_front_sample - buffer_front_loc)
-
-        # region David's latest model on his github
-        # conv0_kwargs = {"in_channels": num_channels_in, "out_channels": 100, "kernel_size": 30, "stride": 2, "padding": "valid"}
-        # conv1_kwargs = {"in_channels": conv0_kwargs["out_channels"], "out_channels": 200, "kernel_size": 10, "stride": 2, "padding": "valid"}
-        # conv2_kwargs = {"in_channels": conv1_kwargs["out_channels"], "out_channels": 300, "kernel_size": 10, "stride": 2, "padding": "valid"}
-        # conv3_kwargs = {"in_channels": conv2_kwargs["out_channels"], "out_channels": 300, "kernel_size": 6, "stride": 2, "padding": "valid"}
-        # conv_layer_kwargs = [conv0_kwargs, conv1_kwargs, conv2_kwargs, conv3_kwargs]
-        # conv_layers = []
-        # for kwargs in conv_layer_kwargs:
-        #     conv_layers.extend([
-        #         ModelSpikeSorter.get_same_padding(kwargs),
-        #         nn.Conv1d(**kwargs),
-        #         nn.ReLU(),
-        #     ])
-        # conv = nn.Sequential(*conv_layers)
-        # linear = nn.Sequential(
-        #     nn.Flatten(),
-        #     nn.Linear(int(np.prod(ModelSpikeSorter.get_output_shape(conv, (num_channels_in, sample_size)))), 300),
-        #     nn.ReLU(),
-        # )
-        # layer_output = nn.Linear(300, num_output_locs)
-        # model = nn.Sequential(conv, linear, layer_output)
-        # endregion
-
-        # region David's model in his astronomy paper
-        # Astro model scaled down to match 200 sample size
-        # model = nn.Sequential(  # Input: (batch_size, num_channels_in=1, sample_size=200)
-        #     nn.Conv1d(in_channels=num_channels_in, out_channels=100, kernel_size=32, stride=2),  # (batch_size, 100, 85)
-        #     nn.ReLU(),
-        #
-        #     nn.MaxPool1d(kernel_size=7, stride=4, padding=1),
-        #
-        #     nn.Conv1d(in_channels=100, out_channels=96, kernel_size=16, stride=1, padding=8),
-        #     nn.ReLU(),
-        #
-        #     nn.MaxPool1d(kernel_size=6, stride=4, padding=1),
-        #
-        #     nn.Conv1d(in_channels=96, out_channels=96, kernel_size=16, stride=1, padding=8),
-        #     nn.ReLU(),
-        #
-        #     nn.MaxPool1d(kernel_size=6, stride=4, padding=2),
-        #
-        #     nn.Flatten(),
-        #     nn.Linear(192, 350),
-        #     nn.Linear(350, num_outputs_locs)
-        # )
-        # endregion
-
-        # region CalTech BAR model
-        # model = nn.Sequential(
-        #     nn.Conv1d(in_channels=num_channels_in, out_channels=25, kernel_size=3, stride=1, padding=1),
-        #     nn.ReLU(),
-        #     nn.BatchNorm1d(num_features=25),
-        #
-        #     nn.Conv1d(in_channels=25, out_channels=50, kernel_size=5, stride=1, padding=0),
-        #     nn.ReLU(),
-        #
-        #     nn.MaxPool1d(kernel_size=2, stride=1),
-        #     nn.BatchNorm1d(num_features=50),
-        #
-        #     nn.Conv1d(in_channels=50, out_channels=50, kernel_size=5, stride=1),
-        #     nn.ReLU(),
-        #
-        #     nn.MaxPool1d(kernel_size=2, stride=1),
-        #     nn.BatchNorm1d(50),
-        #
-        #     nn.Flatten(),
-        #     nn.Linear(9500, 50),
-        #     nn.ReLU(),
-        #     nn.BatchNorm1d(50),
-        #
-        #     nn.Linear(50, 140)
-        # )
-        # endregion
-
-        # region Inception layers
-        # model = nn.Sequential(
-        #     InceptionBlock(1, 64, 96, 128, 16, 32, 32),
-        #     nn.Flatten()
-        # )
-        # out_shape = ModelSpikeSorter.get_output_shape(layer=model, input_shape=(1, num_channels_in, sample_size))
-        # model.append(nn.Linear(out_shape[1], 350))
-        # model.append(nn.ReLU())
-        # model.append(nn.Linear(350, num_output_locs))
-        # endregion
-
-        # region Tuning model 1
-        # PRELU_INIT = 0.25
-        #
-        # self.architecture_params = architecture_params
-        # p = architecture_params
-        # """
-        # chans = Num filters
-        # size = Size of filters
-        # stride = stride
-        # pad = zero padding
-        # """
-        # model = nn.Sequential()
-        # in_channels = num_channels_in
-        # i = 1
-        # while f"conv{i}_chans" in p:
-        #     model.append(nn.Conv1d(in_channels=in_channels, out_channels=p[f"conv{i}_chans"], kernel_size=p[f"conv{i}_size"],
-        #                            stride=p[f"conv{i}_stride"], padding=p[f"conv{i}_pad"]))
-        #     # model.append(nn.ReLU())
-        #     # model.append(nn.PReLU())
-        #     model.append(nn.PReLU(num_parameters=p[f"conv{i}_chans"], init=PRELU_INIT))
-        #     # layers.append(nn.SELU())
-        #     if p[f"pool{i}_size"] > 0:
-        #         stride = p[f"pool{i}_stride"]
-        #         stride = stride if stride != -1 else None
-        #         model.append(nn.MaxPool1d(kernel_size=p[f"pool{i}_size"], stride=stride, padding=p[f"pool{i}_pad"]))
-        #     # layers.append(nn.BatchNorm1d(p[f"conv{i}_chans"]))
-        #     # layers.append(nn.InstanceNorm1d(p[f"conv{i}_chans"]))
-        #     in_channels = p[f"conv{i}_chans"]
-        #     i += 1
-        #
-        # model.append(nn.Conv1d(in_channels=in_channels, out_channels=1,
-        #                        kernel_size=p["conv_last_size"], stride=p["conv_last_stride"], padding=p["conv_last_pad"]))
-        # # model.append(nn.Flatten())
-        #
-        # model.append(nn.PReLU(num_parameters=1, init=PRELU_INIT))
-        # self.linear = nn.Conv1d(2, 1, 1)
-        # self.flatten = nn.Flatten()
-
-        # endregion
+        self.num_output_locs = (sample_size - buffer_end_sample +
+                                buffer_end_loc) - (buffer_front_sample - buffer_front_loc)
 
         # region Tuning model 2
         self.architecture_params = architecture_params
         if architecture_params is not None:
             model = ModelTuning(*architecture_params)
         else:
-            model = RMSThresh(buffer_front=buffer_front_sample, buffer_end=buffer_end_sample)
+            model = RMSThresh(buffer_front=buffer_front_sample,
+                              buffer_end=buffer_end_sample)
         # endregion
 
         self.model = model
@@ -253,6 +113,8 @@ class ModelSpikeSorter(nn.Module):
         self.loss_localize = nn.BCEWithLogitsLoss(reduction='none')
 
         self.path = None
+        
+        self.samp_freq = samp_freq 
 
     def init_weights_and_biases(self, method: str, prelu_init=0.25):
         for module in self.modules():
@@ -262,7 +124,8 @@ class ModelSpikeSorter(nn.Module):
                 elif method == "xavier":
                     nn.init.xavier_normal_(module.weight)
                 else:
-                    raise ValueError(f"'{method}' is not a valid argument for parameter 'method'")
+                    raise ValueError(
+                        f"'{method}' is not a valid argument for parameter 'method'")
                 nn.init.zeros_(module.bias)
 
     def init_final_bias(self, num_wfs_probs: list):
@@ -282,9 +145,11 @@ class ModelSpikeSorter(nn.Module):
         exp_prob = 0
         for i, prob in enumerate(num_wfs_probs):
             exp_prob += prob * (i + 1)
-        exp_prob *= 0.5 * 1/self.num_output_locs  # 50% chance of a waveform appearing at all, and 1/num_output_locs for waveform appearing at a output location
+        # 50% chance of a waveform appearing at all, and 1/num_output_locs for waveform appearing at a output location
+        exp_prob *= 0.5 * 1/self.num_output_locs
         # torch.sigmoid(bias) = exp_prob
-        nn.init.constant_(last_weight_layer.bias, torch.logit(torch.tensor(exp_prob)).item())
+        nn.init.constant_(last_weight_layer.bias, torch.logit(
+            torch.tensor(exp_prob)).item())
 
     # @property
     # def device(self):
@@ -295,10 +160,13 @@ class ModelSpikeSorter(nn.Module):
         # x = (x - torch.mean(x, dim=2, keepdim=True))  # / torch.std(x, dim=2, keepdim=True)
 
         # x = x / torch.std(x, dim=2, keepdim=True)
-        return self.model(x)  # self.model(x*self.input_scale)
+        # self.model(x*self.input_scale)
+        return self.model(x * self.input_scale)
 
-        rms = torch.sqrt(torch.mean(torch.square(x), dim=(1, 2), keepdim=True))  # - 1.3
-        x = torch.cat([self.model(x), rms.repeat(1, 1, self.num_output_locs)], dim=1)
+        rms = torch.sqrt(torch.mean(torch.square(
+            x), dim=(1, 2), keepdim=True))  # - 1.3
+        x = torch.cat([self.model(x), rms.repeat(
+            1, 1, self.num_output_locs)], dim=1)
 
         return self.flatten(self.linear(x))
 
@@ -319,13 +187,16 @@ class ModelSpikeSorter(nn.Module):
 
         # Sigmoid for probability instead of softmax
         wf_samples_ind = torch.nonzero(wf_samples).flatten()
-        wf_logits = torch.clamp_min(self.loc_to_logit(wf_locs[wf_samples, :]), -1)
-        labels_loc = torch.zeros(len(outputs), outputs.shape[1] + 1, dtype=torch.float32, device=outputs.device)
+        wf_logits = torch.clamp_min(
+            self.loc_to_logit(wf_locs[wf_samples, :]), -1)
+        labels_loc = torch.zeros(
+            len(outputs), outputs.shape[1] + 1, dtype=torch.float32, device=outputs.device)
         wf_row_ind = np.repeat(wf_samples_ind.cpu(), wf_logits.shape[1])
         wf_col_ind = wf_logits.to(torch.long).flatten()
         labels_loc[wf_row_ind, wf_col_ind] = 1
 
-        localize = self.loss_localize(outputs, labels_loc[:, :-1])  # Train on all samples
+        localize = self.loss_localize(
+            outputs, labels_loc[:, :-1])  # Train on all samples
 
         # Only train on samples with wf
         # localize = self.loss_localize(outputs_locs[wf_samples_ind], labels_loc[wf_samples_ind, :-1])
@@ -335,7 +206,8 @@ class ModelSpikeSorter(nn.Module):
         # wfs_multiplier = num_no_wfs / num_wfs / 10  # Multiply this by losses caused by a waveform location since there are many more locations without waveforms than with
         # localize[wf_row_ind, wf_col_ind] *= 50
 
-        localize = torch.mean(torch.sum(localize, dim=1))  # Loss pretraining = -ln(0.5) * num_logits (number of neurons in output layer)
+        # Loss pretraining = -ln(0.5) * num_logits (number of neurons in output layer)
+        localize = torch.mean(torch.sum(localize, dim=1))
         # localize = torch.mean(localize)  # Loss pretraining: -ln(0.5) = 0.697
 
         # When there is no waveform in sample, correct probability is 1/num_possible_frames (equal probabilities across all frames)
@@ -376,9 +248,10 @@ class ModelSpikeSorter(nn.Module):
             # print("d")
         self.train(False)
 
-    def fit(self, dataloader_train, dataloader_val, optim="adam",
-            num_epochs=100, epoch_patience=10, epoch_thresh=0.01,
-            lr=3e-4, momentum=0.9, lr_patience=5, lr_factor=0.1,
+    def fit(self, dataloader_train, dataloader_val=None, optim="adam",
+            num_epochs=100, epoch_patience=10, training_thresh=0.5,
+            lr=3e-4, momentum=0.9, 
+            lr_patience=5, lr_factor=0.1,
             tune_thresh_every=10, save_best=True):
         """
         Fit self to dataloader_train
@@ -406,38 +279,45 @@ class ModelSpikeSorter(nn.Module):
             If True, save model weights that give best loss (new best has to be less than old best - epoch_thresh) 
                      and reset to this after training ends
         """
+        train_start = time.time()
 
         assert optim in {"adam", "momentum", "nesterov"}
         if optim == 'adam':
             optim = torch.optim.Adam(self.parameters(), lr=lr)
         elif optim == 'momentum':
-            optim = torch.optim.SGD(self.parameters(), lr=lr, momentum=momentum, nesterov=False)
+            optim = torch.optim.SGD(
+                self.parameters(), lr=lr, momentum=momentum, nesterov=False)
         elif optim == 'nesterov':
-            optim = torch.optim.SGD(self.parameters(), lr=lr, momentum=momentum, nesterov=True)
+            optim = torch.optim.SGD(
+                self.parameters(), lr=lr, momentum=momentum, nesterov=True)
         else:
-            raise ValueError(f"'{optim}' is not a valid argument for parameter 'optim'")
+            raise ValueError(
+                f"'{optim}' is not a valid argument for parameter 'optim'")
 
-        lr_scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer=optim, mode="min", factor=lr_factor, patience=lr_patience-1, verbose=True)
-        # torch.optim.lr_scheduler.ExponentialLR(optim, 0.95, verbose=True)
+        lr_scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
+            optimizer=optim, mode="min", factor=lr_factor, patience=lr_patience-1,
+            threshold=training_thresh)
 
-        # Get performance before any training
-        train_log = f"""Train: {len(dataloader_train.dataset)} samples
-Valid: {len(dataloader_val.dataset)} samples
-Num wfs probs: {dataloader_train.num_wfs_probs}
-
-Before Training"""
+        # Get performance before any training        
+        train_log = f"\nBefore Training"
         print(train_log)
         train_perf_all = [self.perf(dataloader_train)]
-        train_log += "\n" + self.perf_report("Train", train_perf_all[0])
-        val_perf_all = [self.perf(dataloader_val)]
-        train_log += "\n" + self.perf_report("Valid", val_perf_all[0])
-
-        best_loss = val_perf_all[0][0]
-        epoch_patience_counter = 0  # Number of epochs since best loss 
+        train_report_preface = "     Train" if dataloader_val is not None else None
+        train_log += "\n" + self.perf_report(train_report_preface, train_perf_all[0])
+        
+        if dataloader_val is not None:
+            val_perf_all = [self.perf(dataloader_val)]
+            train_log += "\n" + self.perf_report("Validation", val_perf_all[0])
+            best_loss = val_perf_all[0][0]
+        else:
+            best_loss = train_perf_all[0][0]
+            
+        epoch_patience_counter = 0  # Number of epochs since best loss
         if save_best:
             best_weights = self.state_dict()
 
-        # Start training!
+        last_lr = optim.param_groups[0]['lr']  # lr_scheduler.get_last_lr()  # AttributeError: 'ReduceLROnPlateau' object has no attribute '_last_lr'. Did you mean: 'get_last_lr'?
+        # Start training
         for epoch in range(1, num_epochs + 1):
             epoch_formatted = f"\nEpoch: {epoch}/{num_epochs}"
             print(epoch_formatted)
@@ -447,19 +327,32 @@ Before Training"""
             self.train_epoch(dataloader_train, optim)
 
             train_perf = self.perf(dataloader_train)
-            train_log += "\n" + self.perf_report("Train", train_perf)
+            train_log += "\n" + self.perf_report(train_report_preface, train_perf)
             train_perf_all.append(train_perf)
+            if np.isnan(train_perf[0]):
+                print("Loss is nan, ending training")
+                return np.nan
 
-            val_perf = self.perf(dataloader_val)
-            train_log += "\n" + self.perf_report("Valid", val_perf)
-            val_perf_all.append(val_perf)
+            if dataloader_val is not None:
+                val_perf = self.perf(dataloader_val)
+                train_log += "\n" + self.perf_report("Validation", val_perf)
+                val_perf_all.append(val_perf)
+                cur_loss = val_perf[0]
+            else:
+                cur_loss = train_perf[0]
+            
+            lr_scheduler.step(cur_loss)
+            new_lr = optim.param_groups[0]['lr']  # lr_scheduler.get_last_lr()
+            if new_lr != last_lr:
+                start = "Validation loss" if dataloader_val is not None else "Loss"
+                msg = f"{start} hasn't decreased in {lr_patience} epochs. Decreasing learning from {last_lr:.2e} to {new_lr:.2e}"
+                train_log += "\n" + msg
+                print(msg)
+                last_lr = new_lr
 
-            val_loss = val_perf[0]
-            lr_scheduler.step(val_loss)
-
-            if best_loss - val_loss >= epoch_thresh:
+            if best_loss - cur_loss >= training_thresh:
                 epoch_patience_counter = 0
-                best_loss = val_loss
+                best_loss = cur_loss
                 if save_best:
                     best_weights = self.state_dict()
             else:
@@ -472,47 +365,109 @@ Before Training"""
             train_log += "\n" + duration_formatted
 
             if tune_thresh_every is not None and epoch % tune_thresh_every == 0:
-                train_log += "\n" + f"\nTuning location probability threshold ..."
-                print(f"\nTuning location probability threshold ...")
+                train_log += "\n" + f"\nTuning detection threshold ..."
+                print(f"\nTuning detection threshold ...")
                 thresh = self.get_loc_prob_thresh()
                 self.tune_loc_prob_thresh(dataloader_train, verbose=False)
                 train_log += f"Threshold: {thresh:.1f}% --> {self.get_loc_prob_thresh():.1f}%"
                 print(f"Threshold: {thresh:.1f}% --> {self.get_loc_prob_thresh():.1f}%")
 
             if epoch_patience is not None and epoch_patience_counter == epoch_patience:
-                ending = f"\nEnding training early because validation loss has not increased in {epoch_patience} epochs"
+                loss_type = "validation" if dataloader_val is not None else "training"
+                ending = f"\nEnding training early because {loss_type} loss has not increased in {epoch_patience} epochs"
                 train_log += "\n" + ending
                 print(ending)
                 break
 
         self.logs["train.log"] = train_log
         self.logs["train_perf.npy"] = np.vstack(train_perf_all)
-        self.logs["val_perf.npy"] = np.vstack(val_perf_all)
+        if dataloader_val is not None:
+            self.logs["val_perf.npy"] = np.vstack(val_perf_all)
 
         if save_best:
-            print("Loading best weights ...")
+            train_log += "\n\nLoading best weights ..."
+            print("\nLoading best weights ...")
             self.load_state_dict(best_weights)
 
-        train_log += "\n" + f"\nTuning location probability threshold ..."
-        print(f"\nTuning location probability threshold ...")
+        train_log += "\n\n" + f"Tuning detection threshold ..."
+        print(f"\nTuning detection threshold ...")
         thresh = self.get_loc_prob_thresh()
-        self.tune_loc_prob_thresh(dataloader_train, verbose=False)
-        train_log += f"Threshold: {thresh:.1f}% --> {self.get_loc_prob_thresh():.1f}%"
-        print(f"Threshold: {thresh:.1f}% --> {self.get_loc_prob_thresh():.1f}%")
+        threshes, thresh_perfs = self.tune_loc_prob_thresh(dataloader_train, stop=100, verbose=False)
+        best_thresh = self.get_loc_prob_thresh()
+        train_log += f"Threshold: {thresh:.1f}% --> {best_thresh:.1f}%"
+        print(f"Threshold: {thresh:.1f}% --> {best_thresh:.1f}%")
 
-        perf = self.perf(dataloader_val, plot_preds=())
-        perf_report = self.perf_report("\nFinal Val", perf)
+        train_end = time.time()
+        
+        # Determine loose threshold
+        ind = threshes <= best_thresh
+        loose_perfs = thresh_perfs[ind]
+        loose_threshes = threshes[ind]
+        recall_minus_precision = loose_perfs[:, 0] - loose_perfs[:, 1]
+        closest_thresh_idx = np.argmin(np.abs(recall_minus_precision - 15)) # Find closes thresh so recall - precision = 15%
+        loose_thresh = loose_threshes[closest_thresh_idx]
+
+        train_log += "\n\nFinal performance:"
+        print("\nFinal performance:")
+        dataloader_final = dataloader_val if dataloader_val is not None else dataloader_train
+        
+        perf = self.perf(dataloader_final, plot_preds=())
+        perf_report_preface = f"With detection score = {best_thresh:.1f}%"
+        perf_report = self.perf_report(perf_report_preface, perf)
         train_log += "\n" + perf_report
+        
+        self.set_loc_prob_thresh(loose_thresh)
+        perf = self.perf(dataloader_final, plot_preds=())
+        perf_report_preface_2 = f"With detection score = {loose_thresh:.1f}%"
+        perf_report = self.perf_report(" " * (len(perf_report_preface) - len(perf_report_preface_2)) + perf_report_preface_2, perf)
+        train_log += "\n" + perf_report
+        self.set_loc_prob_thresh(best_thresh)
+        
+        msg = f"Recommended detection thresholds: stringent={best_thresh:.1f}%, loose={loose_thresh:.1f}%"
+        train_log += "\n" + msg
+        print(msg)
+            
+        train_log += "\n\n" + f"Time: {train_end-train_start:.1f}s"
 
-        val_f1_score_final = perf[5]
-        return train_perf_all, val_perf_all, val_f1_score_final
+        train_losses = self.logs['train_perf.npy'][:, 0]
+        plt.title("Loss throughout training", fontsize=14)
+        plt.plot(train_losses, label="Train", color="#7542ff")
+        if dataloader_val is not None:
+            plt.plot(self.logs['val_perf.npy'][:, 0], label="Validation", color="#42ccff")
+        plt.ylabel("Loss", fontsize=12)
+        plt.xlabel("Number of epochs", fontsize=12)
+        plt.xlim(0, len(train_losses)-1)
+        plt.tick_params(axis='x', labelsize=12)
+        plt.tick_params(axis='y', labelsize=12)
+        plt.legend(prop={'size': 11})
+        plt.show()
+        
+        plt.title("F1 score, precision, and recall based on detection threshold", fontsize=14)
+        plt.axvline(loose_thresh, color="black", linestyle="dashed", label="Loose threshold")
+        plt.axvline(best_thresh, color="black", label="Stringent threshold")
+        plt.plot(threshes, thresh_perfs[:, 0], label="Recall", color="#7b69d5")
+        plt.plot(threshes, thresh_perfs[:, 1], label="Precision", color="#72bed2")
+        plt.plot(threshes, thresh_perfs[:, 2], label="F1 score", color="#d4b36f")
+        plt.ylabel("Performance (%)", fontsize=12)
+        plt.xlabel("Detection threshold", fontsize=12)
+        plt.xticks(range(0, 101, 10))
+        plt.yticks(range(0, 101, 10))
+        plt.tick_params(axis='x', labelsize=12)
+        plt.tick_params(axis='y', labelsize=12)
+        plt.legend(prop={'size': 8})
+        plt.show()
+        
+        # val_f1_score_final = perf[5]
+        # return train_perf_all, val_perf_all, val_f1_score_final
+        return train_losses[-1]
 
     def set_loc_prob_thresh(self, loc_prob_thresh):
         """
         loc_prob_thresh is in (0, 100)
         internally, self.loc_prob_thresh_logit is (-inf, inf) since model's outputs are not from sigmoid
         """
-        self.loc_prob_thresh_logit = torch.logit(torch.tensor(loc_prob_thresh/100)).item()
+        self.loc_prob_thresh_logit = torch.logit(
+            torch.tensor(loc_prob_thresh/100)).item()
 
     def get_loc_prob_thresh(self):
         """
@@ -554,7 +509,8 @@ Before Training"""
             preds = []
             wf_count = 0
             for i in range(len(outputs)):
-                peaks = self.logit_to_loc(find_peaks(np.concatenate(((-np.inf,), (outputs[i]), (-np.inf,))), height=self.loc_prob_thresh_logit)[0])
+                peaks = self.logit_to_loc(find_peaks(np.concatenate(
+                    ((-np.inf,), (outputs[i]), (-np.inf,))), height=self.loc_prob_thresh_logit)[0])
                 peaks -= 1
                 preds.append(peaks)
                 wf_count += len(peaks)
@@ -563,7 +519,8 @@ Before Training"""
             preds = [
                 self.logit_to_loc(
                     find_peaks(
-                        np.concatenate(((-np.inf,), (outputs[i]), (-np.inf,))),  # Pad beginning and end with -inf so that first location frame and last location frame can be identifed as peaks
+                        # Pad beginning and end with -inf so that first location frame and last location frame can be identifed as peaks
+                        np.concatenate(((-np.inf,), (outputs[i]), (-np.inf,))),
                         height=self.loc_prob_thresh_logit
                     )[0] - 1  # Subtract one to account for the np.concatenate
                 )
@@ -625,7 +582,11 @@ Before Training"""
             6) Loc MAD between location of waveforms predicted by model and label waveforms (in frames)
             7) Loc MAD (in ms)
         """
-        plot_preds = {plot_preds} if isinstance(plot_preds, str) else set(plot_preds)
+        if self.samp_freq is None:
+            raise AttributeError("Attribute samp_freq must be set to the sampling frequency of the recordings (in kHz) to use method perf.\nThis can be done with model.samp_freq = SAMP_FREQ or in the __init__ arguments")
+        
+        plot_preds = {plot_preds} if isinstance(
+            plot_preds, str) else set(plot_preds)
         num_plots = 0
 
         self.train(False)
@@ -635,7 +596,8 @@ Before Training"""
             num_wf_pred_all = 0  # Total number of waveforms predicted by model
             num_wf_pred_correct = 0  # Number of correctly predicted waveforms by model
             num_wf_label = 0  # Total number of actual waveforms
-            num_frames_total = 0  # Total number of time frames with a potential waveform that model predicts for
+            # Total number of time frames with a potential waveform that model predicts for
+            num_frames_total = 0
 
             loc_deviations = []
 
@@ -649,7 +611,7 @@ Before Training"""
                     outputs = self(inputs)
                 else:
                     outputs = outputs_list[i]
-                
+
                 # if num_wfs > 0:
                 loss_total += self.loss(outputs, num_wfs, wf_locs).item()
                 num_samples += 1
@@ -670,23 +632,27 @@ Before Training"""
                             or ("failed" in plot_preds and wf_count != num_wf) \
                             or ("noise" in plot_preds and wf_count == 0):
                         if max_plots is None or (max_plots is not None and num_plots < max_plots):
-                            multirec = None if not isinstance(dataloader, data.RecordingDataloader) else dataloader
                             self.plot_pred(inputs[j, 0, :], outputs[j], loc_preds,
                                            num_wf, loc_labels, wf_alphas[j],
-                                           None)
-                            num_plots += 1                                
-                    
-                    wf_true_positives = set()  # Store which pred waveforms have already been assigned to a label waveforms
-                    labels_predicted = set()  # Store which label waveforms have already been assigned to a pred waveform
-                                
+                                           dataloader)
+                            num_plots += 1
+
+                    # Store which pred waveforms have already been assigned to a label waveforms
+                    wf_true_positives = set()
+                    # Store which label waveforms have already been assigned to a pred waveform
+                    labels_predicted = set()
+
                     pairs_dists = []  # each element is distance between a loc_pred and loc_label
-                    pairs_ind = []  # each element is (loc_pred_idx, loc_label_ind)    
+                    # each element is (loc_pred_idx, loc_label_ind)
+                    pairs_ind = []
                     for idx_pred in range(len(loc_preds)):
                         for idx_label in range(num_wf):
-                            pairs_dists.append(np.abs(loc_preds[idx_pred] - loc_labels[idx_label]))
+                            pairs_dists.append(
+                                np.abs(loc_preds[idx_pred] - loc_labels[idx_label]))
                             pairs_ind.append((idx_pred, idx_label))
-                            
-                    order = np.argsort(pairs_dists)  # Mark as TP the predicted waveforms closest to label waveform
+
+                    # Mark as TP the predicted waveforms closest to label waveform
+                    order = np.argsort(pairs_dists)
                     for o in order:
                         dist = pairs_dists[o]
                         idx_pred, idx_label = pairs_ind[o]
@@ -694,14 +660,14 @@ Before Training"""
                             continue
                         if idx_label in labels_predicted:
                             continue
-                        
-                        if dist <= loc_buffer: # label was detected:
+
+                        if dist <= loc_buffer:  # label was detected:
                             loc_deviations.append(dist)
                             wf_true_positives.add(idx_pred)
                             labels_predicted.add(idx_label)
                         else:  # pairs_dists is sorted ascending, so if dist is above threshold, all following are above too
                             break
-                                
+
                     num_wf_pred_correct += len(wf_true_positives)
 
                     # Find distances of false positive probability predictions above prediction threshold
@@ -711,21 +677,26 @@ Before Training"""
                             logit = outputs[j, logit_frame].item()
                             dist = sigmoid(logit)*100 - self.get_loc_prob_thresh()
                             above_dists.append(dist)
-                            
+
                     # Find distances of false negative probability predictions below prediction threshold
                     for i_label in range(num_wf):
                         if i_label not in labels_predicted:  # False negative
-                            logit_frame = self.loc_to_logit(loc_labels[i_label])
+                            logit_frame = self.loc_to_logit(
+                                loc_labels[i_label])
                             logit = outputs[j, logit_frame].item()
                             dist = self.get_loc_prob_thresh() - sigmoid(logit)*100
                             below_dists.append(dist)
 
             loc_mad_frames = np.mean(loc_deviations) if len(loc_deviations) > 0 else np.nan
-            loc_mad_ms = utils.frames_to_ms(loc_mad_frames)
+            # loc_mad_ms = utils.frames_to_ms(loc_mad_frames)
+            loc_mad_ms = loc_mad_frames / self.samp_freq
 
             if "hist" in plot_preds:
                 # Plot histogram of absolute deviation of locations
-                plot.plot_hist_loc_mad(utils.frames_to_ms(np.array(loc_deviations)))
+                plot.plot_hist_loc_mad(
+                    # utils.frames_to_ms(np.array(loc_deviations))
+                    np.array(loc_deviations) / self.samp_freq
+                )
 
                 # Plot histogram of percent absolute error
                 # plot.plot_hist_percent_abs_error(alpha_percent_abs_errors)
@@ -741,7 +712,7 @@ Before Training"""
             # plt.xlabel("Prediction percent above spike detection threshold")
             # plt.xlim(0)
             # plt.show()
-            
+
             # plt.hist(below_dists, bins=10)
             # print(np.median(below_dists))
             # print(np.mean(below_dists))
@@ -749,11 +720,13 @@ Before Training"""
             # plt.xlabel("Prediction percent below spike detection threshold")
             # plt.xlim(0)
             # plt.show()
-            
+
             return (
                 loss_total / num_samples,  # Loss
-                100 * num_wf_pred_all / num_wf_label if num_wf_label > 0 else np.nan,  # Ratio of number of waveforms predicted by model to number of correct waveforms
-                100 * (num_wf_pred_correct + num_frames_total - (num_wf_pred_all + num_wf_label - num_wf_pred_correct)) / num_frames_total,  # Accuracy
+                # Ratio of number of waveforms predicted by model to number of correct waveforms
+                # 100 * num_wf_pred_all / num_wf_label if num_wf_label > 0 else np.nan,
+                100 * (num_wf_pred_correct + num_frames_total - (num_wf_pred_all + \
+                       num_wf_label - num_wf_pred_correct)) / num_frames_total,  # Accuracy
                 recall,
                 precision,
                 f1_score,
@@ -762,10 +735,9 @@ Before Training"""
             )
             # return stats
 
-    def plot_pred(self, trace:torch.Tensor, output, pred,
+    def plot_pred(self, trace: torch.Tensor, output, pred,
                   num_wf, wf_labels, wf_alphas,
                   multi_rec=None):
-
         """
         Plot models prediction for a sample
         
@@ -799,7 +771,8 @@ Before Training"""
         # a1.axhline(-5 * rms, linestyle="dashed", color="black", linewidth=1, alpha=0.5)
         a1.plot(trace)  # , label=f"{rms:.1f}")
 
-        false_positives = set(pred)  # Initially, false positives is every prediction
+        # Initially, false positives is every prediction
+        false_positives = set(pred)
         plot_false_negative = False
 
         # Plot correct wf
@@ -821,7 +794,8 @@ Before Training"""
 
                 # Plot underlying waveform on separate axis
                 if multi_rec is not None:
-                    loc = int(loc)  # Needs to be int for plotting waveform and removing waveform from trace
+                    # Needs to be int for plotting waveform and removing waveform from trace
+                    loc = int(loc)
 
                     # a0.axvline(loc, alpha=ALPHA, color=color, linestyle=LINESTYLE)
                     wf, peak_idx, wf_len, _, _ = multi_rec.wfs[alpha].unravel()
@@ -829,13 +803,16 @@ Before Training"""
 
         # Plot location of predicted waveforms
         for i, loc in enumerate(false_positives):
-            a1.axvline(loc, alpha=ALPHA, color="red", linestyle=LINESTYLE, label="FP" if i == 0 else None)
+            a1.axvline(loc, alpha=ALPHA, color="red",
+                       linestyle=LINESTYLE, label="FP" if i == 0 else None)
 
         # Create legend for labels for vertical lines if they are in plot
         if len(false_positives) < len(pred):
-            a1.axvline(-1000, alpha=ALPHA, color="green", linestyle=LINESTYLE, label="TP")
+            a1.axvline(-1000, alpha=ALPHA, color="green",
+                       linestyle=LINESTYLE, label="TP")
         if plot_false_negative:
-            a1.axvline(-1000, alpha=ALPHA, color="blue", linestyle=LINESTYLE, label="FN")
+            a1.axvline(-1000, alpha=ALPHA, color="blue",
+                       linestyle=LINESTYLE, label="FN")
 
         if num_wf > 0 and multi_rec is not None:
             a0.legend()
@@ -853,14 +830,17 @@ Before Training"""
         # axis is a plt subplot
 
         output = torch.sigmoid(model_output.to(torch.float32))
-        axis.plot(np.arange(len(output)) + self.loc_first_frame, output.cpu() * 100, color="red")
-        axis.axhline(self.get_loc_prob_thresh(), linestyle="dashed", color="black", label="Detection Threshold", linewidth=1)
+        axis.plot(np.arange(len(output)) + self.loc_first_frame,
+                  output.cpu() * 100, color="red")
+        axis.axhline(self.get_loc_prob_thresh(), linestyle="dashed",
+                     color="black", label="Detection Threshold", linewidth=1)
         axis.set_title("Location probabilities")
         axis.set_ylim(0, 100)
-        axis.set_yticks(range(0, 101, 20), [f"{p}%" for p in range(0, 101, 20)])
+        axis.set_yticks(range(0, 101, 20), [
+                        f"{p}%" for p in range(0, 101, 20)])
         axis.legend()
 
-    def save(self, folder, logs=(), src=r"/data/MEAprojects/DLSpikeSorter/src"):
+    def save(self, folder, logs=(), verbose=True):
         """
         In folder, saves another folder with time it was created
         which contains all relevant info about the model in the following hierarchy:
@@ -868,12 +848,12 @@ Before Training"""
                 yymmdd_HHMMSS_ffffff (see utils.get_time for more details)
                     state_dict.pt: model's PyTorch parameters (weights, biases, etc)
                     init_dict.json: model's init args
-                    src: All source code in src folder (except __init__.py) that are needed to recreate and run model
-                        data.py
-                        model.py
-                        plot.py
-                        train.py
-                        utils.py
+                    # src: All source code in src folder (except __init__.py) that are needed to recreate and run model
+                    #     data.py
+                    #     model.py
+                    #     plot.py
+                    #     train.py
+                    #     utils.py
                     log: .log, .txt, and any other data files specified in :param logs:
 
         :param folder: Path or str
@@ -888,10 +868,10 @@ Before Training"""
 
         """
         name = utils.get_time()
-        folder_model = Path(folder) / utils.get_time()
-        folder_src = folder_model / "src"
+        folder_model = Path(folder) / name  # utils.get_time()
+        # folder_src = folder_model / "src"
         folder_log = folder_model / "log"
-        folder_src.mkdir(parents=True, exist_ok=True)
+        # folder_src.mkdir(parents=True, exist_ok=True)
         folder_log.mkdir(parents=True, exist_ok=True)
 
         torch.save(self.state_dict(), folder_model / "state_dict.pt")
@@ -907,13 +887,14 @@ Before Training"""
         with open(folder_model / "init_dict.json", 'w') as f:
             json.dump(init_dict, f)
 
-        for f in Path(src).iterdir():
-            if f.suffix == ".py" and f.name != "__init__.py":
-                if f.name == "train.py":
-                    print("Not copying train.py")
-                else:
-                    utils.copy_file(f, folder_src)
-                    
+        # # Copy source code
+        # for f in Path(src).iterdir():
+        #     if f.suffix == ".py" and f.name != "__init__.py":
+        #         if f.name == "train.py":
+        #             print("Not copying train.py")
+        #         else:
+        #             utils.copy_file(f, folder_src)
+
         for file, contents in logs:
             if file.endswith("npy"):
                 np.save(folder_log / file, contents)
@@ -927,6 +908,9 @@ Before Training"""
             else:
                 with open(folder_log / file, "w") as f:
                     f.write(contents)
+
+        if verbose:
+            print(f"Saved trained model at {folder_model}")
 
         return name
 
@@ -969,21 +953,26 @@ Before Training"""
         best_score = 0
         best_thresh = self.loc_prob_thresh_logit
         num = int(stop // step)
-        for thresh in np.linspace(start, num * step, num):
+        perfs = []  # (num_threshes, 3=recall + precision + f1)
+        threshes = np.linspace(start, num * step, num)
+        for thresh in threshes:
             self.set_loc_prob_thresh(thresh)
 
             perf = self.perf(inputs_list, outputs_list=outputs_list)
 
-            f1_score = perf[5]
+            f1_score = perf[4]
             if verbose:
                 self.perf_report(f"Prob Thresh: {thresh:.1f}%", perf)
-                print(f"F1 Score: {f1_score:.1f}\n")
+                print(f"F1 Score: {f1_score:.1f}%\n")
             if f1_score > best_score:
                 best_score = f1_score
                 best_thresh = thresh
+            perfs.append(perf[2:5])
+                
         if verbose:
             print(f"Best thresh: {best_thresh:.1f}%")
         self.set_loc_prob_thresh(best_thresh)
+        return threshes, np.array(perfs)
 
     def log(self, path, save_data):
         """
@@ -995,7 +984,8 @@ Before Training"""
         """
 
         if self.path is None:
-            raise ValueError("model's path is not set. Set it with 'model.path = PATH'")
+            raise ValueError(
+                "model's path is not set. Set it with 'model.path = PATH'")
 
         path = Path(self.path) / "log" / path
         path.parent.mkdir(parents=True, exist_ok=True)
@@ -1005,8 +995,61 @@ Before Training"""
         else:
             raise NotImplementedError("data format not implemented yet")
 
+    def compile(self, n_dim_0: int, model_save_path=None,
+                input_size=None,
+                dtype=torch.float16, device="cuda"):
+        """
+        Compile model with torch tensorrt 
+        
+        Params:
+        n_dim_0
+            Input to model should be (n_dim_0, self.num_channels_in, self.sample_size)
+            
+        input_size: None or int
+            If None, detection_model will expect input_size (num frames in input) as currently used
+            Else, use input_size
+        
+        model_save_path
+            If not None, save compiled model to model_save_path/compiled.ts (useful to cache since compiling can take a long time)
+        """
+
+        # can use random example data: https://apple.github.io/coremltools/docs-guides/source/model-tracing.html#:~:text=For%20an%20example%20input%2C%20you,input%2C%20needed%20by%20jit%20tracer.
+        # some versions of the code used to create figures did not set the random seed for this compiling, so results may be different
+        np.random.seed(231)
+        torch.manual_seed(231)
+
+        if input_size is None:
+            input_size = self.sample_size
+
+        model = self.model.conv
+        model.to(device=device, dtype=dtype)
+        model = torch.jit.trace(model, [torch.rand(
+            n_dim_0, self.num_channels_in, input_size, dtype=dtype, device=device)])
+        if not TENSORRT:
+            print("Cannot compile detection model with torch_tensorrt because cannot load torch_tensorrt. Skipping NVIDIA compilation")
+            return model
+        
+        model = torch_tensorrt.compile(model,
+                                       inputs=[torch_tensorrt.Input(
+                                           (n_dim_0, self.num_channels_in, input_size), dtype=dtype)],
+                                       enabled_precisions={dtype},
+                                       ir="ts")
+
+        if model_save_path is not None:
+            torch.jit.save(model, model_save_path /
+                           ModelSpikeSorter.compiled_name)
+        return model
+
+    @staticmethod
+    def load_compiled(model_save_path):
+        """
+        Load saved compiled model
+        """
+        return torch.jit.load(Path(model_save_path) / ModelSpikeSorter.compiled_name)
+
     @staticmethod
     def load(folder):
+
         # Load model from :param folder:
 
         folder = Path(folder)
@@ -1043,9 +1086,28 @@ Before Training"""
 
     @staticmethod
     def perf_report(preface, perf):
+        if preface is None:
+            preface = ""
+            remove_start = True
+        else:
+            remove_start = False
+            
         report = ModelSpikeSorter._perf_report.format(preface, *perf)
+        if remove_start:
+            report = report[2:]
+            
         print(report)
         return report
+
+    @staticmethod
+    def load_mea():
+        import brainloop
+        return ModelSpikeSorter.load(Path(brainloop.__path__[0]) / "core/spikedetector/detection_models/mea")
+    
+    @staticmethod
+    def load_neuropixels():
+        import brainloop
+        return ModelSpikeSorter.load(Path(brainloop.__path__[0]) / "core/spikedetector/detection_models/neuropixels")
 
 
 class ModelTuning(nn.Module):
@@ -1054,9 +1116,15 @@ class ModelTuning(nn.Module):
                  sample_size=200):
         super().__init__()
 
-        num_layers, kernel_size = self.parse_architecture(architecture)
+        if isinstance(architecture, str):  # architecture == sampling frequency as a str in kHz
+            # Force 4 layers with 4ms receptive field
+            num_layers = 4
+            kernel_size = int(architecture) + 1
+        else:  # For backwards compatibility
+            num_layers, kernel_size = self.parse_architecture(architecture)
 
-        get_relu = lambda num_parameters: nn.ReLU() if relu == "relu" else nn.PReLU(num_parameters)
+        def get_relu(num_parameters): return nn.ReLU(
+        ) if relu == "relu" else nn.PReLU(num_parameters)
 
         if num_layers is not None:
             conv = nn.Sequential()
@@ -1081,7 +1149,8 @@ class ModelTuning(nn.Module):
                         if noise == 0:
                             skip_relu = True
 
-                    conv.append(nn.Conv1d(in_channels, out_channels, 3, padding=1))
+                    conv.append(
+                        nn.Conv1d(in_channels, out_channels, 3, padding=1))
                     if not skip_relu:
                         conv.append(get_relu(out_channels))
                     in_channels = out_channels
@@ -1122,7 +1191,8 @@ class ModelTuning(nn.Module):
         if isinstance(self.noise, nn.Flatten):
             x2 = self.noise(x2)
         elif isinstance(self.noise, nn.Sequential):
-            rms = torch.sqrt(torch.mean(torch.square(x), dim=(1, 2), keepdim=True)) - 1.3  # 1.3 is mean
+            rms = torch.sqrt(torch.mean(torch.square(x), dim=(
+                1, 2), keepdim=True)) - 1.3  # 1.3 is mean
             x2 = torch.cat([x2, rms.repeat(1, 1, x2.shape[-1])], dim=1)
             x2 = self.noise(x2)
         elif isinstance(self.noise, nn.ModuleList):
@@ -1148,13 +1218,19 @@ class ModelTuning(nn.Module):
         exp_prob = 0
         for i, prob in enumerate(num_wfs_probs):
             exp_prob += prob * (i + 1)
-        exp_prob *= 0.5 * 1/num_output_locs  # 50% chance of a waveform appearing at all, and 1/num_output_locs for waveform appearing at a output location
+        # 50% chance of a waveform appearing at all, and 1/num_output_locs for waveform appearing at a output location
+        exp_prob *= 0.5 * 1/num_output_locs
         # torch.sigmoid(bias) = exp_prob
-        nn.init.constant_(last_weight_layer.bias, torch.logit(torch.tensor(exp_prob)).item())
+        nn.init.constant_(last_weight_layer.bias, torch.logit(
+            torch.tensor(exp_prob)).item())
 
     @staticmethod
     def parse_architecture(architecture):
-        # Convert architecture number to num_layers and kernel_size
+        """
+        Convert architecture number to num_layers and kernel_size
+        
+        negative p:architecture: is for neuropixels (30kHz). positive is for MEA (20kHz)
+        """
 
         # Output receptive field = 60
         if architecture == 1:
@@ -1175,6 +1251,9 @@ class ModelTuning(nn.Module):
             # 4 conv layers of 21/1
             NUM_LAYERS = 4
             KERNEL_SIZE = 21
+        elif architecture == -4:
+            NUM_LAYERS = 4
+            KERNEL_SIZE = 31
         elif architecture == 5:
             # 8 conv layers of 11/1
             NUM_LAYERS = 8
@@ -1250,9 +1329,11 @@ class ConvBlock(nn.Module):
 class ExpandBlock(nn.Module):
     def __init__(self, in_channels_x, kernel_size=3):
         super().__init__()
-        self.up_conv = nn.ConvTranspose1d(in_channels_x, in_channels_x // 2, 2, 2)
+        self.up_conv = nn.ConvTranspose1d(
+            in_channels_x, in_channels_x // 2, 2, 2)
         self.relu = nn.ReLU()
-        self.conv_block = ConvBlock(in_channels_x, in_channels_x // 2, kernel_size)
+        self.conv_block = ConvBlock(
+            in_channels_x, in_channels_x // 2, kernel_size)
 
     def forward(self, x, cat):
         up = self.relu(self.up_conv(x))
@@ -1271,21 +1352,25 @@ class RMSThresh(nn.Module):
     """
     Model where spikes are classified based on RMS threshold
     """
+
     def __init__(self, thresh=5, sample_size=200, buffer_front=40, buffer_end=40):
         super().__init__()
 
         self.thresh = thresh
         self.filter = data.BandpassFilter((300, 3000))
-        self.sample_size = sample_size
+        # self.sample_size = sample_size
         self.buffer_front = buffer_front
         self.buffer_end = buffer_end
 
     def forward(self, x):
+        x /= 100
         dtype = x.dtype
+        device = x.device
+        x = x.cpu()
         x = torch.tensor(self.filter(x[:, 0, :]).copy())
         rms = torch.sqrt(torch.mean(torch.square(x), keepdim=True, dim=-1))
 
-        return (torch.abs(x[:, self.buffer_front:-self.buffer_end]) >= self.thresh * rms).to(dtype) * 2000 - 1000
+        return (torch.abs(x[:, self.buffer_front:-self.buffer_end]) >= self.thresh * rms).to(dtype=dtype, device=device) * 200 - 100
 
 
 def sigmoid(x):
@@ -1293,7 +1378,8 @@ def sigmoid(x):
     #                 1 / (1 + np.exp(x)),
     #                 np.exp(x) / (1+np.exp(x))
     #                 )
-    return np.exp(x) / (1+np.exp(x))  # Positive overflow is not an issue because DL does not output large positive values (only large negative)
+    # Positive overflow is not an issue because DL does not output large positive values (only large negative)
+    return np.exp(x) / (1+np.exp(x))
 
 
 def main():
@@ -1301,9 +1387,11 @@ def main():
     NUM_CHANNELS_IN = 1
     SAMPLE_SIZE = 80
 
-    inputs = torch.rand(BATCH_SIZE, NUM_CHANNELS_IN, SAMPLE_SIZE, device="cpu", dtype=torch.float32)
+    inputs = torch.rand(BATCH_SIZE, NUM_CHANNELS_IN,
+                        SAMPLE_SIZE, device="cpu", dtype=torch.float32)
 
-    model = ModelSpikeSorter(1, SAMPLE_SIZE, 0, 0, 35, 0, 0, "cpu", (4, 1, "relu", 0, 0, 0, 0))
+    model = ModelSpikeSorter(1, SAMPLE_SIZE, 0, 0, 35,
+                             0, 0, "cpu", (4, 1, "relu", 0, 0, 0, 0))
 
     # model = ModelTuning(*ModelTuning.parse_architecture(4),
     #                     relu="prelu", add_conv=4, bottleneck=1, noise=0, filter=0,

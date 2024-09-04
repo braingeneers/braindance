@@ -20,7 +20,7 @@ from spikeinterface.extractors import MaxwellRecordingExtractor, NwbRecordingExt
 from threadpoolctl import threadpool_limits 
 from tqdm import tqdm
 
-from braindance.core.spikedetector.model2 import ModelSpikeSorter
+from brainloop.core.spikedetector.model import ModelSpikeSorter
 from spikedata import SpikeData
 
 neuropixels_params={
@@ -871,7 +871,8 @@ class RTSort:
             return root_elecs
 
     def get_units(self):
-        from braindance.analysis.select_units import Unit
+        raise NotImplementedError
+        from brainloop.analysis.select_units import Unit
         return [Unit(root_elec, spike_train, idx) for idx, (spike_train, root_elec) in 
                 enumerate(zip(self.seq_spike_trains, self.get_seq_root_elecs()))]
 
@@ -918,7 +919,7 @@ def rt_sort_maxwell_env_process(process_ready, obs_ready, stim_ready, env_done,
     """
     import multiprocessing
     from multiprocessing import shared_memory
-    from braindance.core.maxwell_env import Config
+    from brainloop.core.maxwell_env import Config
     
     obs_chans=1027
     shm_dtype=np.float32

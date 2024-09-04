@@ -10,14 +10,10 @@ import json
 import torch
 from torch.utils.data import Dataset, DataLoader, ConcatDataset
 
-from braindance.core.spikedetector import plot 
-from braindance.core.spikesorter.kilosort2 import run_kilosort2
-from braindance.core.spikesorter.rt_sort import save_traces
+from brainloop.core.spikedetector import plot 
+from brainloop.core.spikesorter.kilosort2 import run_kilosort2
+from brainloop.core.spikesorter.rt_sort import save_traces
 
-"""
-Monkey and a Typewriter:
-    Change Recording + WaveformDataset --> MultiRecordingDataset dynamic to Recording --> RecordingDataset
-"""
 
 class Recording:
     """
