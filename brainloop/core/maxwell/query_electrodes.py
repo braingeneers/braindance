@@ -1,7 +1,11 @@
-import maxlab
+try:
+    import maxlab
+except:
+    # print("Could not import maxlab")
+    # print("Please make sure you are running this on a maxwell computer")
+    import brainloop.core.dummy_maxlab as maxlab
 import argparse
 import json
-
 
     
 

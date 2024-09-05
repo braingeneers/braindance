@@ -90,7 +90,7 @@ class PhaseManager:
                                     self.filenames[-1]])
 
     def run(self):
-        from brainloop.phases_analysis import AnalysisPhase, HeatmapPhase
+        # from brainloop.phases_analysis import AnalysisPhase, HeatmapPhase
 
         try:
             cur_filename = self.env.save_file
@@ -102,7 +102,7 @@ class PhaseManager:
             for phase in self.phases:
 
                 # Reset environment only if it not an analysis phase
-                if phase != self.phases[0] and not isinstance(phase, AnalysisPhase):
+                if phase != self.phases[0]: #and not isinstance(phase, AnalysisPhase):
                     self.env.reset()
                     cur_filename = self.env.save_file
                     self.filenames.append(cur_filename)

@@ -24,24 +24,7 @@ except ImportError:
 
 # stop_process_using_port(7204) to stop dummy raw data if not stopped automatically (useful for Jupyter notebooks)
 import psutil
-def find_process_by_port(port):
-    for proc in psutil.process_iter(['pid', 'name']):
-        try:
-            for conn in proc.connections():
-                if conn.laddr.port == port:
-                    return proc
-        except psutil.AccessDenied:
-            pass  # Ignore processes we don't have permission to access
-    return None
-def stop_process_using_port(port):
-    proc = find_process_by_port(port)
-    if proc:
-        print(
-            f"Found process {proc.pid} ({proc.name()}) using port {port}. Stopping...")
-        proc.terminate()
-        proc.wait()  # Wait for the process to terminate
-    else:
-        print(f"No process found using port {port}")
+
 
 
 from collections import namedtuple
@@ -60,46 +43,27 @@ fs_ms = 20 # sampling rate in kHz
 class MaxwellEnv(BaseEnv):
     """
     The MaxwellEnv class extends from the BaseEnv class and implements a specific environment 
-    for running Maxwell's equations simulations.
+    for running experiments on MaxWell's MaxOne system. This class is used to interact with the
+    MaxOne system, receive data, and send stimulation commands.
 
-
-    Attributes
-    ----------
-    config : str
-        Stores the config filepath in order to easily reload the array.
-    name : str
-        Stores the name of the environment instance.
-    max_time_sec : int
-        Stores the maximum experiment time.
-    save_file : str
-        The file where the data will be saved.
-    stim_electrodes : list
-        Stores the list of electrodes for stimulation.
-    verbose : int
-        Controls the verbosity of the environment's operations.
-    array : None
-        Initialized as None, to be updated in sub-classes as needed.
-    subscriber : None
-        Initialized as None, to be updated in sub-classes as needed.
-    save_dir : str
-        Stores the directory where the simulation data will be saved.
-    is_stimulation : bool
-        A flag that indicates whether a stimulation is going to occur.
-    stim_log_file : str or None
-        The file where the log of the stimulation is saved. If no stimulation is going to occur, this is None.
-    stim_units : None
-        Initialized as None, to be updated in sub-classes as needed.
-    stim_electrodes_dict : None
-        Initialized as None, to be updated in sub-classes as needed.
-    start_time : float
-        The time when the environment is initialized.
-    cur_time : float
-        The current time, updated at each step.
-    last_stim_time : float
-        The time when the last stimulation occurred.
-    smoke_test : bool
-        A flag that indicates whether the environment is being used for a smoke test.
-        
+    Attributes:
+        config (str): Stores the config filepath in order to easily reload the array.
+        name (str): Stores the name of the environment instance.
+        max_time_sec (int): Stores the maximum experiment time.
+        save_file (str): The file where the data will be saved.
+        stim_electrodes (list): Stores the list of electrodes for stimulation.
+        verbose (int): Controls the verbosity of the environment's operations.
+        array (None): Initialized as None, to be updated in sub-classes as needed.
+        subscriber (None): Initialized as None, to be updated in sub-classes as needed.
+        save_dir (str): Stores the directory where the simulation data will be saved.
+        is_stimulation (bool): A flag that indicates whether a stimulation is going to occur.
+        stim_log_file (str or None): The file where the log of the stimulation is saved. If no stimulation is going to occur, this is None.
+        stim_units (None): Initialized as None, to be updated in sub-classes as needed.
+        stim_electrodes_dict (None): Initialized as None, to be updated in sub-classes as needed.
+        start_time (float): The time when the environment is initialized.
+        cur_time (float): The current time, updated at each step.
+        last_stim_time (float): The time when the last stimulation occurred.
+        smoke_test (bool): A flag that indicates whether the environment is being used for a smoke test.
     """
 
     def __init__(self, config, name="", stim_electrodes=[], max_time_sec=60,
@@ -107,37 +71,27 @@ class MaxwellEnv(BaseEnv):
                 filt=False, observation_type='spikes', verbose = 1, 
                 smoke_test=False, dummy=None, start=True):
         """
-        Parameters
-        ----------
-        config : str
-            A path to the maxwell config file. This is usually made by the Maxwell GUI, 
-            and contains the information about the array.
-        name : str
-            The name of the environment instance. This is used for saving data.
-        stim_electrodes : list
-            A list of electrodes for stimulation. If no electrodes are specified, no stimulation will occur.
-        max_time_sec : int
-            The maximum experiment time in seconds.
-        save_dir : str
-            The directory where the stimulation data will be saved.
-        filt : bool
-            A flag that indicates whether a filter should be applied to the data. The filter is onboard the chip,
-            and is applied to the data before it is sent to the computer. It adds ~100ms of latency.
-        observation_type : str
-            A string that indicates the type of observation that the environment should return.
+        Initialize the Maxwell environment.
+
+        Args:
+            config (str): A path to the maxwell config file. This is usually made by the Maxwell GUI, 
+                and contains the information about the array.
+            name (str): The name of the environment instance. This is used for saving data.
+            stim_electrodes (list): A list of electrodes for stimulation. If no electrodes are specified, no stimulation will occur.
+            max_time_sec (int): The maximum experiment time in seconds.
+            save_dir (str): The directory where the stimulation data will be saved.
+            filt (bool): A flag that indicates whether a filter should be applied to the data. The filter is onboard the chip,
+                and is applied to the data before it is sent to the computer. It adds ~100ms of latency.
+            observation_type (str): A string that indicates the type of observation that the environment should return.
                 'spikes' returns a list of spike events
                 'raw' returns the raw datastream frame with shape (ch,1) 
-        verbose : int
-            An integer that controls the verbosity of the environment's operations. 0 is silent, 1 is verbose.
-        smoke_test : bool
-            A flag that indicates whether the environment is being used for a smoke test. If True, the environment
-            will not save any data, will use dummy logic, and no hardware will be used.
-        dummy : str
-            A flag that will indicate whether to use a dummy maxwell server.
+            verbose (int): An integer that controls the verbosity of the environment's operations. 0 is silent, 1 is verbose.
+            smoke_test (bool): A flag that indicates whether the environment is being used for a smoke test. If True, the environment
+                will not save any data, will use dummy logic, and no hardware will be used.
+            dummy (str): A flag that will indicate whether to use a dummy maxwell server.
                 'sine' will use a sine wave for the data
-                '{filepath}' will use the first 30 seconds of data from the filepath
+                *filepath* will use the first 30 seconds of data from the filepath
                 None will use the real maxwell server
-
         """
 
 
@@ -231,6 +185,9 @@ class MaxwellEnv(BaseEnv):
             print("===================== Beginning experiment =====================")
         
     def start(self):
+        """
+        Start the experiment by initializing time management, flushing the buffer, and starting the recording.
+        """
         # Time management
         self.start_time = self.cur_time = time.perf_counter()
         self.last_stim_time = 0
@@ -287,10 +244,17 @@ class MaxwellEnv(BaseEnv):
     def clear_buffer(self, num_successive_waits=10, min_wait_f=0.5, buffer_size=10,
                      samp_freq_hz=20000):
         """
-        Clear the ZMQ socket buffer, so self.step() returns latest data
+        Clear the ZMQ socket buffer, so self.step() returns latest data.
+
         This is done by waiting until the time to receive buffer_size frames is at least to min_wait_f*buffer_size
-        for num_successive_waits successive method calls
-            There are two buffers: the ZMQ socket buffer and buffer_size used in self.step(buffer_size=buffer_size)
+        for num_successive_waits successive method calls. There are two buffers: the ZMQ socket buffer and 
+        buffer_size used in self.step(buffer_size=buffer_size).
+
+        Args:
+            num_successive_waits (int): Number of successive waits before considering the buffer cleared.
+            min_wait_f (float): Minimum wait factor.
+            buffer_size (int): Size of the buffer.
+            samp_freq_hz (int): Sampling frequency in Hz.
         """
         print("Clearing buffer")
         
@@ -316,9 +280,15 @@ class MaxwellEnv(BaseEnv):
         
 
     def get_observation(self, buffer_size=None):
-        '''
-        Create the observation from the electrodes or spike events
-        '''
+        """
+        Create the observation from the electrodes or spike events.
+
+        Args:
+            buffer_size (int, optional): Size of the buffer for raw data observation.
+
+        Returns:
+            list or numpy.ndarray: Observation data.
+        """
         if self.observation_type == 'spikes':
             # Receive data
             if self.multiprocess:
@@ -360,15 +330,19 @@ class MaxwellEnv(BaseEnv):
 
 
     def step(self, action=None, tag=None, buffer_size=None):
-        '''
-        Recieve events published since last time step() was called.
+        """
+        Receive events published since last time step() was called.
         This includes spike events and raw datastream.
 
-        Parameters
-        ----------
-        action : list 
-            A list of stimulation commands. Each command is a tuple of the form (electrode_index, amplitude_mV, phase_length_us).
-        '''
+        Args:
+            action (list, optional): A list of stimulation commands. Each command is a tuple of the form 
+                (electrode_index, amplitude_mV, phase_length_us).
+            tag (str, optional): A tag for the stimulation log.
+            buffer_size (int, optional): Size of the buffer for observation.
+
+        Returns:
+            tuple: A tuple containing the observation and a boolean indicating if the episode is done.
+        """
         self.cur_time = time.perf_counter()
 
         # Receive data
@@ -466,22 +440,18 @@ class MaxwellEnv(BaseEnv):
     
 
     def _create_stim_pulse(self, stim_command):
-        '''
-        Create a pulse sequence that just sets the DAC amplitude in a pulse shape for a brief
-        period. This should be combined with code that connects electrodes to the DAC in order
-        to actually generate stimulus behavior.
+        """
+        Create a pulse sequence that sets the DAC amplitude in a pulse shape for a brief period.
 
-        Parameters
-        ----------
-        stim_command : tuple
-            A tuple of the form (stim_electrodes, amplitude_mV, phase_length_us)
-                stim_electrodes : list
-                    A list of electrode numbers to stimulate.
-                amplitude_mV : float
-                    The amplitude of the square wave, in mV.
-                phase_length_us : float
-                    The length of each phase of the square wave, in us.
-        '''
+        Args:
+            stim_command (tuple): A tuple of the form (stim_electrodes, amplitude_mV, phase_length_us)
+                stim_electrodes (list): A list of electrode numbers to stimulate.
+                amplitude_mV (float): The amplitude of the square wave, in mV.
+                phase_length_us (float): The length of each phase of the square wave, in us.
+
+        Returns:
+            maxlab.Sequence: The created stimulation sequence.
+        """
         self.seq = maxlab.Sequence()
         self.active_units = []
         
@@ -489,7 +459,6 @@ class MaxwellEnv(BaseEnv):
         
         # Append each neuron that needs to be stimmed in order
         for n in neurons:
-            # print(f'Adding neuron {n} to stim sequence')
             unit = self.stim_units[n]
             self.active_units.append(unit)
             self.seq.append(unit.power_up(True))
@@ -834,6 +803,29 @@ def stim_process(
     stim_shm.close()
 
 
+#==========================================================================
+#=========================  DUMMY FUNCTIONS  ==============================
+#==========================================================================
+
+def find_process_by_port(port):
+    for proc in psutil.process_iter(['pid', 'name']):
+        try:
+            for conn in proc.connections():
+                if conn.laddr.port == port:
+                    return proc
+        except psutil.AccessDenied:
+            pass  # Ignore processes we don't have permission to access
+    return None
+def stop_process_using_port(port):
+    proc = find_process_by_port(port)
+    if proc:
+        print(
+            f"Found process {proc.pid} ({proc.name()}) using port {port}. Stopping...")
+        proc.terminate()
+        proc.wait()  # Wait for the process to terminate
+    else:
+        print(f"No process found using port {port}")
+
 
 #==========================================================================
 #=========================  MAXWELL FUNCTIONS  ============================
@@ -842,32 +834,20 @@ def stim_process(
 def init_maxone(config, stim_electrodes,filt=True, verbose=1, gain=512, cutoff='1Hz',
                 spike_thresh=5, dummy=False):
     """
-    Initialize MaxOne, set electrodes, and setup subscribers
+    Initialize MaxOne, set electrodes, and setup subscribers.
 
-    Parameters
-    ----------
-    config : str
-        Path to the config file for the electrodes
+    Args:
+        config (str): Path to the config file for the electrodes.
+        stim_electrodes (list): List of electrode numbers to stimulate.
+        filt (bool): Whether to use the high-pass filter.
+        verbose (int): Verbosity level. 0: No print statements, 1: Print initialization statements, 2: Print all statements.
+        gain (int): Gain of the amplifier. Options: 512, 1024, 2048.
+        cutoff (str): Cutoff frequency of the high-pass filter. Options: '1Hz', '300Hz'.
+        spike_thresh (int): Threshold for spike detection, in units of standard deviations.
+        dummy (bool): Whether to use dummy data.
 
-    stim_electrodes : list  
-        List of electrode numbers to stimulate
-
-    filt : bool
-        Whether to use the high-pass filter
-
-    verbose : int   
-        0: No print statements
-        1: Print initialization statements
-        2: Print all statements
-
-    gain : int, {512, 1024, 2048}   
-        Gain of the amplifier
-
-    cutoff : str, {'1Hz', '300Hz'}  
-        Cutoff frequency of the high-pass filter
-
-    spike_thresh : int  
-        Threshold for spike detection, in units of standard deviations
+    Returns:
+        tuple: A tuple containing the subscriber, stimulation units, and stimulation electrodes dictionary.
     """
 
     init_maxone_settings(gain=gain, cutoff=cutoff, spike_thresh=spike_thresh, verbose=verbose)
@@ -1238,7 +1218,18 @@ def launch_dummy_server(dummy):
 
 
 class Config:
+    """
+    Class to handle configuration file parsing and management.
+    """
+
+
     def __init__(self, filename):
+        """
+        Initialize the Config object.
+
+        Args:
+            filename (str): Path to the configuration file.
+        """
 
         self.config = []
         self.mappings = []
@@ -1254,15 +1245,42 @@ class Config:
         self.config = [(int(m[0]), int(m[1]), float(m[2]), float(m[3])) for m in self.config]
 
     def get_channels(self):
+        """
+        Get all channels from the configuration.
+
+        Returns:
+            list: List of channel numbers.
+        """
         return [m.channel for m in self.mappings]
     
     def get_electrodes(self):
+        """
+        Get all electrodes from the configuration.
+
+        Returns:
+            list: List of electrode numbers.
+        """
         return [m.electrode for m in self.mappings]
 
     def get_channels_for_electrodes(self, electrodes):
+        """
+        Get channels corresponding to given electrodes.
+
+        Args:
+            electrodes (list): List of electrode numbers.
+
+        Returns:
+            list: List of corresponding channel numbers.
+        """
         return [m.channel for m in self.mappings if m.electrode in electrodes]
     
     def get_num_channels(self):
+        """
+        Get the total number of channels in the configuration.
+
+        Returns:
+            int: Number of channels.
+        """
         return len(self.get_channels())
 
     class Mapping:

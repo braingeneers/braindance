@@ -1,3 +1,10 @@
+"""
+ZMQ Publisher for streaming simulated or real neural data.
+
+This script sets up ZMQ publishers to stream neural data and spike events.
+It can generate sine wave data, use manually created data, or load data from files.
+"""
+
 import zmq
 import struct
 import time
@@ -9,6 +16,17 @@ from brainloop.analysis import data_loader
 from collections import namedtuple
 
 def get_sine_wave(n_channels=1024, fs=20000, total_time_steps=20000*30):
+    """
+    Generate a sine wave dataset.
+
+    Args:
+        n_channels (int): Number of channels. Default is 1024.
+        fs (int): Sampling frequency in Hz. Default is 20000.
+        total_time_steps (int): Total number of time steps. Default is 20000*30 (30 seconds).
+
+    Returns:
+        numpy.ndarray: 2D array of sine wave data with shape (n_channels, total_time_steps).
+    """
     time_array = np.arange(total_time_steps)/fs  # Time array in seconds
 
     # Pre-generate the frame data as a 2D array of sin waves for each channel
@@ -21,6 +39,16 @@ def get_sine_wave(n_channels=1024, fs=20000, total_time_steps=20000*30):
 
 
 def run(data_path, random_events=True):
+    """
+    Run the ZMQ publisher to stream neural data and spike events.
+
+    Args:
+        data_path (str): Path to the data file or 'sine' for generated sine wave or 'manual' for manually created data.
+        random_events (bool): Whether to generate random spike events. Default is True.
+
+    Raises:
+        NotImplementedError: If the data file type is not supported.
+    """
     context = zmq.Context()
 
     # Define the ZMQ publishers
@@ -106,4 +134,8 @@ def run(data_path, random_events=True):
         frame_number = (frame_number + 1) % total_time_steps
 
 if __name__ == '__main__':
+    """
+    Main entry point of the script.
+    Runs the ZMQ publisher with default parameters.
+    """
     run()
