@@ -12,3 +12,4 @@ zmq
 scipy
 seaborn
 pandas
+psutil
