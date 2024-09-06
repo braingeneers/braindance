@@ -5,8 +5,8 @@ from spikeinterface.extractors import BaseRecording
 import torch
 from torch.utils.data import DataLoader
 
-from brainloop.core.spikedetector import data, utils
-from brainloop.core.spikedetector.model import ModelSpikeSorter
+from braindance.core.spikedetector import data, utils
+from braindance.core.spikedetector.model import ModelSpikeSorter
 
 def train_detection_model(recordings: list,
                           dl_folder_name="dl_folder",
@@ -111,7 +111,7 @@ def train_detection_model(recordings: list,
                 The data type to use
         
         run_kilosort2 parameters
-            See brainloop.core.spikesorter.kilosort2.py
+            See braindance.core.spikesorter.kilosort2.py
 
     """    
     

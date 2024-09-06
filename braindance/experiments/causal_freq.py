@@ -1,7 +1,7 @@
 import numpy as np
 
-from brainloop.core.maxwell_env import MaxwellEnv
-from brainloop.core.params import maxwell_params
+from braindance.core.maxwell_env import MaxwellEnv
+from braindance.core.params import maxwell_params
 
 params = maxwell_params
 params['name'] = 'causal_freq' # Name of the experiment
@@ -15,7 +15,7 @@ params['config'] = 'config.cfg' # Path to the config file
 # This is NOT THE RECOMMENDED way to run experiments, but it is possible
 # to directly interact with the environment and use exact timing.
 # It is generally better to use the PhaseManager and Phase classes to
-# define experiments. ( brainloop.core.phases )
+# define experiments. ( braindance.core.phases )
 
 
 # Here we will run a simple experiment with 3 phases:

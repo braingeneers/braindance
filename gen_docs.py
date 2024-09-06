@@ -7,7 +7,7 @@ from pydoc_markdown.contrib.renderers.markdown import MarkdownRenderer
 
 
 # FOR LAZYDOCS USE:
-# find brainloop -name "*.py" ! -name "__init__.py" -type f | tee /dev/tty | xargs -I {} sh -c 'echo "Processing {}"; lazydocs --output-format mdx {}'
+# find braindance -name "*.py" ! -name "__init__.py" -type f | tee /dev/tty | xargs -I {} sh -c 'echo "Processing {}"; lazydocs --output-format mdx {}'
 
 def get_local_objects(file_path):
     with open(file_path, 'r') as file:
@@ -105,7 +105,7 @@ def generate_docs(src_dir, out_dir):
                     print(f"Skipped {rel_path} (no local objects found)")
 
 if __name__ == '__main__':
-    src_dir = 'brainloop'
+    src_dir = 'braindance'
     out_dir = 'docs'
     generate_docs(src_dir, out_dir)
     print("Documentation generation complete.")
