@@ -46,7 +46,7 @@ sweep_phase = NeuralSweepPhase(env, neuron_list=[0, 1], amp_bounds=300, stim_fre
 phase_manager = PhaseManager(env, verbose=True)
 phase_manager.add_phase_group([record_phase, sweep_phase, record_phase])
 
-print(phase_manger.summary())
+print(phase_manager.summary())
 
 phase_manager.run()
 ```
