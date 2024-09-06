@@ -5,11 +5,20 @@
   "source": "@site/docs/docs/data_loader.py.mdx",
   "sourceDirName": "docs",
   "slug": "/docs/data_loader.py",
-  "permalink": "/BrainLoop/docs/docs/data_loader.py",
+  "permalink": "/braindance/docs/docs/data_loader.py",
   "draft": false,
   "unlisted": false,
-  "editUrl": "https://github.com/braingeneers/brainloop/docs/docs/data_loader.py.mdx",
+  "editUrl": "https://github.com/braingeneers/braindance/docs/docs/data_loader.py.mdx",
   "tags": [],
   "version": "current",
-  "frontMatter": {}
+  "frontMatter": {},
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "base_env.py",
+    "permalink": "/braindance/docs/docs/base_env.py"
+  },
+  "next": {
+    "title": "dummy_maxlab.py",
+    "permalink": "/braindance/docs/docs/dummy_maxlab.py"
+  }
 }

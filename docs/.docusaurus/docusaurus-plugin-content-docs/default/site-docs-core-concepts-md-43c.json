@@ -5,14 +5,23 @@
   "source": "@site/docs/core-concepts.md",
   "sourceDirName": ".",
   "slug": "/core-concepts",
-  "permalink": "/BrainLoop/docs/core-concepts",
+  "permalink": "/braindance/docs/core-concepts",
   "draft": false,
   "unlisted": false,
-  "editUrl": "https://github.com/braingeneers/brainloop/docs/core-concepts.md",
+  "editUrl": "https://github.com/braingeneers/braindance/docs/core-concepts.md",
   "tags": [],
   "version": "current",
   "sidebarPosition": 2,
   "frontMatter": {
     "sidebar_position": 2
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Quick Start Guide",
+    "permalink": "/braindance/docs/quick-start"
+  },
+  "next": {
+    "title": "RT-Sort",
+    "permalink": "/braindance/docs/category/rt-sort"
   }
 }

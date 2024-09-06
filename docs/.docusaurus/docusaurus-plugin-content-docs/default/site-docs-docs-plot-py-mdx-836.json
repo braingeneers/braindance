@@ -5,11 +5,20 @@
   "source": "@site/docs/docs/plot.py.mdx",
   "sourceDirName": "docs",
   "slug": "/docs/plot.py",
-  "permalink": "/BrainLoop/docs/docs/plot.py",
+  "permalink": "/braindance/docs/docs/plot.py",
   "draft": false,
   "unlisted": false,
-  "editUrl": "https://github.com/braingeneers/brainloop/docs/docs/plot.py.mdx",
+  "editUrl": "https://github.com/braingeneers/braindance/docs/docs/plot.py.mdx",
   "tags": [],
   "version": "current",
-  "frontMatter": {}
+  "frontMatter": {},
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "phases.py",
+    "permalink": "/braindance/docs/docs/phases.py"
+  },
+  "next": {
+    "title": "query_electrodes.py",
+    "permalink": "/braindance/docs/docs/query_electrodes.py"
+  }
 }

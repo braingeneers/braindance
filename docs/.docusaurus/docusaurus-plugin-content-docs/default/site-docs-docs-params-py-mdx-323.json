@@ -5,11 +5,20 @@
   "source": "@site/docs/docs/params.py.mdx",
   "sourceDirName": "docs",
   "slug": "/docs/params.py",
-  "permalink": "/BrainLoop/docs/docs/params.py",
+  "permalink": "/braindance/docs/docs/params.py",
   "draft": false,
   "unlisted": false,
-  "editUrl": "https://github.com/braingeneers/brainloop/docs/docs/params.py.mdx",
+  "editUrl": "https://github.com/braingeneers/braindance/docs/docs/params.py.mdx",
   "tags": [],
   "version": "current",
-  "frontMatter": {}
+  "frontMatter": {},
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "maxwell_utils.py",
+    "permalink": "/braindance/docs/docs/maxwell_utils.py"
+  },
+  "next": {
+    "title": "phases.py",
+    "permalink": "/braindance/docs/docs/phases.py"
+  }
 }

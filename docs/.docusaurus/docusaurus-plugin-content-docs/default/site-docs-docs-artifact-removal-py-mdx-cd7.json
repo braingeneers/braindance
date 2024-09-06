@@ -5,11 +5,20 @@
   "source": "@site/docs/docs/artifact_removal.py.mdx",
   "sourceDirName": "docs",
   "slug": "/docs/artifact_removal.py",
-  "permalink": "/BrainLoop/docs/docs/artifact_removal.py",
+  "permalink": "/braindance/docs/docs/artifact_removal.py",
   "draft": false,
   "unlisted": false,
-  "editUrl": "https://github.com/braingeneers/brainloop/docs/docs/artifact_removal.py.mdx",
+  "editUrl": "https://github.com/braingeneers/braindance/docs/docs/artifact_removal.py.mdx",
   "tags": [],
   "version": "current",
-  "frontMatter": {}
+  "frontMatter": {},
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Documentation",
+    "permalink": "/braindance/docs/category/documentation"
+  },
+  "next": {
+    "title": "base_env.py",
+    "permalink": "/braindance/docs/docs/base_env.py"
+  }
 }

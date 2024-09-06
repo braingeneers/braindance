@@ -3,187 +3,201 @@ import ComponentCreator from '@docusaurus/ComponentCreator';
 
 export default [
   {
-    path: '/BrainLoop/__docusaurus/debug',
-    component: ComponentCreator('/BrainLoop/__docusaurus/debug', 'a2a'),
-    exact: true
-  },
-  {
-    path: '/BrainLoop/__docusaurus/debug/config',
-    component: ComponentCreator('/BrainLoop/__docusaurus/debug/config', '7df'),
-    exact: true
-  },
-  {
-    path: '/BrainLoop/__docusaurus/debug/content',
-    component: ComponentCreator('/BrainLoop/__docusaurus/debug/content', '9dc'),
-    exact: true
-  },
-  {
-    path: '/BrainLoop/__docusaurus/debug/globalData',
-    component: ComponentCreator('/BrainLoop/__docusaurus/debug/globalData', '3d1'),
-    exact: true
-  },
-  {
-    path: '/BrainLoop/__docusaurus/debug/metadata',
-    component: ComponentCreator('/BrainLoop/__docusaurus/debug/metadata', 'f14'),
-    exact: true
-  },
-  {
-    path: '/BrainLoop/__docusaurus/debug/registry',
-    component: ComponentCreator('/BrainLoop/__docusaurus/debug/registry', 'b9d'),
-    exact: true
-  },
-  {
-    path: '/BrainLoop/__docusaurus/debug/routes',
-    component: ComponentCreator('/BrainLoop/__docusaurus/debug/routes', 'b73'),
-    exact: true
-  },
-  {
-    path: '/BrainLoop/docs',
-    component: ComponentCreator('/BrainLoop/docs', '2c1'),
+    path: '/braindance/docs',
+    component: ComponentCreator('/braindance/docs', '553'),
     routes: [
       {
-        path: '/BrainLoop/docs',
-        component: ComponentCreator('/BrainLoop/docs', 'd0e'),
+        path: '/braindance/docs',
+        component: ComponentCreator('/braindance/docs', '483'),
         routes: [
           {
-            path: '/BrainLoop/docs',
-            component: ComponentCreator('/BrainLoop/docs', 'a5e'),
+            path: '/braindance/docs',
+            component: ComponentCreator('/braindance/docs', '4c6'),
             routes: [
               {
-                path: '/BrainLoop/docs',
-                component: ComponentCreator('/BrainLoop/docs', 'f8d'),
-                exact: true
+                path: '/braindance/docs',
+                component: ComponentCreator('/braindance/docs', '101'),
+                exact: true,
+                sidebar: "tutorialSidebar"
               },
               {
-                path: '/BrainLoop/docs/core-concepts',
-                component: ComponentCreator('/BrainLoop/docs/core-concepts', '30c'),
-                exact: true
+                path: '/braindance/docs/category/documentation',
+                component: ComponentCreator('/braindance/docs/category/documentation', '5cd'),
+                exact: true,
+                sidebar: "tutorialSidebar"
               },
               {
-                path: '/BrainLoop/docs/docs/artifact_removal.py',
-                component: ComponentCreator('/BrainLoop/docs/docs/artifact_removal.py', '4bb'),
-                exact: true
+                path: '/braindance/docs/category/rt-sort',
+                component: ComponentCreator('/braindance/docs/category/rt-sort', '88e'),
+                exact: true,
+                sidebar: "tutorialSidebar"
               },
               {
-                path: '/BrainLoop/docs/docs/base_env.py',
-                component: ComponentCreator('/BrainLoop/docs/docs/base_env.py', '507'),
-                exact: true
+                path: '/braindance/docs/category/usage',
+                component: ComponentCreator('/braindance/docs/category/usage', 'e09'),
+                exact: true,
+                sidebar: "tutorialSidebar"
               },
               {
-                path: '/BrainLoop/docs/docs/data_loader.py',
-                component: ComponentCreator('/BrainLoop/docs/docs/data_loader.py', 'ebd'),
-                exact: true
+                path: '/braindance/docs/core-concepts',
+                component: ComponentCreator('/braindance/docs/core-concepts', '8b3'),
+                exact: true,
+                sidebar: "tutorialSidebar"
               },
               {
-                path: '/BrainLoop/docs/docs/dummy_maxlab.py',
-                component: ComponentCreator('/BrainLoop/docs/docs/dummy_maxlab.py', 'ab9'),
-                exact: true
+                path: '/braindance/docs/docs/artifact_removal.py',
+                component: ComponentCreator('/braindance/docs/docs/artifact_removal.py', 'ff1'),
+                exact: true,
+                sidebar: "tutorialSidebar"
               },
               {
-                path: '/BrainLoop/docs/docs/dummy_zmq_np.py',
-                component: ComponentCreator('/BrainLoop/docs/docs/dummy_zmq_np.py', 'a26'),
-                exact: true
+                path: '/braindance/docs/docs/base_env.py',
+                component: ComponentCreator('/braindance/docs/docs/base_env.py', '5a4'),
+                exact: true,
+                sidebar: "tutorialSidebar"
               },
               {
-                path: '/BrainLoop/docs/docs/maxwell_env.py',
-                component: ComponentCreator('/BrainLoop/docs/docs/maxwell_env.py', 'b89'),
-                exact: true
+                path: '/braindance/docs/docs/data_loader.py',
+                component: ComponentCreator('/braindance/docs/docs/data_loader.py', '252'),
+                exact: true,
+                sidebar: "tutorialSidebar"
               },
               {
-                path: '/BrainLoop/docs/docs/maxwell_utils.py',
-                component: ComponentCreator('/BrainLoop/docs/docs/maxwell_utils.py', '8fe'),
-                exact: true
+                path: '/braindance/docs/docs/dummy_maxlab.py',
+                component: ComponentCreator('/braindance/docs/docs/dummy_maxlab.py', '756'),
+                exact: true,
+                sidebar: "tutorialSidebar"
               },
               {
-                path: '/BrainLoop/docs/docs/params.py',
-                component: ComponentCreator('/BrainLoop/docs/docs/params.py', '3a7'),
-                exact: true
+                path: '/braindance/docs/docs/dummy_zmq_np.py',
+                component: ComponentCreator('/braindance/docs/docs/dummy_zmq_np.py', '905'),
+                exact: true,
+                sidebar: "tutorialSidebar"
               },
               {
-                path: '/BrainLoop/docs/docs/phases.py',
-                component: ComponentCreator('/BrainLoop/docs/docs/phases.py', '1b1'),
-                exact: true
+                path: '/braindance/docs/docs/maxwell_env.py',
+                component: ComponentCreator('/braindance/docs/docs/maxwell_env.py', '54b'),
+                exact: true,
+                sidebar: "tutorialSidebar"
               },
               {
-                path: '/BrainLoop/docs/docs/plot.py',
-                component: ComponentCreator('/BrainLoop/docs/docs/plot.py', '745'),
-                exact: true
+                path: '/braindance/docs/docs/maxwell_utils.py',
+                component: ComponentCreator('/braindance/docs/docs/maxwell_utils.py', 'bf2'),
+                exact: true,
+                sidebar: "tutorialSidebar"
               },
               {
-                path: '/BrainLoop/docs/docs/query_electrodes.py',
-                component: ComponentCreator('/BrainLoop/docs/docs/query_electrodes.py', 'ca7'),
-                exact: true
+                path: '/braindance/docs/docs/params.py',
+                component: ComponentCreator('/braindance/docs/docs/params.py', '1e5'),
+                exact: true,
+                sidebar: "tutorialSidebar"
               },
               {
-                path: '/BrainLoop/docs/docs/select_electrodes.py',
-                component: ComponentCreator('/BrainLoop/docs/docs/select_electrodes.py', '969'),
-                exact: true
+                path: '/braindance/docs/docs/phases.py',
+                component: ComponentCreator('/braindance/docs/docs/phases.py', '350'),
+                exact: true,
+                sidebar: "tutorialSidebar"
               },
               {
-                path: '/BrainLoop/docs/docs/spikedetector.py',
-                component: ComponentCreator('/BrainLoop/docs/docs/spikedetector.py', '4d3'),
-                exact: true
+                path: '/braindance/docs/docs/plot.py',
+                component: ComponentCreator('/braindance/docs/docs/plot.py', '826'),
+                exact: true,
+                sidebar: "tutorialSidebar"
               },
               {
-                path: '/BrainLoop/docs/docs/train.py',
-                component: ComponentCreator('/BrainLoop/docs/docs/train.py', '186'),
-                exact: true
+                path: '/braindance/docs/docs/query_electrodes.py',
+                component: ComponentCreator('/braindance/docs/docs/query_electrodes.py', '7b9'),
+                exact: true,
+                sidebar: "tutorialSidebar"
               },
               {
-                path: '/BrainLoop/docs/docs/trainer.py',
-                component: ComponentCreator('/BrainLoop/docs/docs/trainer.py', 'ab5'),
-                exact: true
+                path: '/braindance/docs/docs/select_electrodes.py',
+                component: ComponentCreator('/braindance/docs/docs/select_electrodes.py', '912'),
+                exact: true,
+                sidebar: "tutorialSidebar"
               },
               {
-                path: '/BrainLoop/docs/docs/utils.py',
-                component: ComponentCreator('/BrainLoop/docs/docs/utils.py', '423'),
-                exact: true
+                path: '/braindance/docs/docs/spikedetector.py',
+                component: ComponentCreator('/braindance/docs/docs/spikedetector.py', '717'),
+                exact: true,
+                sidebar: "tutorialSidebar"
               },
               {
-                path: '/BrainLoop/docs/quick-start',
-                component: ComponentCreator('/BrainLoop/docs/quick-start', 'd99'),
-                exact: true
+                path: '/braindance/docs/docs/train.py',
+                component: ComponentCreator('/braindance/docs/docs/train.py', 'da2'),
+                exact: true,
+                sidebar: "tutorialSidebar"
               },
               {
-                path: '/BrainLoop/docs/RT-sort/api-reference',
-                component: ComponentCreator('/BrainLoop/docs/RT-sort/api-reference', '829'),
-                exact: true
+                path: '/braindance/docs/docs/trainer.py',
+                component: ComponentCreator('/braindance/docs/docs/trainer.py', '258'),
+                exact: true,
+                sidebar: "tutorialSidebar"
               },
               {
-                path: '/BrainLoop/docs/RT-sort/installation',
-                component: ComponentCreator('/BrainLoop/docs/RT-sort/installation', '39f'),
-                exact: true
+                path: '/braindance/docs/docs/utils.py',
+                component: ComponentCreator('/braindance/docs/docs/utils.py', '93c'),
+                exact: true,
+                sidebar: "tutorialSidebar"
               },
               {
-                path: '/BrainLoop/docs/RT-sort/introduction',
-                component: ComponentCreator('/BrainLoop/docs/RT-sort/introduction', 'a8b'),
-                exact: true
+                path: '/braindance/docs/quick-start',
+                component: ComponentCreator('/braindance/docs/quick-start', '510'),
+                exact: true,
+                sidebar: "tutorialSidebar"
               },
               {
-                path: '/BrainLoop/docs/RT-sort/usage/load-detection-model',
-                component: ComponentCreator('/BrainLoop/docs/RT-sort/usage/load-detection-model', '2ea'),
-                exact: true
+                path: '/braindance/docs/RT-sort/api-reference',
+                component: ComponentCreator('/braindance/docs/RT-sort/api-reference', '3c1'),
+                exact: true,
+                sidebar: "tutorialSidebar"
               },
               {
-                path: '/BrainLoop/docs/RT-sort/usage/real-time-application',
-                component: ComponentCreator('/BrainLoop/docs/RT-sort/usage/real-time-application', 'e15'),
-                exact: true
+                path: '/braindance/docs/RT-sort/installation',
+                component: ComponentCreator('/braindance/docs/RT-sort/installation', 'ae4'),
+                exact: true,
+                sidebar: "tutorialSidebar"
               },
               {
-                path: '/BrainLoop/docs/RT-sort/usage/sequence-detection',
-                component: ComponentCreator('/BrainLoop/docs/RT-sort/usage/sequence-detection', '391'),
-                exact: true
+                path: '/braindance/docs/RT-sort/introduction',
+                component: ComponentCreator('/braindance/docs/RT-sort/introduction', 'cc2'),
+                exact: true,
+                sidebar: "tutorialSidebar"
               },
               {
-                path: '/BrainLoop/docs/RT-sort/usage/training-models',
-                component: ComponentCreator('/BrainLoop/docs/RT-sort/usage/training-models', '41c'),
-                exact: true
+                path: '/braindance/docs/RT-sort/usage/load-detection-model',
+                component: ComponentCreator('/braindance/docs/RT-sort/usage/load-detection-model', '07a'),
+                exact: true,
+                sidebar: "tutorialSidebar"
+              },
+              {
+                path: '/braindance/docs/RT-sort/usage/real-time-application',
+                component: ComponentCreator('/braindance/docs/RT-sort/usage/real-time-application', '333'),
+                exact: true,
+                sidebar: "tutorialSidebar"
+              },
+              {
+                path: '/braindance/docs/RT-sort/usage/sequence-detection',
+                component: ComponentCreator('/braindance/docs/RT-sort/usage/sequence-detection', 'a3f'),
+                exact: true,
+                sidebar: "tutorialSidebar"
+              },
+              {
+                path: '/braindance/docs/RT-sort/usage/training-models',
+                component: ComponentCreator('/braindance/docs/RT-sort/usage/training-models', '3ce'),
+                exact: true,
+                sidebar: "tutorialSidebar"
               }
             ]
           }
         ]
       }
     ]
+  },
+  {
+    path: '/braindance/',
+    component: ComponentCreator('/braindance/', '649'),
+    exact: true
   },
   {
     path: '*',

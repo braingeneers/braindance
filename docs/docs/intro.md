@@ -24,9 +24,9 @@ Are you ready to start your neural stimulation experiments? Check out our [Quick
 Here's a glimpse of what a BrainDance experiment looks like:
 
 ```python
-from brainloop.core.maxwell_env import MaxwellEnv
-from brainloop.core.params import maxwell_params
-from brainloop.core.phases import PhaseManager, NeuralSweepPhase, RecordPhase, FrequencyStimPhase
+from braindance.core.maxwell_env import MaxwellEnv
+from braindance.core.params import maxwell_params
+from braindance.core.phases import PhaseManager, NeuralSweepPhase, RecordPhase, FrequencyStimPhase
 
 # Set up environment
 params = maxwell_params

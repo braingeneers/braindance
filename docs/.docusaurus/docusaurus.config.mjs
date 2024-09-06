@@ -8,9 +8,9 @@ export default {
   "tagline": "Making neural stimulation easy",
   "favicon": "img/favicon.ico",
   "url": "https://braingeneers.github.io",
-  "baseUrl": "/BrainLoop/",
+  "baseUrl": "/braindance/",
   "organizationName": "braingeneers",
-  "projectName": "brainloop",
+  "projectName": "braindance",
   "deploymentBranch": "docs",
   "trailingSlash": false,
   "onBrokenLinks": "warn",
@@ -29,7 +29,7 @@ export default {
       {
         "docs": {
           "sidebarPath": "./sidebars.ts",
-          "editUrl": "https://github.com/braingeneers/brainloop/"
+          "editUrl": "https://github.com/braingeneers/braindance/"
         },
         "blog": {
           "showReadingTime": true,
@@ -40,7 +40,7 @@ export default {
             ],
             "xslt": true
           },
-          "editUrl": "https://github.com/braingeneers/brainloop/",
+          "editUrl": "https://github.com/braingeneers/braindance/",
           "onInlineTags": "warn",
           "onInlineAuthors": "warn",
           "onUntruncatedBlogPosts": "warn"
@@ -67,7 +67,7 @@ export default {
           "label": "Docs"
         },
         {
-          "href": "https://github.com/braingeneers/brainloop",
+          "href": "https://github.com/braingeneers/braindance",
           "label": "GitHub",
           "position": "right"
         }
@@ -95,7 +95,7 @@ export default {
           "items": [
             {
               "label": "GitHub",
-              "href": "https://github.com/braingeneers/brainloop"
+              "href": "https://github.com/braingeneers/braindance"
             }
           ]
         }

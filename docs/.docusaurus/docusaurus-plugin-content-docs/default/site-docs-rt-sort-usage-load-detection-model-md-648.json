@@ -5,14 +5,23 @@
   "source": "@site/docs/RT-sort/usage/load-detection-model.md",
   "sourceDirName": "RT-sort/usage",
   "slug": "/RT-sort/usage/load-detection-model",
-  "permalink": "/BrainLoop/docs/RT-sort/usage/load-detection-model",
+  "permalink": "/braindance/docs/RT-sort/usage/load-detection-model",
   "draft": false,
   "unlisted": false,
-  "editUrl": "https://github.com/braingeneers/brainloop/docs/RT-sort/usage/load-detection-model.md",
+  "editUrl": "https://github.com/braingeneers/braindance/docs/RT-sort/usage/load-detection-model.md",
   "tags": [],
   "version": "current",
   "sidebarPosition": 1,
   "frontMatter": {
     "sidebar_position": 1
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "usage",
+    "permalink": "/braindance/docs/category/usage"
+  },
+  "next": {
+    "title": "Sequence Detection (Offline Use)",
+    "permalink": "/braindance/docs/RT-sort/usage/sequence-detection"
   }
 }

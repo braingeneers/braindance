@@ -5,11 +5,20 @@
   "source": "@site/docs/docs/dummy_zmq_np.py.mdx",
   "sourceDirName": "docs",
   "slug": "/docs/dummy_zmq_np.py",
-  "permalink": "/BrainLoop/docs/docs/dummy_zmq_np.py",
+  "permalink": "/braindance/docs/docs/dummy_zmq_np.py",
   "draft": false,
   "unlisted": false,
-  "editUrl": "https://github.com/braingeneers/brainloop/docs/docs/dummy_zmq_np.py.mdx",
+  "editUrl": "https://github.com/braingeneers/braindance/docs/docs/dummy_zmq_np.py.mdx",
   "tags": [],
   "version": "current",
-  "frontMatter": {}
+  "frontMatter": {},
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "dummy_maxlab.py",
+    "permalink": "/braindance/docs/docs/dummy_maxlab.py"
+  },
+  "next": {
+    "title": "maxwell_env.py",
+    "permalink": "/braindance/docs/docs/maxwell_env.py"
+  }
 }

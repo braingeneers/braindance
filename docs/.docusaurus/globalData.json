@@ -1,122 +1,170 @@
 {
   "docusaurus-plugin-content-docs": {
     "default": {
-      "path": "/BrainLoop/docs",
+      "path": "/braindance/docs",
       "versions": [
         {
           "name": "current",
           "label": "Next",
           "isLast": true,
-          "path": "/BrainLoop/docs",
+          "path": "/braindance/docs",
           "mainDocId": "intro",
           "docs": [
             {
               "id": "core-concepts",
-              "path": "/BrainLoop/docs/core-concepts"
+              "path": "/braindance/docs/core-concepts",
+              "sidebar": "tutorialSidebar"
             },
             {
               "id": "docs/artifact_removal.py",
-              "path": "/BrainLoop/docs/docs/artifact_removal.py"
+              "path": "/braindance/docs/docs/artifact_removal.py",
+              "sidebar": "tutorialSidebar"
             },
             {
               "id": "docs/base_env.py",
-              "path": "/BrainLoop/docs/docs/base_env.py"
+              "path": "/braindance/docs/docs/base_env.py",
+              "sidebar": "tutorialSidebar"
             },
             {
               "id": "docs/data_loader.py",
-              "path": "/BrainLoop/docs/docs/data_loader.py"
+              "path": "/braindance/docs/docs/data_loader.py",
+              "sidebar": "tutorialSidebar"
             },
             {
               "id": "docs/dummy_maxlab.py",
-              "path": "/BrainLoop/docs/docs/dummy_maxlab.py"
+              "path": "/braindance/docs/docs/dummy_maxlab.py",
+              "sidebar": "tutorialSidebar"
             },
             {
               "id": "docs/dummy_zmq_np.py",
-              "path": "/BrainLoop/docs/docs/dummy_zmq_np.py"
+              "path": "/braindance/docs/docs/dummy_zmq_np.py",
+              "sidebar": "tutorialSidebar"
             },
             {
               "id": "docs/maxwell_env.py",
-              "path": "/BrainLoop/docs/docs/maxwell_env.py"
+              "path": "/braindance/docs/docs/maxwell_env.py",
+              "sidebar": "tutorialSidebar"
             },
             {
               "id": "docs/maxwell_utils.py",
-              "path": "/BrainLoop/docs/docs/maxwell_utils.py"
+              "path": "/braindance/docs/docs/maxwell_utils.py",
+              "sidebar": "tutorialSidebar"
             },
             {
               "id": "docs/params.py",
-              "path": "/BrainLoop/docs/docs/params.py"
+              "path": "/braindance/docs/docs/params.py",
+              "sidebar": "tutorialSidebar"
             },
             {
               "id": "docs/phases.py",
-              "path": "/BrainLoop/docs/docs/phases.py"
+              "path": "/braindance/docs/docs/phases.py",
+              "sidebar": "tutorialSidebar"
             },
             {
               "id": "docs/plot.py",
-              "path": "/BrainLoop/docs/docs/plot.py"
+              "path": "/braindance/docs/docs/plot.py",
+              "sidebar": "tutorialSidebar"
             },
             {
               "id": "docs/query_electrodes.py",
-              "path": "/BrainLoop/docs/docs/query_electrodes.py"
+              "path": "/braindance/docs/docs/query_electrodes.py",
+              "sidebar": "tutorialSidebar"
             },
             {
               "id": "docs/select_electrodes.py",
-              "path": "/BrainLoop/docs/docs/select_electrodes.py"
+              "path": "/braindance/docs/docs/select_electrodes.py",
+              "sidebar": "tutorialSidebar"
             },
             {
               "id": "docs/spikedetector.py",
-              "path": "/BrainLoop/docs/docs/spikedetector.py"
+              "path": "/braindance/docs/docs/spikedetector.py",
+              "sidebar": "tutorialSidebar"
             },
             {
               "id": "docs/train.py",
-              "path": "/BrainLoop/docs/docs/train.py"
+              "path": "/braindance/docs/docs/train.py",
+              "sidebar": "tutorialSidebar"
             },
             {
               "id": "docs/trainer.py",
-              "path": "/BrainLoop/docs/docs/trainer.py"
+              "path": "/braindance/docs/docs/trainer.py",
+              "sidebar": "tutorialSidebar"
             },
             {
               "id": "docs/utils.py",
-              "path": "/BrainLoop/docs/docs/utils.py"
+              "path": "/braindance/docs/docs/utils.py",
+              "sidebar": "tutorialSidebar"
             },
             {
               "id": "intro",
-              "path": "/BrainLoop/docs/"
+              "path": "/braindance/docs/",
+              "sidebar": "tutorialSidebar"
             },
             {
               "id": "quick-start",
-              "path": "/BrainLoop/docs/quick-start"
+              "path": "/braindance/docs/quick-start",
+              "sidebar": "tutorialSidebar"
             },
             {
               "id": "RT-sort/api-reference",
-              "path": "/BrainLoop/docs/RT-sort/api-reference"
+              "path": "/braindance/docs/RT-sort/api-reference",
+              "sidebar": "tutorialSidebar"
             },
             {
               "id": "RT-sort/installation",
-              "path": "/BrainLoop/docs/RT-sort/installation"
+              "path": "/braindance/docs/RT-sort/installation",
+              "sidebar": "tutorialSidebar"
             },
             {
               "id": "RT-sort/introduction",
-              "path": "/BrainLoop/docs/RT-sort/introduction"
+              "path": "/braindance/docs/RT-sort/introduction",
+              "sidebar": "tutorialSidebar"
             },
             {
               "id": "RT-sort/usage/load-detection-model",
-              "path": "/BrainLoop/docs/RT-sort/usage/load-detection-model"
+              "path": "/braindance/docs/RT-sort/usage/load-detection-model",
+              "sidebar": "tutorialSidebar"
             },
             {
               "id": "RT-sort/usage/real-time-application",
-              "path": "/BrainLoop/docs/RT-sort/usage/real-time-application"
+              "path": "/braindance/docs/RT-sort/usage/real-time-application",
+              "sidebar": "tutorialSidebar"
             },
             {
               "id": "RT-sort/usage/sequence-detection",
-              "path": "/BrainLoop/docs/RT-sort/usage/sequence-detection"
+              "path": "/braindance/docs/RT-sort/usage/sequence-detection",
+              "sidebar": "tutorialSidebar"
             },
             {
               "id": "RT-sort/usage/training-models",
-              "path": "/BrainLoop/docs/RT-sort/usage/training-models"
+              "path": "/braindance/docs/RT-sort/usage/training-models",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "/category/rt-sort",
+              "path": "/braindance/docs/category/rt-sort",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "/category/usage",
+              "path": "/braindance/docs/category/usage",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "/category/documentation",
+              "path": "/braindance/docs/category/documentation",
+              "sidebar": "tutorialSidebar"
             }
           ],
           "draftIds": [],
-          "sidebars": {}
+          "sidebars": {
+            "tutorialSidebar": {
+              "link": {
+                "path": "/braindance/docs/",
+                "label": "intro"
+              }
+            }
+          }
         }
       ],
       "breadcrumbs": true

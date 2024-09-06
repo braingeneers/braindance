@@ -5,14 +5,23 @@
   "source": "@site/docs/RT-sort/api-reference.md",
   "sourceDirName": "RT-sort",
   "slug": "/RT-sort/api-reference",
-  "permalink": "/BrainLoop/docs/RT-sort/api-reference",
+  "permalink": "/braindance/docs/RT-sort/api-reference",
   "draft": false,
   "unlisted": false,
-  "editUrl": "https://github.com/braingeneers/brainloop/docs/RT-sort/api-reference.md",
+  "editUrl": "https://github.com/braingeneers/braindance/docs/RT-sort/api-reference.md",
   "tags": [],
   "version": "current",
   "sidebarPosition": 5,
   "frontMatter": {
     "sidebar_position": 5
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Training Your Own Detection Models",
+    "permalink": "/braindance/docs/RT-sort/usage/training-models"
+  },
+  "next": {
+    "title": "Documentation",
+    "permalink": "/braindance/docs/category/documentation"
   }
 }

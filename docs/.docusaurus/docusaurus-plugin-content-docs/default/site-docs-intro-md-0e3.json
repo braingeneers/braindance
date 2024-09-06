@@ -5,10 +5,10 @@
   "source": "@site/docs/intro.md",
   "sourceDirName": ".",
   "slug": "/",
-  "permalink": "/BrainLoop/docs/",
+  "permalink": "/braindance/docs/",
   "draft": false,
   "unlisted": false,
-  "editUrl": "https://github.com/braingeneers/brainloop/docs/intro.md",
+  "editUrl": "https://github.com/braingeneers/braindance/docs/intro.md",
   "tags": [],
   "version": "current",
   "sidebarPosition": 0,
@@ -17,5 +17,10 @@
     "description": "Neural stimulation framework for organoids and cultures with micro electrode arrays",
     "slug": "/",
     "sidebar_position": 0
+  },
+  "sidebar": "tutorialSidebar",
+  "next": {
+    "title": "Quick Start Guide",
+    "permalink": "/braindance/docs/quick-start"
   }
 }

@@ -5,11 +5,20 @@
   "source": "@site/docs/docs/phases.py.mdx",
   "sourceDirName": "docs",
   "slug": "/docs/phases.py",
-  "permalink": "/BrainLoop/docs/docs/phases.py",
+  "permalink": "/braindance/docs/docs/phases.py",
   "draft": false,
   "unlisted": false,
-  "editUrl": "https://github.com/braingeneers/brainloop/docs/docs/phases.py.mdx",
+  "editUrl": "https://github.com/braingeneers/braindance/docs/docs/phases.py.mdx",
   "tags": [],
   "version": "current",
-  "frontMatter": {}
+  "frontMatter": {},
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "params.py",
+    "permalink": "/braindance/docs/docs/params.py"
+  },
+  "next": {
+    "title": "plot.py",
+    "permalink": "/braindance/docs/docs/plot.py"
+  }
 }

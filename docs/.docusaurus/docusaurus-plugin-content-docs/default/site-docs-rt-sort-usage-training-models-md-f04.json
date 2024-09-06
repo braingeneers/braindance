@@ -5,14 +5,23 @@
   "source": "@site/docs/RT-sort/usage/training-models.md",
   "sourceDirName": "RT-sort/usage",
   "slug": "/RT-sort/usage/training-models",
-  "permalink": "/BrainLoop/docs/RT-sort/usage/training-models",
+  "permalink": "/braindance/docs/RT-sort/usage/training-models",
   "draft": false,
   "unlisted": false,
-  "editUrl": "https://github.com/braingeneers/brainloop/docs/RT-sort/usage/training-models.md",
+  "editUrl": "https://github.com/braingeneers/braindance/docs/RT-sort/usage/training-models.md",
   "tags": [],
   "version": "current",
   "sidebarPosition": 4,
   "frontMatter": {
     "sidebar_position": 4
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Real-time Application (Online Use)",
+    "permalink": "/braindance/docs/RT-sort/usage/real-time-application"
+  },
+  "next": {
+    "title": "API Reference",
+    "permalink": "/braindance/docs/RT-sort/api-reference"
   }
 }

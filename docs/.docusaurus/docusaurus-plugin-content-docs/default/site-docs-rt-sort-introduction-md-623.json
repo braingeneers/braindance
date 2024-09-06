@@ -5,14 +5,23 @@
   "source": "@site/docs/RT-sort/introduction.md",
   "sourceDirName": "RT-sort",
   "slug": "/RT-sort/introduction",
-  "permalink": "/BrainLoop/docs/RT-sort/introduction",
+  "permalink": "/braindance/docs/RT-sort/introduction",
   "draft": false,
   "unlisted": false,
-  "editUrl": "https://github.com/braingeneers/brainloop/docs/RT-sort/introduction.md",
+  "editUrl": "https://github.com/braingeneers/braindance/docs/RT-sort/introduction.md",
   "tags": [],
   "version": "current",
   "sidebarPosition": 1,
   "frontMatter": {
     "sidebar_position": 1
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "RT-Sort",
+    "permalink": "/braindance/docs/category/rt-sort"
+  },
+  "next": {
+    "title": "Installation",
+    "permalink": "/braindance/docs/RT-sort/installation"
   }
 }

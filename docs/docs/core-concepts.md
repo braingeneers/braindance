@@ -18,8 +18,8 @@ The `MaxwellEnv` class is the central component that interfaces with the micro e
 Example usage:
 
 ```python
-from brainloop.core.maxwell_env import MaxwellEnv
-from brainloop.core.params import maxwell_params
+from braindance.core.maxwell_env import MaxwellEnv
+from braindance.core.params import maxwell_params
 
 params = maxwell_params
 params['save_dir'] = './experiment_data'
@@ -38,7 +38,7 @@ Phases are the building blocks of experiments in BrainDance. Each phase represen
 Example of creating a phase:
 
 ```python
-from brainloop.core.phases import RecordPhase
+from braindance.core.phases import RecordPhase
 
 record_phase = RecordPhase(env, duration=60*5)  # 5-minute recording phase
 ```
@@ -54,7 +54,7 @@ The `PhaseManager` class orchestrates the execution of multiple phases in an exp
 Example usage:
 
 ```python
-from brainloop.core.phases import PhaseManager
+from braindance.core.phases import PhaseManager
 
 phase_manager = PhaseManager(env, verbose=True)
 phase_manager.add_phase_group([record_phase, stim_phase, record_phase])

@@ -5,11 +5,20 @@
   "source": "@site/docs/docs/trainer.py.mdx",
   "sourceDirName": "docs",
   "slug": "/docs/trainer.py",
-  "permalink": "/BrainLoop/docs/docs/trainer.py",
+  "permalink": "/braindance/docs/docs/trainer.py",
   "draft": false,
   "unlisted": false,
-  "editUrl": "https://github.com/braingeneers/brainloop/docs/docs/trainer.py.mdx",
+  "editUrl": "https://github.com/braingeneers/braindance/docs/docs/trainer.py.mdx",
   "tags": [],
   "version": "current",
-  "frontMatter": {}
+  "frontMatter": {},
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "train.py",
+    "permalink": "/braindance/docs/docs/train.py"
+  },
+  "next": {
+    "title": "utils.py",
+    "permalink": "/braindance/docs/docs/utils.py"
+  }
 }

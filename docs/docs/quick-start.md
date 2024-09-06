@@ -23,9 +23,9 @@ Get up and running with BrainDance in just a few minutes!
 Here's a simple experiment to get you started:
 
 ```python
-from brainloop.core.maxwell_env import MaxwellEnv
-from brainloop.core.params import maxwell_params
-from brainloop.core.phases import PhaseManager, RecordPhase, NeuralSweepPhase
+from braindance.core.maxwell_env import MaxwellEnv
+from braindance.core.params import maxwell_params
+from braindance.core.phases import PhaseManager, RecordPhase, NeuralSweepPhase
 
 # Set up the environment
 params = maxwell_params
