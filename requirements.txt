@@ -5,7 +5,6 @@ gymnasium[classic-control]
 tables
 h5py
 smart_open
-xarray
 numba
 tqdm
 pyqt5
