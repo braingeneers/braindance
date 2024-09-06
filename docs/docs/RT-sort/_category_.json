@@ -1,8 +1,0 @@
-{
-  "label": "RT-Sort",
-  "position": 3,
-  "link": {
-    "type": "generated-index",
-    "description": "RT-Sort: Real-time spike detection and sorting with millisecond latencies"
-  }
-}

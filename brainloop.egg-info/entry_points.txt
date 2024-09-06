@@ -1,2 +1,0 @@
-[console_scripts]
-bdquery = brainloop.core.maxwell.query_electrodes:main
