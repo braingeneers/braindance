@@ -1,10 +1,10 @@
-# BraindDance
+# BrainDance
 
 Making neural stimulation easier.
 
 ### Easy installation
 ```bash
-pip install git+https://github.com/braingeneers/BraindDance
+pip install git+https://github.com/braingeneers/BrainDance
 ```
 
 #### RT-Sort installation
