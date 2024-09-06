@@ -1,0 +1,24 @@
+{
+  "id": "docs/phases.py",
+  "title": "phases.py",
+  "description": "Experiment phases",
+  "source": "@site/docs/docs/phases.py.mdx",
+  "sourceDirName": "docs",
+  "slug": "/docs/phases.py",
+  "permalink": "/BrainLoop/docs/docs/phases.py",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/braingeneers/brainloop/docs/docs/phases.py.mdx",
+  "tags": [],
+  "version": "current",
+  "frontMatter": {},
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "params.py",
+    "permalink": "/BrainLoop/docs/docs/params.py"
+  },
+  "next": {
+    "title": "plot.py",
+    "permalink": "/BrainLoop/docs/docs/plot.py"
+  }
+}

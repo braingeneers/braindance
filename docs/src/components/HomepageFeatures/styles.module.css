@@ -1,0 +1,30 @@
+.features {
+  display: flex;
+  align-items: center;
+  padding: 2rem 0;
+  width: 100%;
+}
+
+.featureSvg {
+  height: 200px;
+  width: 200px;
+}
+
+.featureImg {
+  height: 150px;  /* Reduced from 200px */
+  width: 150px;   /* Reduced from 200px */
+  object-fit: contain;
+  border-radius: 40px;  /* Adds rounded corners */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);  /* Adds a subtle shadow */
+  margin-bottom: 1rem;  /* Adds some space below the image */
+  padding: .7rem;  /* Adds some internal padding */
+  /* background-size: contain; */
+  background-color: #ffffff;  /*Light grey background */
+  transition: transform 0.3s ease, box-shadow 0.3s ease;  /* Smooth transition for hover effect */
+  
+}
+
+.featureImg:hover {
+  transform: translateY(-5px);  /* Slight lift effect on hover */
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);  /* Enhanced shadow on hover */
+}

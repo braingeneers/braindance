@@ -1,0 +1,27 @@
+{
+  "id": "RT-sort/Usage/training-models",
+  "title": "Training Your Own Detection Models",
+  "description": "RT-Sort allows you to train your own detection models using leave-one-out cross-validation. Here's how to do it:",
+  "source": "@site/docs/RT-sort/Usage/training-models.md",
+  "sourceDirName": "RT-sort/Usage",
+  "slug": "/RT-sort/Usage/training-models",
+  "permalink": "/docs/RT-sort/Usage/training-models",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/braingeneers/braindance/docs/RT-sort/Usage/training-models.md",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 4,
+  "frontMatter": {
+    "sidebar_position": 4
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Real-time Application (Online Use)",
+    "permalink": "/docs/RT-sort/Usage/real-time-application"
+  },
+  "next": {
+    "title": "Documentation",
+    "permalink": "/docs/category/documentation"
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "id": "RT-sort/Usage/real-time-application",
+  "title": "Real-time Application (Online Use)",
+  "description": "Once you have detected sequences, you can use RT-Sort for real-time applications. Here's how to do it:",
+  "source": "@site/docs/RT-sort/Usage/real-time-application.md",
+  "sourceDirName": "RT-sort/Usage",
+  "slug": "/RT-sort/Usage/real-time-application",
+  "permalink": "/docs/RT-sort/Usage/real-time-application",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/braingeneers/braindance/docs/RT-sort/Usage/real-time-application.md",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 3,
+  "frontMatter": {
+    "sidebar_position": 3
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Sequence Detection (Offline Use)",
+    "permalink": "/docs/RT-sort/Usage/sequence-detection"
+  },
+  "next": {
+    "title": "Training Your Own Detection Models",
+    "permalink": "/docs/RT-sort/Usage/training-models"
+  }
+}

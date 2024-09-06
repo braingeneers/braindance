@@ -1,0 +1,24 @@
+{
+  "id": "docs/select_electrodes.py",
+  "title": "select_electrodes.py",
+  "description": "---",
+  "source": "@site/docs/docs/select_electrodes.py.mdx",
+  "sourceDirName": "docs",
+  "slug": "/docs/select_electrodes.py",
+  "permalink": "/BrainLoop/docs/docs/select_electrodes.py",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/braingeneers/brainloop/docs/docs/select_electrodes.py.mdx",
+  "tags": [],
+  "version": "current",
+  "frontMatter": {},
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "query_electrodes.py",
+    "permalink": "/BrainLoop/docs/docs/query_electrodes.py"
+  },
+  "next": {
+    "title": "spikedetector.py",
+    "permalink": "/BrainLoop/docs/docs/spikedetector.py"
+  }
+}

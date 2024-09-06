@@ -1,0 +1,24 @@
+{
+  "id": "docs/maxwell_env.py",
+  "title": "maxwell_env.py",
+  "description": "Global Variables",
+  "source": "@site/docs/docs/maxwell_env.py.mdx",
+  "sourceDirName": "docs",
+  "slug": "/docs/maxwell_env.py",
+  "permalink": "/BrainLoop/docs/docs/maxwell_env.py",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/braingeneers/brainloop/docs/docs/maxwell_env.py.mdx",
+  "tags": [],
+  "version": "current",
+  "frontMatter": {},
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "dummy_zmq_np.py",
+    "permalink": "/BrainLoop/docs/docs/dummy_zmq_np.py"
+  },
+  "next": {
+    "title": "maxwell_utils.py",
+    "permalink": "/BrainLoop/docs/docs/maxwell_utils.py"
+  }
+}

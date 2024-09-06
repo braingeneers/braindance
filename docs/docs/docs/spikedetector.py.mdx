@@ -1,0 +1,95 @@
+<!-- markdownlint-disable -->
+
+<a href="https://github.com/braingeneers/brainloop/blob/main/brainloop/core/spikedetector/spikedetector.py#L0"><img align="right" style={{"float":"right"}} src="https://img.shields.io/badge/-source-cccccc?style=flat-square" /></a>
+
+# <kbd>module</kbd> `spikedetector.py`
+
+
+
+
+**Global Variables**
+---------------
+- **model_path**
+- **map_location**
+
+
+---
+
+## <kbd>class</kbd> `SpikeDetector`
+
+
+
+
+<a href="https://github.com/braingeneers/brainloop/blob/main/brainloop/core/spikedetector/spikedetector.py#L18"><img align="right" style={{"float":"right"}} src="https://img.shields.io/badge/-source-cccccc?style=flat-square" /></a>
+
+### <kbd>function</kbd> `__init__`
+
+```python
+__init__(model_path, n_channels=256, n_frames=200, device='cuda')
+```
+
+
+
+
+
+
+
+
+---
+
+<a href="https://github.com/braingeneers/brainloop/blob/main/brainloop/core/spikedetector/spikedetector.py#L28"><img align="right" style={{"float":"right"}} src="https://img.shields.io/badge/-source-cccccc?style=flat-square" /></a>
+
+### <kbd>function</kbd> `detect`
+
+```python
+detect(data_frame)
+```
+
+Takes in the current frame of data, adds it to the data slice, and returns the spike predictions 
+
+Parameters 
+ ----------  data_frame : np.array of shape (n_channels, 1)  The current frame of data Returns 
+-------  spike_preds : np.array of shape (n_channels, 120)  The spike predictions for each channel, for the   previous 6ms, or 120 frames 
+
+
+
+
+
+---
+
+<a href="https://github.com/braingeneers/brainloop/blob/main/brainloop/core/spikedetector/spikedetector.py#L63"><img align="right" style={{"float":"right"}} src="https://img.shields.io/badge/-source-cccccc?style=flat-square" /></a>
+
+### <kbd>function</kbd> `detect_chunk`
+
+```python
+detect_chunk(data_chunk)
+```
+
+Takes in a chunk of data, and returns the spike predictions for each channel for the last 6ms of data 
+
+Parameters 
+----------  data_chunk : np.array of shape (n_channels, n_frames)  The chunk of data to be processed Returns 
+-------  spike_preds : np.array of shape (n_channels, 120)  The spike predictions for each channel, for the  previous 6ms, or 120 frames  
+
+
+
+---
+
+<a href="https://github.com/braingeneers/brainloop/blob/main/brainloop/core/spikedetector/spikedetector.py#L104"><img align="right" style={{"float":"right"}} src="https://img.shields.io/badge/-source-cccccc?style=flat-square" /></a>
+
+### <kbd>function</kbd> `reset`
+
+```python
+reset()
+```
+
+
+
+
+
+
+
+
+---
+
+_This file was automatically generated via [lazydocs](https://github.com/ml-tooling/lazydocs)._
