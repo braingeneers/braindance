@@ -1,0 +1,125 @@
+{
+  "docusaurus-plugin-content-docs": {
+    "default": {
+      "path": "/BrainLoop/docs",
+      "versions": [
+        {
+          "name": "current",
+          "label": "Next",
+          "isLast": true,
+          "path": "/BrainLoop/docs",
+          "mainDocId": "intro",
+          "docs": [
+            {
+              "id": "core-concepts",
+              "path": "/BrainLoop/docs/core-concepts"
+            },
+            {
+              "id": "docs/artifact_removal.py",
+              "path": "/BrainLoop/docs/docs/artifact_removal.py"
+            },
+            {
+              "id": "docs/base_env.py",
+              "path": "/BrainLoop/docs/docs/base_env.py"
+            },
+            {
+              "id": "docs/data_loader.py",
+              "path": "/BrainLoop/docs/docs/data_loader.py"
+            },
+            {
+              "id": "docs/dummy_maxlab.py",
+              "path": "/BrainLoop/docs/docs/dummy_maxlab.py"
+            },
+            {
+              "id": "docs/dummy_zmq_np.py",
+              "path": "/BrainLoop/docs/docs/dummy_zmq_np.py"
+            },
+            {
+              "id": "docs/maxwell_env.py",
+              "path": "/BrainLoop/docs/docs/maxwell_env.py"
+            },
+            {
+              "id": "docs/maxwell_utils.py",
+              "path": "/BrainLoop/docs/docs/maxwell_utils.py"
+            },
+            {
+              "id": "docs/params.py",
+              "path": "/BrainLoop/docs/docs/params.py"
+            },
+            {
+              "id": "docs/phases.py",
+              "path": "/BrainLoop/docs/docs/phases.py"
+            },
+            {
+              "id": "docs/plot.py",
+              "path": "/BrainLoop/docs/docs/plot.py"
+            },
+            {
+              "id": "docs/query_electrodes.py",
+              "path": "/BrainLoop/docs/docs/query_electrodes.py"
+            },
+            {
+              "id": "docs/select_electrodes.py",
+              "path": "/BrainLoop/docs/docs/select_electrodes.py"
+            },
+            {
+              "id": "docs/spikedetector.py",
+              "path": "/BrainLoop/docs/docs/spikedetector.py"
+            },
+            {
+              "id": "docs/train.py",
+              "path": "/BrainLoop/docs/docs/train.py"
+            },
+            {
+              "id": "docs/trainer.py",
+              "path": "/BrainLoop/docs/docs/trainer.py"
+            },
+            {
+              "id": "docs/utils.py",
+              "path": "/BrainLoop/docs/docs/utils.py"
+            },
+            {
+              "id": "intro",
+              "path": "/BrainLoop/docs/"
+            },
+            {
+              "id": "quick-start",
+              "path": "/BrainLoop/docs/quick-start"
+            },
+            {
+              "id": "RT-sort/api-reference",
+              "path": "/BrainLoop/docs/RT-sort/api-reference"
+            },
+            {
+              "id": "RT-sort/installation",
+              "path": "/BrainLoop/docs/RT-sort/installation"
+            },
+            {
+              "id": "RT-sort/introduction",
+              "path": "/BrainLoop/docs/RT-sort/introduction"
+            },
+            {
+              "id": "RT-sort/usage/load-detection-model",
+              "path": "/BrainLoop/docs/RT-sort/usage/load-detection-model"
+            },
+            {
+              "id": "RT-sort/usage/real-time-application",
+              "path": "/BrainLoop/docs/RT-sort/usage/real-time-application"
+            },
+            {
+              "id": "RT-sort/usage/sequence-detection",
+              "path": "/BrainLoop/docs/RT-sort/usage/sequence-detection"
+            },
+            {
+              "id": "RT-sort/usage/training-models",
+              "path": "/BrainLoop/docs/RT-sort/usage/training-models"
+            }
+          ],
+          "draftIds": [],
+          "sidebars": {}
+        }
+      ],
+      "breadcrumbs": true
+    }
+  }
+}

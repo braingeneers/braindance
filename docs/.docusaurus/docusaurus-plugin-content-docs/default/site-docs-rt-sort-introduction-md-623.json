@@ -1,0 +1,18 @@
+{
+  "id": "RT-sort/introduction",
+  "title": "Introduction to RT-Sort",
+  "description": "RT-Sort is a powerful tool for real-time spike detection and sorting with millisecond latencies. This user manual will guide you through the installation, usage, and advanced features of RT-Sort.",
+  "source": "@site/docs/RT-sort/introduction.md",
+  "sourceDirName": "RT-sort",
+  "slug": "/RT-sort/introduction",
+  "permalink": "/BrainLoop/docs/RT-sort/introduction",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/braingeneers/brainloop/docs/RT-sort/introduction.md",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 1,
+  "frontMatter": {
+    "sidebar_position": 1
+  }
+}

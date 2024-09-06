@@ -1,0 +1,18 @@
+{
+  "id": "quick-start",
+  "title": "Quick Start Guide",
+  "description": "Get up and running with BrainDance in just a few minutes!",
+  "source": "@site/docs/quick-start.md",
+  "sourceDirName": ".",
+  "slug": "/quick-start",
+  "permalink": "/BrainLoop/docs/quick-start",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/braingeneers/brainloop/docs/quick-start.md",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 1,
+  "frontMatter": {
+    "sidebar_position": 1
+  }
+}

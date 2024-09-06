@@ -1,0 +1,162 @@
+{
+  "/BrainLoop/__docusaurus/debug-a2a": {
+    "__comp": "__comp---theme-debug-config-23-a-2ff",
+    "__context": {
+      "plugin": "plugin---brain-loop-docusaurus-debugb-38-ab0"
+    }
+  },
+  "/BrainLoop/__docusaurus/debug/config-7df": {
+    "__comp": "__comp---theme-debug-config-23-a-2ff",
+    "__context": {
+      "plugin": "plugin---brain-loop-docusaurus-debugb-38-ab0"
+    }
+  },
+  "/BrainLoop/__docusaurus/debug/content-9dc": {
+    "__comp": "__comp---theme-debug-contentba-8-ce7",
+    "__context": {
+      "plugin": "plugin---brain-loop-docusaurus-debugb-38-ab0"
+    },
+    "__props": "__props---brain-loop-docusaurus-debug-contentca-0-945"
+  },
+  "/BrainLoop/__docusaurus/debug/globalData-3d1": {
+    "__comp": "__comp---theme-debug-global-dataede-0fa",
+    "__context": {
+      "plugin": "plugin---brain-loop-docusaurus-debugb-38-ab0"
+    }
+  },
+  "/BrainLoop/__docusaurus/debug/metadata-f14": {
+    "__comp": "__comp---theme-debug-site-metadata-68-e-3d4",
+    "__context": {
+      "plugin": "plugin---brain-loop-docusaurus-debugb-38-ab0"
+    }
+  },
+  "/BrainLoop/__docusaurus/debug/registry-b9d": {
+    "__comp": "__comp---theme-debug-registry-679-501",
+    "__context": {
+      "plugin": "plugin---brain-loop-docusaurus-debugb-38-ab0"
+    }
+  },
+  "/BrainLoop/__docusaurus/debug/routes-b73": {
+    "__comp": "__comp---theme-debug-routes-946-699",
+    "__context": {
+      "plugin": "plugin---brain-loop-docusaurus-debugb-38-ab0"
+    }
+  },
+  "/BrainLoop/docs-2c1": {
+    "__comp": "__comp---theme-docs-root-5-e-9-0b6",
+    "__context": {
+      "plugin": "plugin---brain-loop-docsaba-b6b"
+    }
+  },
+  "/BrainLoop/docs-d0e": {
+    "__comp": "__comp---theme-doc-version-roota-7-b-5de",
+    "__props": "__props---brain-loop-docs-4-d-0-650"
+  },
+  "/BrainLoop/docs-a5e": {
+    "__comp": "__comp---theme-doc-roota-94-67a"
+  },
+  "/BrainLoop/docs-f8d": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---brain-loop-docs-0-e-3-e38"
+  },
+  "/BrainLoop/docs/core-concepts-30c": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---brain-loop-docs-core-concepts-43-c-5ce"
+  },
+  "/BrainLoop/docs/docs/artifact_removal.py-4bb": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---brain-loop-docs-docs-artifact-removal-pycd-7-88b"
+  },
+  "/BrainLoop/docs/docs/base_env.py-507": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---brain-loop-docs-docs-base-env-py-66-d-ff3"
+  },
+  "/BrainLoop/docs/docs/data_loader.py-ebd": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---brain-loop-docs-docs-data-loader-py-32-c-be5"
+  },
+  "/BrainLoop/docs/docs/dummy_maxlab.py-ab9": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---brain-loop-docs-docs-dummy-maxlab-py-1-f-6-f60"
+  },
+  "/BrainLoop/docs/docs/dummy_zmq_np.py-a26": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---brain-loop-docs-docs-dummy-zmq-np-py-500-93f"
+  },
+  "/BrainLoop/docs/docs/maxwell_env.py-b89": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---brain-loop-docs-docs-maxwell-env-py-288-ded"
+  },
+  "/BrainLoop/docs/docs/maxwell_utils.py-8fe": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---brain-loop-docs-docs-maxwell-utils-py-496-ef1"
+  },
+  "/BrainLoop/docs/docs/params.py-3a7": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---brain-loop-docs-docs-params-py-323-a78"
+  },
+  "/BrainLoop/docs/docs/phases.py-1b1": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---brain-loop-docs-docs-phases-py-3-f-9-e37"
+  },
+  "/BrainLoop/docs/docs/plot.py-745": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---brain-loop-docs-docs-plot-py-836-9e1"
+  },
+  "/BrainLoop/docs/docs/query_electrodes.py-ca7": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---brain-loop-docs-docs-query-electrodes-pyd-3-d-3a3"
+  },
+  "/BrainLoop/docs/docs/select_electrodes.py-969": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---brain-loop-docs-docs-select-electrodes-py-4-c-7-460"
+  },
+  "/BrainLoop/docs/docs/spikedetector.py-4d3": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---brain-loop-docs-docs-spikedetector-py-9-d-2-d16"
+  },
+  "/BrainLoop/docs/docs/train.py-186": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---brain-loop-docs-docs-train-py-0-c-0-d58"
+  },
+  "/BrainLoop/docs/docs/trainer.py-ab5": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---brain-loop-docs-docs-trainer-py-902-c45"
+  },
+  "/BrainLoop/docs/docs/utils.py-423": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---brain-loop-docs-docs-utils-pyedd-c2a"
+  },
+  "/BrainLoop/docs/quick-start-d99": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---brain-loop-docs-quick-start-72-e-5de"
+  },
+  "/BrainLoop/docs/RT-sort/api-reference-829": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---brain-loop-docs-rt-sort-api-referencedc-1-1d0"
+  },
+  "/BrainLoop/docs/RT-sort/installation-39f": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---brain-loop-docs-rt-sort-installation-3-ff-d2b"
+  },
+  "/BrainLoop/docs/RT-sort/introduction-a8b": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---brain-loop-docs-rt-sort-introduction-623-690"
+  },
+  "/BrainLoop/docs/RT-sort/usage/load-detection-model-2ea": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---brain-loop-docs-rt-sort-usage-load-detection-model-648-c55"
+  },
+  "/BrainLoop/docs/RT-sort/usage/real-time-application-e15": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---brain-loop-docs-rt-sort-usage-real-time-application-4-ad-089"
+  },
+  "/BrainLoop/docs/RT-sort/usage/sequence-detection-391": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---brain-loop-docs-rt-sort-usage-sequence-detectionefa-3df"
+  },
+  "/BrainLoop/docs/RT-sort/usage/training-models-41c": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---brain-loop-docs-rt-sort-usage-training-modelsf-04-a75"
+  }
+}

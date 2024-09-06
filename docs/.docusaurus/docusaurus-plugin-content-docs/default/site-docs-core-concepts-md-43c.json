@@ -1,0 +1,18 @@
+{
+  "id": "core-concepts",
+  "title": "Core Concepts",
+  "description": "Understanding the core concepts of BrainDance will help you design and execute more complex experiments.",
+  "source": "@site/docs/core-concepts.md",
+  "sourceDirName": ".",
+  "slug": "/core-concepts",
+  "permalink": "/BrainLoop/docs/core-concepts",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/braingeneers/brainloop/docs/core-concepts.md",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 2,
+  "frontMatter": {
+    "sidebar_position": 2
+  }
+}

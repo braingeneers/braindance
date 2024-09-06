@@ -1,0 +1,186 @@
+<!-- markdownlint-disable -->
+
+<a href="https://github.com/braingeneers/brainloop/blob/main/brainloop/core/spikedetector/plot.py#L0"><img align="right" style={{"float":"right"}} src="https://img.shields.io/badge/-source-cccccc?style=flat-square" /></a>
+
+# <kbd>module</kbd> `plot.py`
+
+
+
+
+**Global Variables**
+---------------
+- **TRACE_X_LABEL**
+
+---
+
+<a href="https://github.com/braingeneers/brainloop/blob/main/brainloop/core/spikedetector/plot.py#L14"><img align="right" style={{"float":"right"}} src="https://img.shields.io/badge/-source-cccccc?style=flat-square" /></a>
+
+## <kbd>function</kbd> `plot_waveform`
+
+```python
+plot_waveform(
+    waveform,
+    peak_idx,
+    wf_len,
+    wf_alpha,
+    wf_trace_loc,
+    axis,
+    xlim=None,
+    ylim_diff=None,
+    title='Waveform',
+    **wf_line_kwargs
+)
+```
+
+
+
+
+
+
+---
+
+<a href="https://github.com/braingeneers/brainloop/blob/main/brainloop/core/spikedetector/plot.py#L38"><img align="right" style={{"float":"right"}} src="https://img.shields.io/badge/-source-cccccc?style=flat-square" /></a>
+
+## <kbd>function</kbd> `plot_hist_loc_mad`
+
+```python
+plot_hist_loc_mad(loc_deviations, n_bins=15)
+```
+
+
+
+
+
+
+---
+
+<a href="https://github.com/braingeneers/brainloop/blob/main/brainloop/core/spikedetector/plot.py#L55"><img align="right" style={{"float":"right"}} src="https://img.shields.io/badge/-source-cccccc?style=flat-square" /></a>
+
+## <kbd>function</kbd> `plot_hist_percent_abs_error`
+
+```python
+plot_hist_percent_abs_error(percent_abs_errors, n_bins=10)
+```
+
+
+
+
+
+
+---
+
+<a href="https://github.com/braingeneers/brainloop/blob/main/brainloop/core/spikedetector/plot.py#L71"><img align="right" style={{"float":"right"}} src="https://img.shields.io/badge/-source-cccccc?style=flat-square" /></a>
+
+## <kbd>function</kbd> `get_yticks_lim`
+
+```python
+get_yticks_lim(trace, anchor=0, increment=5, buffer_min=5, buffer_max=3)
+```
+
+Get lim and ticks for y-axis when trace is plotted 
+
+:param trace: np.array  Trace that will be plotted using the returned lim and ticks :param anchor: int or float  The ticks will show anchor :param increment: int or float  Increment between ticks :param buffer_min:  Ticks will be within [min(trace) - buffer_min, max(trace) + buffer_max)] :param buffer_max:  [min(trace) - buffer_min, max(trace) + buffer_max)] 
+
+
+---
+
+<a href="https://github.com/braingeneers/brainloop/blob/main/brainloop/core/spikedetector/plot.py#L99"><img align="right" style={{"float":"right"}} src="https://img.shields.io/badge/-source-cccccc?style=flat-square" /></a>
+
+## <kbd>function</kbd> `set_ticks`
+
+```python
+set_ticks(
+    subplots: Tuple[Axes],
+    trace: <built-in function array>,
+    increment=10,
+    buffer_min=10,
+    buffer_max=10,
+    center_xticks=False
+)
+```
+
+Set x and y ticks for subplots 
+
+:param subplots  Each element is a subplot :param trace  The trace to calculate the appropatiate ticks for :param increment :param center_xticks  Whether to set center of xticks to 0 (left is negative time and right is positive) 
+
+
+---
+
+<a href="https://github.com/braingeneers/brainloop/blob/main/brainloop/core/spikedetector/plot.py#L136"><img align="right" style={{"float":"right"}} src="https://img.shields.io/badge/-source-cccccc?style=flat-square" /></a>
+
+## <kbd>function</kbd> `set_dpi`
+
+```python
+set_dpi(dpi)
+```
+
+
+
+
+
+
+---
+
+<a href="https://github.com/braingeneers/brainloop/blob/main/brainloop/core/spikedetector/plot.py#L141"><img align="right" style={{"float":"right"}} src="https://img.shields.io/badge/-source-cccccc?style=flat-square" /></a>
+
+## <kbd>function</kbd> `get_empty_line`
+
+```python
+get_empty_line(label)
+```
+
+
+
+
+
+
+---
+
+<a href="https://github.com/braingeneers/brainloop/blob/main/brainloop/core/spikedetector/plot.py#L146"><img align="right" style={{"float":"right"}} src="https://img.shields.io/badge/-source-cccccc?style=flat-square" /></a>
+
+## <kbd>function</kbd> `display_prob_spike`
+
+```python
+display_prob_spike(spike_output, axis)
+```
+
+
+
+
+
+
+---
+
+<a href="https://github.com/braingeneers/brainloop/blob/main/brainloop/core/spikedetector/plot.py#L157"><img align="right" style={{"float":"right"}} src="https://img.shields.io/badge/-source-cccccc?style=flat-square" /></a>
+
+## <kbd>function</kbd> `unscaled_ticks_to_uv`
+
+```python
+unscaled_ticks_to_uv(subplot)
+```
+
+
+
+
+
+
+---
+
+<a href="https://github.com/braingeneers/brainloop/blob/main/brainloop/core/spikedetector/plot.py#L163"><img align="right" style={{"float":"right"}} src="https://img.shields.io/badge/-source-cccccc?style=flat-square" /></a>
+
+## <kbd>function</kbd> `plot_hist_percents`
+
+```python
+plot_hist_percents(data, ax=None, **hist_kwargs)
+```
+
+
+
+
+
+
+
+
+---
+
+_This file was automatically generated via [lazydocs](https://github.com/ml-tooling/lazydocs)._

@@ -1,0 +1,684 @@
+<!-- markdownlint-disable -->
+
+<a href="https://github.com/braingeneers/brainloop/blob/main/brainloop/core/maxwell_env.py#L0"><img align="right" style={{"float":"right"}} src="https://img.shields.io/badge/-source-cccccc?style=flat-square" /></a>
+
+# <kbd>module</kbd> `maxwell_env.py`
+
+
+
+
+**Global Variables**
+---------------
+- **fs_ms**
+
+---
+
+<a href="https://github.com/braingeneers/brainloop/blob/main/brainloop/core/maxwell_env.py#L756"><img align="right" style={{"float":"right"}} src="https://img.shields.io/badge/-source-cccccc?style=flat-square" /></a>
+
+## <kbd>function</kbd> `stim_process`
+
+```python
+stim_process(
+    stim_process_ready,
+    stim_units,
+    stim_ready,
+    stim_shm_name,
+    env_done,
+    stim_amp=400,
+    stim_length=100,
+    stim_tag='stim'
+)
+```
+
+Params  stim_amp  mV of square wave  stim_length  us for each phase of the square wave 
+
+
+---
+
+<a href="https://github.com/braingeneers/brainloop/blob/main/brainloop/core/maxwell_env.py#L810"><img align="right" style={{"float":"right"}} src="https://img.shields.io/badge/-source-cccccc?style=flat-square" /></a>
+
+## <kbd>function</kbd> `find_process_by_port`
+
+```python
+find_process_by_port(port)
+```
+
+
+
+
+
+
+---
+
+<a href="https://github.com/braingeneers/brainloop/blob/main/brainloop/core/maxwell_env.py#L819"><img align="right" style={{"float":"right"}} src="https://img.shields.io/badge/-source-cccccc?style=flat-square" /></a>
+
+## <kbd>function</kbd> `stop_process_using_port`
+
+```python
+stop_process_using_port(port)
+```
+
+
+
+
+
+
+---
+
+<a href="https://github.com/braingeneers/brainloop/blob/main/brainloop/core/maxwell_env.py#L834"><img align="right" style={{"float":"right"}} src="https://img.shields.io/badge/-source-cccccc?style=flat-square" /></a>
+
+## <kbd>function</kbd> `init_maxone`
+
+```python
+init_maxone(
+    config,
+    stim_electrodes,
+    filt=True,
+    verbose=1,
+    gain=512,
+    cutoff='1Hz',
+    spike_thresh=5,
+    dummy=False
+)
+```
+
+Initialize MaxOne, set electrodes, and setup subscribers. 
+
+
+
+**Args:**
+ 
+ - <b>`config`</b> (str):  Path to the config file for the electrodes. 
+ - <b>`stim_electrodes`</b> (list):  List of electrode numbers to stimulate. 
+ - <b>`filt`</b> (bool):  Whether to use the high-pass filter. 
+ - <b>`verbose`</b> (int):  Verbosity level. 0: No print statements, 1: Print initialization statements, 2: Print all statements. 
+ - <b>`gain`</b> (int):  Gain of the amplifier. Options: 512, 1024, 2048. 
+ - <b>`cutoff`</b> (str):  Cutoff frequency of the high-pass filter. Options: '1Hz', '300Hz'. 
+ - <b>`spike_thresh`</b> (int):  Threshold for spike detection, in units of standard deviations. 
+ - <b>`dummy`</b> (bool):  Whether to use dummy data. 
+
+
+
+**Returns:**
+ 
+ - <b>`tuple`</b>:  A tuple containing the subscriber, stimulation units, and stimulation electrodes dictionary. 
+
+
+---
+
+<a href="https://github.com/braingeneers/brainloop/blob/main/brainloop/core/maxwell_env.py#L866"><img align="right" style={{"float":"right"}} src="https://img.shields.io/badge/-source-cccccc?style=flat-square" /></a>
+
+## <kbd>function</kbd> `init_maxone_settings`
+
+```python
+init_maxone_settings(
+    gain=512,
+    amp_gain=512,
+    cutoff='1Hz',
+    spike_thresh=5,
+    verbose=1
+)
+```
+
+Initialize MaxOne and set gain and high-pass filter 
+
+Parameters 
+---------- gain : int, {512, 1024, 2048} 
+
+amp_gain : int 
+
+cutoff : str, {'1Hz', '300Hz'} 
+
+
+---
+
+<a href="https://github.com/braingeneers/brainloop/blob/main/brainloop/core/maxwell_env.py#L901"><img align="right" style={{"float":"right"}} src="https://img.shields.io/badge/-source-cccccc?style=flat-square" /></a>
+
+## <kbd>function</kbd> `setup_subscribers`
+
+```python
+setup_subscribers(filt, verbose=1)
+```
+
+Setup subscribers for events from MaxOne, this  allows us to read the data from the chip. 
+
+
+---
+
+<a href="https://github.com/braingeneers/brainloop/blob/main/brainloop/core/maxwell_env.py#L920"><img align="right" style={{"float":"right"}} src="https://img.shields.io/badge/-source-cccccc?style=flat-square" /></a>
+
+## <kbd>function</kbd> `select_electrodes`
+
+```python
+select_electrodes(config, stim_electrodes, verbose=1, dummy=False)
+```
+
+
+
+
+
+
+---
+
+<a href="https://github.com/braingeneers/brainloop/blob/main/brainloop/core/maxwell_env.py#L977"><img align="right" style={{"float":"right"}} src="https://img.shields.io/badge/-source-cccccc?style=flat-square" /></a>
+
+## <kbd>function</kbd> `power_cycle_stim_electrodes`
+
+```python
+power_cycle_stim_electrodes(stim_units)
+```
+
+"Power up and down again all the stimulation units. It appears this is needed to equilibrate the electrodes" 
+- from maxwell code 
+
+
+---
+
+<a href="https://github.com/braingeneers/brainloop/blob/main/brainloop/core/maxwell_env.py#L999"><img align="right" style={{"float":"right"}} src="https://img.shields.io/badge/-source-cccccc?style=flat-square" /></a>
+
+## <kbd>function</kbd> `disconnect_stim_electrodes`
+
+```python
+disconnect_stim_electrodes(stim_units)
+```
+
+Disconnect each stimulation unit in the list. 
+
+
+---
+
+<a href="https://github.com/braingeneers/brainloop/blob/main/brainloop/core/maxwell_env.py#L1006"><img align="right" style={{"float":"right"}} src="https://img.shields.io/badge/-source-cccccc?style=flat-square" /></a>
+
+## <kbd>function</kbd> `connect_stim_electrodes`
+
+```python
+connect_stim_electrodes(stim_units)
+```
+
+Connect each stimulation unit in the list. 
+
+
+---
+
+<a href="https://github.com/braingeneers/brainloop/blob/main/brainloop/core/maxwell_env.py#L1014"><img align="right" style={{"float":"right"}} src="https://img.shields.io/badge/-source-cccccc?style=flat-square" /></a>
+
+## <kbd>function</kbd> `parse_events_list`
+
+```python
+parse_events_list(events_data)
+```
+
+Parse the raw binary events data into a list of SpikeEvent objects. 
+
+
+---
+
+<a href="https://github.com/braingeneers/brainloop/blob/main/brainloop/core/maxwell_env.py#L1039"><img align="right" style={{"float":"right"}} src="https://img.shields.io/badge/-source-cccccc?style=flat-square" /></a>
+
+## <kbd>function</kbd> `parse_frame`
+
+```python
+parse_frame(frame_data)
+```
+
+Parse the binary frame data into an array of floating-point voltages. 
+
+
+---
+
+<a href="https://github.com/braingeneers/brainloop/blob/main/brainloop/core/maxwell_env.py#L1046"><img align="right" style={{"float":"right"}} src="https://img.shields.io/badge/-source-cccccc?style=flat-square" /></a>
+
+## <kbd>function</kbd> `receive_packet`
+
+```python
+receive_packet(subscriber, buffer_size=None)
+```
+
+Use the subscriber to capture the frame and event data from the server. Returns an integer frame_number as well as data buffers for the voltage data frame and the spike events. Also sets the current time. 
+
+
+---
+
+<a href="https://github.com/braingeneers/brainloop/blob/main/brainloop/core/maxwell_env.py#L1103"><img align="right" style={{"float":"right"}} src="https://img.shields.io/badge/-source-cccccc?style=flat-square" /></a>
+
+## <kbd>function</kbd> `socket_worker`
+
+```python
+socket_worker(data_queue, event_queue, subscriber_args)
+```
+
+Worker function that reads from the ZeroMQ socket. 
+
+
+---
+
+<a href="https://github.com/braingeneers/brainloop/blob/main/brainloop/core/maxwell_env.py#L1115"><img align="right" style={{"float":"right"}} src="https://img.shields.io/badge/-source-cccccc?style=flat-square" /></a>
+
+## <kbd>function</kbd> `plot_worker`
+
+```python
+plot_worker(queue)
+```
+
+
+
+
+
+
+---
+
+<a href="https://github.com/braingeneers/brainloop/blob/main/brainloop/core/maxwell_env.py#L1149"><img align="right" style={{"float":"right"}} src="https://img.shields.io/badge/-source-cccccc?style=flat-square" /></a>
+
+## <kbd>function</kbd> `ignore_first_packet`
+
+```python
+ignore_first_packet(subscriber, verbose=1)
+```
+
+This first loop ignores any partial packets to make sure the real loop gets aligned to an actual frame. First it spins for as long as recv() fails, then it waits for the RCVMORE flag to be False to check that the last partial frame is over. 
+
+
+---
+
+<a href="https://github.com/braingeneers/brainloop/blob/main/brainloop/core/maxwell_env.py#L1172"><img align="right" style={{"float":"right"}} src="https://img.shields.io/badge/-source-cccccc?style=flat-square" /></a>
+
+## <kbd>function</kbd> `ignore_remaining_packets`
+
+```python
+ignore_remaining_packets(subscriber, verbose=1)
+```
+
+This function reads and discards all remaining data in the buffer. It uses a non-blocking recv() to ensure that it only reads available data and stops when there are no more packets. 
+
+
+---
+
+<a href="https://github.com/braingeneers/brainloop/blob/main/brainloop/core/maxwell_env.py#L1192"><img align="right" style={{"float":"right"}} src="https://img.shields.io/badge/-source-cccccc?style=flat-square" /></a>
+
+## <kbd>function</kbd> `launch_dummy_server`
+
+```python
+launch_dummy_server(dummy)
+```
+
+
+
+
+
+
+---
+
+## <kbd>class</kbd> `Config`
+Class to handle configuration file parsing and management. 
+
+<a href="https://github.com/braingeneers/brainloop/blob/main/brainloop/core/maxwell_env.py#L1226"><img align="right" style={{"float":"right"}} src="https://img.shields.io/badge/-source-cccccc?style=flat-square" /></a>
+
+### <kbd>function</kbd> `__init__`
+
+```python
+__init__(filename)
+```
+
+Initialize the Config object. 
+
+
+
+**Args:**
+ 
+ - <b>`filename`</b> (str):  Path to the configuration file. 
+
+
+
+
+---
+
+<a href="https://github.com/braingeneers/brainloop/blob/main/brainloop/core/maxwell_env.py#L1247"><img align="right" style={{"float":"right"}} src="https://img.shields.io/badge/-source-cccccc?style=flat-square" /></a>
+
+### <kbd>function</kbd> `get_channels`
+
+```python
+get_channels()
+```
+
+Get all channels from the configuration. 
+
+
+
+**Returns:**
+ 
+ - <b>`list`</b>:  List of channel numbers. 
+
+---
+
+<a href="https://github.com/braingeneers/brainloop/blob/main/brainloop/core/maxwell_env.py#L1265"><img align="right" style={{"float":"right"}} src="https://img.shields.io/badge/-source-cccccc?style=flat-square" /></a>
+
+### <kbd>function</kbd> `get_channels_for_electrodes`
+
+```python
+get_channels_for_electrodes(electrodes)
+```
+
+Get channels corresponding to given electrodes. 
+
+
+
+**Args:**
+ 
+ - <b>`electrodes`</b> (list):  List of electrode numbers. 
+
+
+
+**Returns:**
+ 
+ - <b>`list`</b>:  List of corresponding channel numbers. 
+
+---
+
+<a href="https://github.com/braingeneers/brainloop/blob/main/brainloop/core/maxwell_env.py#L1256"><img align="right" style={{"float":"right"}} src="https://img.shields.io/badge/-source-cccccc?style=flat-square" /></a>
+
+### <kbd>function</kbd> `get_electrodes`
+
+```python
+get_electrodes()
+```
+
+Get all electrodes from the configuration. 
+
+
+
+**Returns:**
+ 
+ - <b>`list`</b>:  List of electrode numbers. 
+
+---
+
+<a href="https://github.com/braingeneers/brainloop/blob/main/brainloop/core/maxwell_env.py#L1277"><img align="right" style={{"float":"right"}} src="https://img.shields.io/badge/-source-cccccc?style=flat-square" /></a>
+
+### <kbd>function</kbd> `get_num_channels`
+
+```python
+get_num_channels()
+```
+
+Get the total number of channels in the configuration. 
+
+
+
+**Returns:**
+ 
+ - <b>`int`</b>:  Number of channels. 
+
+
+---
+
+## <kbd>class</kbd> `MaxwellEnv`
+The MaxwellEnv class extends from the BaseEnv class and implements a specific environment  for running experiments on MaxWell's MaxOne system. This class is used to interact with the MaxOne system, receive data, and send stimulation commands. 
+
+
+
+**Attributes:**
+ 
+ - <b>`config`</b> (str):  Stores the config filepath in order to easily reload the array. 
+ - <b>`name`</b> (str):  Stores the name of the environment instance. 
+ - <b>`max_time_sec`</b> (int):  Stores the maximum experiment time. 
+ - <b>`save_file`</b> (str):  The file where the data will be saved. 
+ - <b>`stim_electrodes`</b> (list):  Stores the list of electrodes for stimulation. 
+ - <b>`verbose`</b> (int):  Controls the verbosity of the environment's operations. 
+ - <b>`array`</b> (None):  Initialized as None, to be updated in sub-classes as needed. 
+ - <b>`subscriber`</b> (None):  Initialized as None, to be updated in sub-classes as needed. 
+ - <b>`save_dir`</b> (str):  Stores the directory where the simulation data will be saved. 
+ - <b>`is_stimulation`</b> (bool):  A flag that indicates whether a stimulation is going to occur. 
+ - <b>`stim_log_file`</b> (str or None):  The file where the log of the stimulation is saved. If no stimulation is going to occur, this is None. 
+ - <b>`stim_units`</b> (None):  Initialized as None, to be updated in sub-classes as needed. 
+ - <b>`stim_electrodes_dict`</b> (None):  Initialized as None, to be updated in sub-classes as needed. 
+ - <b>`start_time`</b> (float):  The time when the environment is initialized. 
+ - <b>`cur_time`</b> (float):  The current time, updated at each step. 
+ - <b>`last_stim_time`</b> (float):  The time when the last stimulation occurred. 
+ - <b>`smoke_test`</b> (bool):  A flag that indicates whether the environment is being used for a smoke test. 
+
+<a href="https://github.com/braingeneers/brainloop/blob/main/brainloop/core/maxwell_env.py#L69"><img align="right" style={{"float":"right"}} src="https://img.shields.io/badge/-source-cccccc?style=flat-square" /></a>
+
+### <kbd>function</kbd> `__init__`
+
+```python
+__init__(
+    config,
+    name='',
+    stim_electrodes=[],
+    max_time_sec=60,
+    save_dir='data',
+    multiprocess=False,
+    render=False,
+    filt=False,
+    observation_type='spikes',
+    verbose=1,
+    smoke_test=False,
+    dummy=None,
+    start=True
+)
+```
+
+Initialize the Maxwell environment. 
+
+
+
+**Args:**
+ 
+ - <b>`config`</b> (str):  A path to the maxwell config file. This is usually made by the Maxwell GUI,   and contains the information about the array. 
+ - <b>`name`</b> (str):  The name of the environment instance. This is used for saving data. 
+ - <b>`stim_electrodes`</b> (list):  A list of electrodes for stimulation. If no electrodes are specified, no stimulation will occur. 
+ - <b>`max_time_sec`</b> (int):  The maximum experiment time in seconds. 
+ - <b>`save_dir`</b> (str):  The directory where the stimulation data will be saved. 
+ - <b>`filt`</b> (bool):  A flag that indicates whether a filter should be applied to the data. The filter is onboard the chip,  and is applied to the data before it is sent to the computer. It adds ~100ms of latency. 
+ - <b>`observation_type`</b> (str):  A string that indicates the type of observation that the environment should return.  'spikes' returns a list of spike events  'raw' returns the raw datastream frame with shape (ch,1)  
+ - <b>`verbose`</b> (int):  An integer that controls the verbosity of the environment's operations. 0 is silent, 1 is verbose. 
+ - <b>`smoke_test`</b> (bool):  A flag that indicates whether the environment is being used for a smoke test. If True, the environment  will not save any data, will use dummy logic, and no hardware will be used. 
+ - <b>`dummy`</b> (str):  A flag that will indicate whether to use a dummy maxwell server.  'sine' will use a sine wave for the data  *filepath* will use the first 30 seconds of data from the filepath  None will use the real maxwell server 
+
+
+---
+
+#### <kbd>property</kbd> dt
+
+Returns time since the last step. 
+
+---
+
+#### <kbd>property</kbd> stim_dt
+
+Returns time since last stimulation. 
+
+---
+
+#### <kbd>property</kbd> stim_dts
+
+Returns time since last stimulation. 
+
+
+
+---
+
+<a href="https://github.com/braingeneers/brainloop/blob/main/brainloop/core/maxwell_env.py#L244"><img align="right" style={{"float":"right"}} src="https://img.shields.io/badge/-source-cccccc?style=flat-square" /></a>
+
+### <kbd>function</kbd> `clear_buffer`
+
+```python
+clear_buffer(
+    num_successive_waits=10,
+    min_wait_f=0.5,
+    buffer_size=10,
+    samp_freq_hz=20000
+)
+```
+
+Clear the ZMQ socket buffer, so self.step() returns latest data. 
+
+This is done by waiting until the time to receive buffer_size frames is at least to min_wait_f*buffer_size for num_successive_waits successive method calls. There are two buffers: the ZMQ socket buffer and  buffer_size used in self.step(buffer_size=buffer_size). 
+
+
+
+**Args:**
+ 
+ - <b>`num_successive_waits`</b> (int):  Number of successive waits before considering the buffer cleared. 
+ - <b>`min_wait_f`</b> (float):  Minimum wait factor. 
+ - <b>`buffer_size`</b> (int):  Size of the buffer. 
+ - <b>`samp_freq_hz`</b> (int):  Sampling frequency in Hz. 
+
+---
+
+<a href="https://github.com/braingeneers/brainloop/blob/main/brainloop/core/maxwell_env.py#L407"><img align="right" style={{"float":"right"}} src="https://img.shields.io/badge/-source-cccccc?style=flat-square" /></a>
+
+### <kbd>function</kbd> `close`
+
+```python
+close()
+```
+
+Shuts down the environment and saves the data. 
+
+---
+
+<a href="https://github.com/braingeneers/brainloop/blob/main/brainloop/core/maxwell_env.py#L669"><img align="right" style={{"float":"right"}} src="https://img.shields.io/badge/-source-cccccc?style=flat-square" /></a>
+
+### <kbd>function</kbd> `connect_units`
+
+```python
+connect_units(units=None, inds=None)
+```
+
+Connect the specified stimulation units. 
+
+---
+
+<a href="https://github.com/braingeneers/brainloop/blob/main/brainloop/core/maxwell_env.py#L661"><img align="right" style={{"float":"right"}} src="https://img.shields.io/badge/-source-cccccc?style=flat-square" /></a>
+
+### <kbd>function</kbd> `disconnect_all`
+
+```python
+disconnect_all()
+```
+
+Disconnect all stimulation units. 
+
+---
+
+<a href="https://github.com/braingeneers/brainloop/blob/main/brainloop/core/maxwell_env.py#L282"><img align="right" style={{"float":"right"}} src="https://img.shields.io/badge/-source-cccccc?style=flat-square" /></a>
+
+### <kbd>function</kbd> `get_observation`
+
+```python
+get_observation(buffer_size=None)
+```
+
+Create the observation from the electrodes or spike events. 
+
+
+
+**Args:**
+ 
+ - <b>`buffer_size`</b> (int, optional):  Size of the buffer for raw data observation. 
+
+
+
+**Returns:**
+ 
+ - <b>`list or numpy.ndarray`</b>:  Observation data. 
+
+---
+
+<a href="https://github.com/braingeneers/brainloop/blob/main/brainloop/core/maxwell_env.py#L208"><img align="right" style={{"float":"right"}} src="https://img.shields.io/badge/-source-cccccc?style=flat-square" /></a>
+
+### <kbd>function</kbd> `reset`
+
+```python
+reset()
+```
+
+Reset the environment 
+
+---
+
+<a href="https://github.com/braingeneers/brainloop/blob/main/brainloop/core/maxwell_env.py#L187"><img align="right" style={{"float":"right"}} src="https://img.shields.io/badge/-source-cccccc?style=flat-square" /></a>
+
+### <kbd>function</kbd> `start`
+
+```python
+start()
+```
+
+Start the experiment by initializing time management, flushing the buffer, and starting the recording. 
+
+---
+
+<a href="https://github.com/braingeneers/brainloop/blob/main/brainloop/core/maxwell_env.py#L332"><img align="right" style={{"float":"right"}} src="https://img.shields.io/badge/-source-cccccc?style=flat-square" /></a>
+
+### <kbd>function</kbd> `step`
+
+```python
+step(action=None, tag=None, buffer_size=None)
+```
+
+Receive events published since last time step() was called. This includes spike events and raw datastream. 
+
+
+
+**Args:**
+ 
+ - <b>`action`</b> (list, optional):  A list of stimulation commands. Each command is a tuple of the form   (electrode_index, amplitude_mV, phase_length_us). 
+ - <b>`tag`</b> (str, optional):  A tag for the stimulation log. 
+ - <b>`buffer_size`</b> (int, optional):  Size of the buffer for observation. 
+
+
+
+**Returns:**
+ 
+ - <b>`tuple`</b>:  A tuple containing the observation and a boolean indicating if the episode is done. 
+
+---
+
+<a href="https://github.com/braingeneers/brainloop/blob/main/brainloop/core/maxwell_env.py#L403"><img align="right" style={{"float":"right"}} src="https://img.shields.io/badge/-source-cccccc?style=flat-square" /></a>
+
+### <kbd>function</kbd> `time_elapsed`
+
+```python
+time_elapsed()
+```
+
+Returns time since initialization of the environment. 
+
+
+---
+
+## <kbd>class</kbd> `MaxwellStim`
+Used for stimulating electrodes in a parallel process 
+
+<a href="https://github.com/braingeneers/brainloop/blob/main/brainloop/core/maxwell_env.py#L686"><img align="right" style={{"float":"right"}} src="https://img.shields.io/badge/-source-cccccc?style=flat-square" /></a>
+
+### <kbd>function</kbd> `__init__`
+
+```python
+__init__(stim_units)
+```
+
+
+
+
+
+
+
+
+
+---
+
+## <kbd>class</kbd> `SpikeEvent`
+SpikeEvent(frame, channel, amplitude) 
+
+
+
+
+
+
+
+---
+
+_This file was automatically generated via [lazydocs](https://github.com/ml-tooling/lazydocs)._

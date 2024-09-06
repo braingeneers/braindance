@@ -1,0 +1,87 @@
+<!-- markdownlint-disable -->
+
+<a href="https://github.com/braingeneers/brainloop/blob/main/brainloop/core/spikedetector/train.py#L0"><img align="right" style={{"float":"right"}} src="https://img.shields.io/badge/-source-cccccc?style=flat-square" /></a>
+
+# <kbd>module</kbd> `train.py`
+
+
+
+
+
+---
+
+<a href="https://github.com/braingeneers/brainloop/blob/main/brainloop/core/spikedetector/train.py#L11"><img align="right" style={{"float":"right"}} src="https://img.shields.io/badge/-source-cccccc?style=flat-square" /></a>
+
+## <kbd>function</kbd> `train_detection_model`
+
+```python
+train_detection_model(
+    recordings: list,
+    dl_folder_name='dl_folder',
+    validation_recording=None,
+    thresh_amp=18.88275,
+    thresh_std=0.6,
+    sample_size_ms=10,
+    recording_spike_before_ms=2,
+    recording_spike_after_ms=2,
+    samples_per_waveform=2,
+    num_wfs_probs=[0.5, 0.3, 0.12, 0.06, 0.02],
+    isi_wf_min_ms=0.2,
+    isi_wf_max_ms=None,
+    learning_rate=0.000776,
+    momentum=0.85,
+    training_thresh=0.01,
+    learning_rate_patience=5,
+    learning_rate_decay=0.4,
+    epoch_patience=10,
+    max_num_epochs=200,
+    batch_size=1,
+    num_workers=0,
+    shuffle=True,
+    training_random_seed=231,
+    input_scale=0.01,
+    input_scale_decay=0.1,
+    device='cuda',
+    dtype=torch.float16,
+    **run_kilosort2_kwargs
+)
+```
+
+Train a DL detection model with :recording_files: 
+
+Params:  General parameters:  recordings:  A list containing the recordings to use for training the detection model. The length recordings must be at least two.   Each element can be one of the following: 
+                - Path to a recording file in .h5 or .nwb format 
+                - Path to a folder containing “sorted.npz” and “scaled_traces.npy”.   This is used if the recordings have already been sorted, and you do not want to re-sort them.  
+                - A recording object loaded with SpikeInterface. See SpikeInterface's Extractor Module (https://spikeinterface.readthedocs.io/en/latest/modules/extractors.html) for details  dl_folder_name:  For each recording that needs to be sorted, the results will be stored in the same folder as the recording in the folder dl_folder_name   
+
+ Dataset parameters:  thresh_amp:  Only waveforms whose amplitude is at least thresh_amp (microvolts) will be selected to train and test the detection model  thresh_std:  Only waveforms in which the standard deviation of the trough divided by the amplitude is at most thresh_std will be selected to train and test the detection model  sample_size_ms:  The size of the input samples fed into the detection model (milliseconds)  recording_spike_before_ms:  When extracting noise from the recording, do not extract if there was a spike within recording_spike_before_ms milliseconds  recording_spike_after_ms:  When extracting noise from the recording, do not extract if there is a spike within recording_spike_after_ms milliseconds  
+
+ Training parameters:  samples_per_waveform:  The number of samples in an epoch equals samples_per_waveform * the total number of waveformsrms  num_wfs_probs:  The ith element refers to the probability (decimal) that i waveforms will appear in a training or validation sample.  isi_wf_min_ms:  If multiple waveforms are pasted into a sample, they must be at least isi_wf_min_ms milliseconds apart  isi_wf_max_ms:  If multiple waveforms are pasted into a sample, one waveform will be at most isi_wf_max_ms milliseconds apart from another waveform  If None, there is no limit  learning_rate:  The learning rate to use for training   momentum:  The momentum value to use for training. See https://pytorch.org/docs/stable/generated/torch.optim.SGD.html  training_thresh:  If the validation loss does not decrease by training_thresh after an epoch, the patience counter increases by 1  If it does, the patience counter resets to 0  learning_rate_decay and learning_rate_patience:  If the patience counter reaches learning_rate_patience, the learning rate decreases by a factor of learning_rate_decay  epoch_patience:  If the patience counter reacehs epoch_patience, training stops for the recording  max_num_epochs:  Training stops after max_num_epochs even if the validation loss continues to decrease  batch_size:  The batch size used for training  num_workers:  The number of workers used to load data. See https://pytorch.org/docs/stable/data.html#single-and-multi-process-data-loading  shuffle:  Whether to randomly shuffle the training and validation data for each epoch  training_random_seed  The random seed set before trainings starts for reproducibility  
+
+ Detection model parameters:  input_scale:  The recording traces (μV) are multiplied by input_scale before being inputted into the detection model.   If the training process indicates “nan” for the loss, then decrease input_scale because the traces are too large for the detection model.   input_scale_decay:  If loss is np.nan, reduce input_scale by factor of input_scale_decay  
+
+ General parameters:  device  The device to use. "cuda" for GPU and "cpu" for CPU  dtype  The data type to use  
+
+ run_kilosort2 parameters  See brainloop.core.spikesorter.kilosort2.py 
+
+
+---
+
+<a href="https://github.com/braingeneers/brainloop/blob/main/brainloop/core/spikedetector/train.py#L223"><img align="right" style={{"float":"right"}} src="https://img.shields.io/badge/-source-cccccc?style=flat-square" /></a>
+
+## <kbd>function</kbd> `main`
+
+```python
+main()
+```
+
+
+
+
+
+
+
+
+---
+
+_This file was automatically generated via [lazydocs](https://github.com/ml-tooling/lazydocs)._

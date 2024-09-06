@@ -1,0 +1,170 @@
+<!-- markdownlint-disable -->
+
+<a href="https://github.com/braingeneers/brainloop/blob/main/brainloop/analysis/data_loader.py#L0"><img align="right" style={{"float":"right"}} src="https://img.shields.io/badge/-source-cccccc?style=flat-square" /></a>
+
+# <kbd>module</kbd> `data_loader.py`
+
+
+
+
+
+---
+
+<a href="https://github.com/braingeneers/brainloop/blob/main/brainloop/analysis/data_loader.py#L9"><img align="right" style={{"float":"right"}} src="https://img.shields.io/badge/-source-cccccc?style=flat-square" /></a>
+
+## <kbd>function</kbd> `load_info_maxwell`
+
+```python
+load_info_maxwell(filepath)
+```
+
+Loads metadata from a maxwell file 
+
+Parameters 
+---------- filepath : str  path to maxwell file  
+
+Returns 
+------- metadata : dict  metadata dictionary 
+
+
+---
+
+<a href="https://github.com/braingeneers/brainloop/blob/main/brainloop/analysis/data_loader.py#L49"><img align="right" style={{"float":"right"}} src="https://img.shields.io/badge/-source-cccccc?style=flat-square" /></a>
+
+## <kbd>function</kbd> `load_mapping_maxwell`
+
+```python
+load_mapping_maxwell(filepath, channels=None)
+```
+
+Loads mapping from a maxwell file 
+
+Parameters 
+---------- filepath : str  path to maxwell file channels : list of int  channels of interest  
+
+Returns 
+------- mapping : dict  mapping dictionary 
+
+
+---
+
+<a href="https://github.com/braingeneers/brainloop/blob/main/brainloop/analysis/data_loader.py#L93"><img align="right" style={{"float":"right"}} src="https://img.shields.io/badge/-source-cccccc?style=flat-square" /></a>
+
+## <kbd>function</kbd> `load_data_maxwell`
+
+```python
+load_data_maxwell(
+    filepath,
+    channels=None,
+    start=0,
+    length=-1,
+    spikes=False,
+    dtype=<class 'numpy.float32'>,
+    suffix=None,
+    verbose=False
+)
+```
+
+Loads specified amount of data from a maxwell file :param filepath:   Path to filename.raw.h5 file :param channels: list of int  Channels of interest :param start: int  Starting frame (offset) of the datapoints to use :param length: int  Length of datapoints to take :param spikes: bool  Whether to only thresholded spikes or raw data :param dtype: np.dtype  Data type to load :param suffix: str  Suffix to add to filepath :param verbose: bool  Whether to print errors 
+
+:return: dataset: nparray  Dataset of datapoints. 
+
+
+---
+
+<a href="https://github.com/braingeneers/brainloop/blob/main/brainloop/analysis/data_loader.py#L215"><img align="right" style={{"float":"right"}} src="https://img.shields.io/badge/-source-cccccc?style=flat-square" /></a>
+
+## <kbd>function</kbd> `convert_uint16_maxwell`
+
+```python
+convert_uint16_maxwell(data)
+```
+
+Converts uint16 data to float32 :param data: nparray  Data to convert :return: data: nparray  Converted data 
+
+
+---
+
+<a href="https://github.com/braingeneers/brainloop/blob/main/brainloop/analysis/data_loader.py#L231"><img align="right" style={{"float":"right"}} src="https://img.shields.io/badge/-source-cccccc?style=flat-square" /></a>
+
+## <kbd>function</kbd> `load_windows_maxwell`
+
+```python
+load_windows_maxwell(filepath, starts, window_sz=2000, channels=None)
+```
+
+Loads a fixed window size from the list of starts :param filepath:   Path to filename.raw.h5 file :param starts: list of int  List of start frames :param window_sz: int  Window size in frames :param channels: list of int 
+
+:return: dataset: nparray  Dataset of datapoints. 
+
+
+---
+
+<a href="https://github.com/braingeneers/brainloop/blob/main/brainloop/analysis/data_loader.py#L263"><img align="right" style={{"float":"right"}} src="https://img.shields.io/badge/-source-cccccc?style=flat-square" /></a>
+
+## <kbd>function</kbd> `load_stim_log`
+
+```python
+load_stim_log(filepath, adjust=False, suffix='_log.csv')
+```
+
+
+
+
+
+
+---
+
+<a href="https://github.com/braingeneers/brainloop/blob/main/brainloop/analysis/data_loader.py#L288"><img align="right" style={{"float":"right"}} src="https://img.shields.io/badge/-source-cccccc?style=flat-square" /></a>
+
+## <kbd>function</kbd> `apply_literal_eval_stim_log`
+
+```python
+apply_literal_eval_stim_log(stim_log)
+```
+
+Applies ast.literal_eval to the stim electrodes and stim pattern columns of the stim log needed because the columns are read as strings 
+
+
+---
+
+<a href="https://github.com/braingeneers/brainloop/blob/main/brainloop/analysis/data_loader.py#L297"><img align="right" style={{"float":"right"}} src="https://img.shields.io/badge/-source-cccccc?style=flat-square" /></a>
+
+## <kbd>function</kbd> `get_stim_electrodes`
+
+```python
+get_stim_electrodes(stim_log)
+```
+
+Get the unique stim electrodes from the stim log 
+
+
+---
+
+<a href="https://github.com/braingeneers/brainloop/blob/main/brainloop/analysis/data_loader.py#L308"><img align="right" style={{"float":"right"}} src="https://img.shields.io/badge/-source-cccccc?style=flat-square" /></a>
+
+## <kbd>function</kbd> `load_windows`
+
+```python
+load_windows(
+    metadata,
+    exp,
+    window_centers,
+    window_sz,
+    dtype=<class 'numpy.float16'>,
+    channels=None
+)
+```
+
+Loads a window of data from an experiment window is in frames Parameters 
+---------- metadata : dict  metadata dictionary exp : str  experiment name window_centers : list  list of window centers in frames window_sz : int  window size in frames dtype : np.dtype  data type to load 
+
+Returns 
+------- data : np.array (n_windows, n_channels, window_sz) 
+
+
+
+
+---
+
+_This file was automatically generated via [lazydocs](https://github.com/ml-tooling/lazydocs)._

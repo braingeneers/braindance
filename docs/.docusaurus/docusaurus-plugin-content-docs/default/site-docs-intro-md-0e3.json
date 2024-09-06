@@ -1,0 +1,21 @@
+{
+  "id": "intro",
+  "title": "BrainDance",
+  "description": "Neural stimulation framework for organoids and cultures with micro electrode arrays",
+  "source": "@site/docs/intro.md",
+  "sourceDirName": ".",
+  "slug": "/",
+  "permalink": "/BrainLoop/docs/",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/braingeneers/brainloop/docs/intro.md",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 0,
+  "frontMatter": {
+    "title": "BrainDance",
+    "description": "Neural stimulation framework for organoids and cultures with micro electrode arrays",
+    "slug": "/",
+    "sidebar_position": 0
+  }
+}

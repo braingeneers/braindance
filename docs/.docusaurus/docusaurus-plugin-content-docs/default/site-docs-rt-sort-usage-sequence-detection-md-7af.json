@@ -1,0 +1,27 @@
+{
+  "id": "RT-sort/Usage/sequence-detection",
+  "title": "Sequence Detection (Offline Use)",
+  "description": "RT-Sort can be used for offline sequence detection with a pre-trained detection model. Here's how to do it for both Maxwell MEAs and Neuropixels.",
+  "source": "@site/docs/RT-sort/Usage/sequence-detection.md",
+  "sourceDirName": "RT-sort/Usage",
+  "slug": "/RT-sort/Usage/sequence-detection",
+  "permalink": "/docs/RT-sort/Usage/sequence-detection",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/braingeneers/braindance/docs/RT-sort/Usage/sequence-detection.md",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 2,
+  "frontMatter": {
+    "sidebar_position": 2
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Loading Detection Models",
+    "permalink": "/docs/RT-sort/Usage/load-detection-model"
+  },
+  "next": {
+    "title": "Real-time Application (Online Use)",
+    "permalink": "/docs/RT-sort/Usage/real-time-application"
+  }
+}

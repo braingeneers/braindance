@@ -1,0 +1,18 @@
+{
+  "id": "RT-sort/usage/load-detection-model",
+  "title": "Loading Detection Models",
+  "description": "To use RT-Sort, you first need to load a detection model. Here's how to do it:",
+  "source": "@site/docs/RT-sort/usage/load-detection-model.md",
+  "sourceDirName": "RT-sort/usage",
+  "slug": "/RT-sort/usage/load-detection-model",
+  "permalink": "/BrainLoop/docs/RT-sort/usage/load-detection-model",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/braingeneers/brainloop/docs/RT-sort/usage/load-detection-model.md",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 1,
+  "frontMatter": {
+    "sidebar_position": 1
+  }
+}
