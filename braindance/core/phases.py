@@ -10,8 +10,8 @@ Phases act as parts of experiments which have a specific purpose, such as
     - custom
         ---where users can build exact logic for stimulation
 '''
-import brainloop.core.base_env as base_env
-from brainloop.core.artifact_removal import ArtifactRemoval
+import braindance.core.base_env as base_env
+from braindance.core.artifact_removal import ArtifactRemoval
 
 import numpy as np
 import time
@@ -90,7 +90,7 @@ class PhaseManager:
                                     self.filenames[-1]])
 
     def run(self):
-        # from brainloop.phases_analysis import AnalysisPhase, HeatmapPhase
+        # from braindance.phases_analysis import AnalysisPhase, HeatmapPhase
 
         try:
             cur_filename = self.env.save_file

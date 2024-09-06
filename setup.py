@@ -6,7 +6,7 @@ def read_requirements():
         return req.read().splitlines()
 
 setup(
-    name='brainloop',
+    name='braindance',
     version='0.0.1',
     packages=find_packages(),
     install_requires=read_requirements(),
@@ -16,7 +16,7 @@ setup(
     },
     entry_points={
         'console_scripts': [
-            'bdquery = brainloop.core.maxwell.query_electrodes:main'
+            'bdquery = braindance.core.maxwell.query_electrodes:main'
         ],
     },
 )

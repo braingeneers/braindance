@@ -1,6 +1,6 @@
-from brainloop.core.maxwell_env import MaxwellEnv
-from brainloop.core.params import maxwell_params
-from brainloop.core.phases import NeuralSweepPhase, PhaseManager
+from braindance.core.maxwell_env import MaxwellEnv
+from braindance.core.params import maxwell_params
+from braindance.core.phases import NeuralSweepPhase, PhaseManager
 
 import numpy as np
 

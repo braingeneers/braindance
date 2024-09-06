@@ -1,4 +1,4 @@
-from brainloop.core.spikedetector.model import ModelSpikeSorter
+from braindance.core.spikedetector.model import ModelSpikeSorter
 import torch
 
 try:

@@ -1,7 +1,7 @@
 import numpy as np
 
-from brainloop.core.maxwell_env import MaxwellEnv
-from brainloop.core.params import maxwell_params
+from braindance.core.maxwell_env import MaxwellEnv
+from braindance.core.params import maxwell_params
 import time
 import sys
 
@@ -21,7 +21,7 @@ params['observation_type'] = 'raw' # can be raw or spikes (spikes can be read th
 # This is NOT THE RECOMMENDED way to run experiments, but it is possible
 # to directly interact with the environment and use exact timing.
 # It is generally better to use the PhaseManager and Phase classes to
-# define experiments. ( brainloop.core.phases )
+# define experiments. ( braindance.core.phases )
 
 # Here we will run a simple experiment which reads consistently, and stimulates
 # when time since the last stim is > 1 second

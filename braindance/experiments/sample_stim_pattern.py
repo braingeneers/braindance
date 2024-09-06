@@ -1,7 +1,7 @@
 import numpy as np
 
-from brainloop.core.maxwell_env import MaxwellEnv
-from brainloop.core.params import maxwell_params
+from braindance.core.maxwell_env import MaxwellEnv
+from braindance.core.params import maxwell_params
 import time
 import sys
 

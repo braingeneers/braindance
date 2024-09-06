@@ -11,7 +11,7 @@ import time
 import random
 import numpy as np
 
-from brainloop.analysis import data_loader
+from braindance.analysis import data_loader
 
 from collections import namedtuple
 

@@ -1,7 +1,7 @@
-from brainloop.core.maxwell_env import MaxwellEnv
-from brainloop.core.params import maxwell_params
-from brainloop.core.phases import FrequencyStimPhase, PhaseManager
-from brainloop.core.trainer import generate_stimulations
+from braindance.core.maxwell_env import MaxwellEnv
+from braindance.core.params import maxwell_params
+from braindance.core.phases import FrequencyStimPhase, PhaseManager
+from braindance.core.trainer import generate_stimulations
 import numpy as np
 
 params = maxwell_params

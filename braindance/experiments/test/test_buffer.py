@@ -1,11 +1,11 @@
 import numpy as np
 
-from brainloop.core.maxwell_env import MaxwellEnv
-from brainloop.core.params import maxwell_params
+from braindance.core.maxwell_env import MaxwellEnv
+from braindance.core.params import maxwell_params
 import time
 import sys
-from brainloop.core.spikedetector.model import ModelSpikeSorter
-from brainloop.core.spikedetector.spikedetector import SpikeDetector
+from braindance.core.spikedetector.model import ModelSpikeSorter
+from braindance.core.spikedetector.spikedetector import SpikeDetector
 import matplotlib.pyplot as plt
 
 params = maxwell_params

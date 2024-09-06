@@ -6,7 +6,7 @@ from matplotlib.lines import Line2D
 from matplotlib.ticker import PercentFormatter
 from matplotlib.axes._axes import Axes
 
-from brainloop.core.spikedetector import utils
+from braindance.core.spikedetector import utils
 
 TRACE_X_LABEL = "Time (ms)"
 
