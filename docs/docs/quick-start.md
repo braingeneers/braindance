@@ -9,6 +9,7 @@ Get up and running with BrainDance in just a few minutes!
 ## Installation
 
 0. Create a virtual environment
+
    ```
    conda create -n brain python=3.11
    ```
@@ -33,12 +34,13 @@ params['save_dir'] = './my_first_experiment'
 params['name'] = 'quick_start'
 params['max_time_sec'] = 60*5  # 5 minutes
 params['stim_electrodes'] = [20421, 1925] # electrodes in your current config
-params['config'] = 'config.cfg' # this is the path to your config file for Maxwell
+params['config'] = None # 'config.cfg' : this is the path to your config file for Maxwell
+params['dummy'] = 'sine' # This generates fake data, comment this out to use real data
 env = MaxwellEnv(**params)
 
 # Create phases
 record_phase = RecordPhase(env, duration=60)
-sweep_phase = NeuralSweepPhase(env, neuron_list=[0, 1], amp_bounds=300, stim_freq=1, tag="QuickSweep", replicates=3)
+sweep_phase = NeuralSweepPhase(env, neuron_list=[0, 1], amp_bounds=300, stim_freq=1, tag="QuickSweep", replicates=3) # neuron list indicates the indexes stim_electrodes
 
 # Build and run the experiment
 phase_manager = PhaseManager(env, verbose=True)
@@ -50,6 +52,7 @@ phase_manager.run()
 ```
 
 This experiment will:
+
 1. Record baseline activity for 1 minute
 2. Perform a neural sweep on two electrodes
 3. Record post-stimulation activity for 1 minute
