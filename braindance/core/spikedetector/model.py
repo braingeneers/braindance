@@ -1048,27 +1048,29 @@ class ModelSpikeSorter(nn.Module):
         return torch.jit.load(Path(model_save_path) / ModelSpikeSorter.compiled_name)
 
     @staticmethod
-    def load(folder):
+    def load(detection_model_path):
+        """
+        Loads a model from the specified folder detection_model_path.
 
-        # Load model from :param folder:
+        Args:
+            detection_model_path (str or Path): The folder containing the model's data files. 
 
-        folder = Path(folder)
-        if not (folder / "init_dict.json").exists():
-            """
-            Model data hierarchy
-                version (v0_2)
-                    holdout recording (2953)
-                        yymmdd_HHMMSS (220928_012416) = model's folder
+        Returns:
+            ModelSpikeSorter: The loaded model with the initialized state dictionary and updated path.
 
-            If folder == holdout recording, return most recent model (latest date)
-            """
-            folder = sorted(folder.iterdir())[-1]
+        Raises:
+            FileNotFoundError: If the required 'init_dict.json' or "state_dict.pt" file is not found in the folder.
+        """
 
-        with open(folder / "init_dict.json", 'r') as f:
+        detection_model_path = Path(detection_model_path)
+        if not (detection_model_path / "init_dict.json").exists() or not (detection_model_path / "state_dict.pt").exists():
+            raise ValueError(f"The folder {detection_model_path} does not contain init_dict.json and state_dict.pt for loading a model")
+
+        with open(detection_model_path / "init_dict.json", 'r') as f:
             init_dict = json.load(f)
         model = ModelSpikeSorter(**init_dict)
-        model.load_state_dict(torch.load(folder / 'state_dict.pt'))
-        model.path = folder
+        model.load_state_dict(torch.load(detection_model_path / 'state_dict.pt'))
+        model.path = detection_model_path
         return model
 
     @staticmethod

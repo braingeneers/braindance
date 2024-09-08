@@ -1,365 +1,6 @@
 """
-Much of this code is taken from SpikeInterface
-
-Do not change the values of the global variables defined below. They are just used for documentation.
-Instead, pass your values to the function run_kilosort2.
+Much of this code is adapted from SpikeInterface
 """
-
-RECORDING_FILES = ["data.raw.h5"]
-
-INTERMEDIATE_FOLDERS = ["spikesort"]
-
-# Name of the .out file in each folder in INTERMEDIATE_FOLDERS containing stdout of this script
-OUT_FILE = "run_kilsort2.out"
-
-# List of output folders where compiled results for each recording are stored
-# If a FOLDER in RESULTS_FOLDERS is the same as its corresponding folder in INTERMEDIATE_FOLDERS, it will be changed to FOLDER/results
-RESULTS_FOLDERS = ["spikesort/results"]
-
-# Set Kilosort2's path
-KILOSORT_PATH = "/home/mea/SpikeSorting/kilosort/Kilosort2"
-# Set path of plugin (the path to the folder containing libcompression.so)
-HDF5_PLUGIN_PATH = '/home/mea/SpikeSorting/spikeinterface'
-
-COMPILED_RESULTS_FOLDER = "/compiled/results"
-# endregion
-
-# region spikesort_matlab4.py
-######################################################
-###############  KILOSORT PARAMETERS  ################
-######################################################
-# Kilosort2 params
-KILOSORT_PARAMS = {
-    'detect_threshold': 6,
-    'projection_threshold': [10, 4],
-    'preclust_threshold': 8,
-    'car': True,
-    'minFR': 0.1,
-    'minfr_goodchannels': 0.1,
-    'freq_min': 150,
-    'sigmaMask': 30,
-    'nPCs': 3,
-    'ntbuff': 64,
-    'nfilt_factor': 4,
-    'NT': None,
-    'keep_good_only': False,
-}
-
-######################################################
-###############  RECOMPUTE RESULTS?  #################
-######################################################
-# This refers to when run_kilosort2 is reran with the same values of recording_files, intermediate_folders, results_folders, and compiled_results_folder 
-# If True and exists, the ENTIRE FOLDER is deleted
-RECOMPUTE_RECORDING = True  # Refers to the .dat recording file created for Kilosort2. If True, all the following variable become True as well
-RECOMPUTE_SORTING = False  # If True, entire intermediate_folder will be deleted
-REEXTRACT_WAVEFORMS = False
-RECURATE_FIRST = False
-RECURATE_SECOND = False
-RECOMPILE_SINGLE_RECORDING = True  # If True, results stored in the RESULTS_FOLDERS are recomputed
-RECOMPILE_ALL_RECORDINGS = False  # If True, results stored in COMPILED_RESULTS_FOLDER are recomputed
-
-######################################################
-#############  DELETE INTER RESULTS?  ################
-######################################################
-DELETE_INTER = True  # If True, delete intermediate_folders after sorting is completed (this contains intermediate results which could be helpful to you or save time if rerunning run_kilosort2)
-
-######################################################
-##################  COPY SCRIPT?  ####################
-######################################################
-# If True, a copy of this script will be saved to each path in 'INTERMEDIATE_FOLDERS' with name prepended with "year-month-day_hourminute"
-SAVE_SCRIPT = False
-
-######################################################
-##########  PARALLEL PROCESSING PARAMETERS  ##########
-######################################################
-# N_JOBS and TOTAL_MEMORY affects how bandpass filter is applied to raw recording,
-# causing recording data to be analyzed slightly differently
-# Number of jobs to use for converting raw recording and extracting waveforms
-N_JOBS = 8
-# Total RAM to use for converting raw and extracting waveforms
-TOTAL_MEMORY = "16G"
-# IF False, do not use parallel processing for converting the raw recording to the proper format for Kilosort2
-#           The entire recording will be loaded into RAM
-USE_PARALLEL_PROCESSING_FOR_RAW_CONVERSION = True
-
-######################################################
-###############  RECORDING PARAMETERS  ###############
-######################################################
-# Only analyze the first FIRST_N_MINS of recording (i.e. if FIRST_N_MINS = 5, only the first 5 minutes of each recording will be analyzed in this script)
-# If None-> entire recording will be analyzed
-FIRST_N_MINS = None  
-# The height of the MEA (in μm) to flip the y-coordinates (.h5 files contains flipped y-coordinates)
-# If None-> y-coordinates will not be flipped
-# If -1-> the height will be found based on the maximum height of the electrodes
-MEA_Y_MAX = 2100
-# Multiply this value by recording traces to convert to uV
-# If None-> value set by recording will be used
-GAIN_TO_UV = None
-# Add this value to recording traces to convert to uV
-# If None-> value set by recording will be used
-OFFSET_TO_UV = None
-# Each element is "{start_frame}, {end_frame}" of a chunk of the recording.
-# The chunks will be concatenated together and spike sorted. There will be one output file
-# for each chunk with the spike times relative to the beginning time of the chunk.
-# If length is 0, use entire recording
-REC_CHUNKS = []
-
-######################################################
-############  BANDPASS FILTER PARAMETERS  ############
-######################################################
-FREQ_MIN = 300
-FREQ_MAX = 6000
-
-######################################################
-###############  WAVEFORM PARAMETERS  ################
-######################################################
-# NOTE: If waveform parameters are change, set REEXTRACT_WAVEFORMS to True
-#       Otherwise, old parameters will be used to analyze waveforms
-
-# ms before waveform peak to extract
-WAVEFORMS_MS_BEFORE = 3.5
-# ms after waveform peak to extract
-WAVEFORMS_MS_AFTER = 4.5
-# If the positive peak of the waveform or template is POS_PEAK_THRESH times as large as
-# the absolute value of negative peak, the positive peak is used for centering the waveform, amplitude,
-# and finding the max channel. Otherwise, the negative peak is used
-POS_PEAK_THRESH = 2
-# If True and recording has gain_to_uV/offset_to_uV properties, waveforms are converted to uV
-# Maximum number of waveforms (spikes) per unit to compute templates and extract (None-> all spikes are used)
-MAX_WAVEFORMS_PER_UNIT = 300
-# NOTES:
-# Waveforms are centered by negative or positive peak
-# Waveforms in .npy files have shape (num_spikes, num_samples, num_channels)
-# num_samples = n_samples_before + 1 (1 for location of spike) + n_samples_after
-
-######################################################
-###############  CURATION PARAMETERS  ################
-######################################################
-# If True, units are curated based on firing rate, ISI, SNR, and/or min spikes per unit.
-# This curation is used to determine whether each unit represents a real neuron or random noise
-CURATE_FIRST = True
-# If True, units are curated based on min spikes per unit and/or max norm std
-# This curation is used to select only the most consistent waveforms
-CURATE_SECOND = False
-
-# If both CURATE_FIRST and CURATE_SECOND are True, then first curation precedes second curation
-
-# In the following threshold (min and max) values,
-# if any is None, that auto curation is skipped.
-# Units that do not meet thresholds are removed.
-######################################################
-##################  FIRST CURATION  ##################
-######################################################
-# Firing rate (in Hz)
-# (smaller values are removed)
-FR_MIN = 0.05
-
-# Percentage of spikes that can violate ISI
-# (greater values are removed)
-ISI_VIOL_MAX = 1
-
-# Signal-to-noise ratio
-# (smaller values are removed)
-SNR_MIN = 5
-
-# Minimum number of spikes per unit
-# (smaller values are removed)
-SPIKES_MIN_FIRST = 30
-
-######################################################
-#################  SECOND CURATION  ##################
-######################################################
-# Minimum number of spikes per unit
-# (smaller values are removed)
-SPIKES_MIN_SECOND = 50
-
-# Maximum normalized standard deviation (standard deviation of waveform divided (normalized) by amplitude)
-# (greater values are removed)
-STD_NORM_MAX = 1
-# If True, use the standard deviation at the peak. If False, use the average standard deviation over the waveform window
-STD_AT_PEAK = True
-# If STD_AT_PEAK = False, the waveform window for the average standard deviation
-STD_OVER_WINDOW_MS_BEFORE = 0.5
-STD_OVER_WINDOW_MS_AFTER = 1.5
-
-######################################################
-################  EXPORT PARAMETERS  #################
-######################################################
-"""
-The results of the spike sorting and curation of each recording will be exported as both a .mat and .npz file
-The following will be saved:
-
-1) In "locations", the locations of the recording channels (electrodes)
-
-2) In "fs", the sampling frequency of the recording
-
-3) In "units", for each unit, a structure containing the following
-   1) In "unit_id", the unit's ID
-   2) In "spike_train", an array of the units spike times
-   3) In "x_max", the x-location of the recording electrode that detected the largest signal from the unit
-   4) In "y_max", the y-lcoation of the recording electrode that detected the largest signal from the unit
-   5) In "template", the average of all the unit's waveforms (spikes)
-   6) If SAVE_ELECTRODES is True, in "electrode" the electrode number of the electrode that detected the largest signal from the unit
-"""
-# If True, include the electrode number [1, 26400] to the "unit" data structure in the sorted .mat and .npz files
-SAVE_ELECTRODES = True
-# If True, spike_times will be saved in .mat and .npy files
-SAVE_SPIKE_TIMES = False  # True
-# If True, saves additional data in "unit_dict" for training detection models
-SAVE_DL_DATA = True
-
-######################################################
-################  RESULTS PARAMETERS  ################
-######################################################
-"""
-RESULTS_FOLDERS = List of output folders where final results of each recording are saved
-Results will be stored in the following folder hierarchy:
-
-RESULTS_FOLDER
-        sorted.mat (created only if COMPILE_TO_MAT is True)
-        sorted.npz (created only if COMPILE_TO_NPZ is True)
-        spike_times.npy     # The spikes that passed first curation
-        spike_clusters.npy  # Unit ids corresponding to spike_times.npy
-        parameters.json
-    figures (created only if CREATE_FIGURES is True)
-        curation_bar_plot.png
-        std_scatter_plot.png (created only if CURATE_SECOND is True, SPIKES_MIN_SECOND is not None, and STD_NORM_MAX is not None)
-        all_templates_plot.png
-    waveforms (created only if EXPORT_WAVEFORMS is True)
-        negative_peaks
-            waveforms_0.npy
-            waveforms_1.npy
-            waveforms_2.npy
-            ...
-        positive_peaks
-            waveforms_0.npy
-            waveforms_1.npy
-            waveforms_2.npy
-            ...
-The .mat and .npz files with same names will have same results
-negative_peaks store the units with negative peaks and positive_peaks store the units with positive peaks
-The .npy files in "waveforms" contain the waveforms for each unit (after curation if script is set to curate units)
-    The waveforms will have shape (n_waveforms, n_samples, n_channels)
-    The waveforms will be sorted in descending order of amplitude (i.e. 0=largest amplitude, 1=second largest amplitude, etc.)
-"""
-COMPILE_SINGLE_RECORDING = True
-COMPILE_TO_MAT = False
-COMPILE_TO_NPZ = True
-COMPILE_WAVEFORMS = False
-COMPILE_ALL_RECORDINGS = False
-
-# ms before waveform peak to include in saved numpy array
-COMPILED_WAVEFORMS_MS_BEFORE = 3.
-# ms after waveform peak to include in saved numpy array
-COMPILED_WAVEFORMS_MS_AFTER = 4.
-
-# If True, compiled waveforms and templates will be scaled to uV
-SCALE_COMPILED_WAVEFORMS = True
-
-######################################################
-################  FIGURE PARAMETERS  #################
-######################################################
-"""
-If CREATE_FIGURES is True, the following figures (each as a separate .png file)
-will be created, containing data from all recordings. 
-They will be stored in in COMPILED_RESULTS_FOLDER/figures
-
-1) Bar plot showing how many units before and after second curation.
-   Will only be created if CURATE_SECOND is True
-
-2) Scatter plot where each dot represents a single unit (same color indicates from same recording)
-   x-axis is number of spikes. y-axis is norm std described in SECOND CURATION 
-   Dotted lines showing SPIKES_MIN_SECOND and STD_NORM_MAX will be plotted
-   Will only be created if CURATE_SECOND is True, SPIKES_MIN_SECOND is not None 
-   and STD_NORM_MAX is not None
-
-3) All template (average) waveforms that pass curation based on spikes plotted together, ordered by amplitude (top = highest amplitude)
-   Black waveforms indicates that the corresponding unit of the waveform passed all curation thresholds.
-   Red waveforms indicates that the unit did not pass all curation thresholds.
-   Vertical dotted lines at LINE_MS_BEFORE_PEAK and LINE_MS_AFTER_PEAK will be plotted before and after
-   the waveform peaks, respectively
-
-NOTE: All waveforms must have been extracted with the same parameters
-"""
-CREATE_FIGURES = False
-
-# Figures' DPI (None-> default value is used)
-FIGURES_DPI = 200
-# Figures' font size (None-> default value is used)
-FIGURES_FONT_SIZE = 12
-
-##############
-# For plot 1 #
-##############
-# Label for x-axis
-BAR_X_LABEL = "Recording"
-# Label for y-axis
-BAR_Y_LABEL = "Number of Units"
-# Rotation of bar labels in degrees (counterclockwise)
-BAR_LABEL_ROTATION = 0
-# Label for number of units after first curation
-BAR_TOTAL_LABEL = "First Curation"
-# Label for number of units after second curation
-BAR_SELECTED_LABEL = "Second Curation"
-
-##############
-# For plot 2 #
-##############
-# The number of units to randomly sample from each recording to plot on the std scaled scatter plot
-# If None-> all units are used
-SCATTER_STD_MAX_UNITS_PER_RECORDING = None
-# The possible color choices of the different recordings in hexadecimal
-# If there are fewer recordings than colors, not all colors will be used
-# The length of SCATTER_RECORDING_COLORS must be at least the length of RECORDING_FILES
-SCATTER_RECORDING_COLORS = [
-    "#f74343",  # red
-    "#fccd56",  # yellow
-    "#74fc56",  # green
-    "#56fcf6",  # light blue
-    "#1e1efa",  # dark blue
-    "#fa1ed2",  # pink
-]
-# Alpha value for dots (1 = opaque, 0 = transparent)
-SCATTER_RECORDING_ALPHA = 1
-# Label for x-axis
-SCATTER_X_LABEL = "Number of Spikes"
-# Label for y-axis
-SCATTER_Y_LABEL = "avg. STD / amplitude"
-# Buffer for setting limits of x-axs
-# The axis will go from 0 to maximum_number_of_spikes + SCATTER_X_MAX_BUFFER
-SCATTER_X_MAX_BUFFER = 300
-# Buffer for setting limits of y-axs
-# The axis will go from 0 to maximum_std + SCATTER_Y_MAX_BUFFER
-SCATTER_Y_MAX_BUFFER = 0.2
-
-##############
-# For plot 3 #
-##############
-# Color for waveforms that pass all curation
-ALL_TEMPLATES_COLOR_CURATED = "#000000"
-# Color for waveforms that failed at least 1 curation
-ALL_TEMPLATES_COLOR_FAILED = "#FF0000"
-# Number of templates to be plotted in the same column
-ALL_TEMPLATES_PER_COLUMN = 50
-# Spacing between templates (larger values cause lower resolution and vice versa)
-ALL_TEMPLATES_Y_SPACING = 50
-# Buffer for limits of y-axis to add white space at the top and bottom of plots
-ALL_TEMPLATES_Y_LIM_BUFFER = 10
-# ms before waveform peaks to include in plot
-ALL_TEMPLATES_WINDOW_MS_BEFORE_PEAK = 5.0
-# ms after waveform peaks to include in plot
-ALL_TEMPLATES_WINDOW_MS_AFTER_PEAK = 5.0
-# Vertical dotted lines at LINE_MS_BEFORE_PEAK and LINE_MS_AFTER_PEAK will be plotted before and after
-# the waveform peaks, respectively
-# If None-> no line is plotted
-ALL_TEMPLATES_LINE_MS_BEFORE_PEAK = 1
-ALL_TEMPLATES_LINE_MS_AFTER_PEAK = 4
-# Label for x-axis
-ALL_TEMPLATES_X_LABEL = "Time Rel. to Peak (ms)"
-
-######################################################
-######################  CODE  ########################
-######################################################
 
 def print_stage(text):
     text = str(text)
@@ -4628,6 +4269,110 @@ def run_kilosort2(
     all_templates_line_ms_after_peak=4, 
     all_templates_x_label="Time Rel. to Peak (ms)"
 ):
+    """
+    Run Kilosort2 spike sorting on multiple recordings, using various processing options.
+
+    Args:
+        recording_files (list): List of file paths to raw recordings.
+        intermediate_folders (list, optional): List of folders for intermediate results. Defaults to None.
+        results_folders (list, optional): Output folders for compiled results. Defaults to None.
+        compiled_results_folder (str, optional): Folder for final compiled results. Defaults to None.
+        out_file (str, optional): Name of the .out file for stdout logs. Defaults to "run_kilosort2.out".
+        
+        kilosort_path (str, optional): Path to Kilosort2 installation. Defaults to None.
+        
+        kilosort_params (dict, optional): Kilosort2 configuration parameters. Defaults to preset values.
+        
+        recompute_recording (bool, optional): Whether to recompute the reformatted recording file if it already exists. Defaults to True.
+        recompute_sorting (bool, optional): Whether to rerun Kilosort2 if the saved files already exist. Defaults to False.
+        reextract_waveforms (bool, optional): Whether to reextract waveforms if the saved files already exist. Defaults to False.
+        recurate_first (bool, optional): Whether to rerun first curation if the saved files already exist. Defaults to False.
+        recurate_second (bool, optional): Whether to rerun second curation if the saved files already exist. Defaults to False.
+        recompile_single_recording (bool, optional): Whether to recompile single recording results if the file already exists. Defaults to False.
+        recompile_all_recordings (bool, optional): Whether to recompile results of all recordings if the file already exists. Defaults to False.
+        
+        delete_inter (bool, optional): Whether to delete intermediate results after sorting. Defaults to True.
+        
+        save_script (bool, optional): Whether to save a copy of this script with results. Defaults to False.
+        
+        n_jobs (int, optional): Number of CPU threads for parallel processing. Defaults to 8.
+        total_memory (str, optional): Maximum RAM for parallel processing. Defaults to "16G".
+        use_parallel_processing_for_raw_conversion (bool, optional): Whether to use parallel processing during raw data conversion. Defaults to True.
+        
+        first_n_mins (float, optional): Number of minutes to process from the start of each recording. Defaults to None.
+        mea_y_max (int, optional): Maximum height (μm) for flipping MEA y-coordinates. Defaults to None.
+        gain_to_uv (float, optional): Gain factor for converting to microvolts (μV). Defaults to None.
+        offset_to_uv (float, optional): Offset for converting to μV. Defaults to None.
+        rec_chunks (list, optional): Recording chunks to process, defined as frame ranges. Defaults to [].
+        
+        freq_min (int, optional): Minimum frequency for bandpass filter (Hz). Defaults to 300.
+        freq_max (int, optional): Maximum frequency for bandpass filter (Hz). Defaults to 6000.
+        
+        waveforms_ms_before (float, optional): Time window before waveform peak to extract (ms). Defaults to 2.
+        waveforms_ms_after (float, optional): Time window after waveform peak to extract (ms). Defaults to 2.
+        pos_peak_thresh (float, optional): Threshold ratio between positive and negative peaks to use positive for centering. Defaults to 2.
+        max_waveforms_per_unit (int, optional): Maximum number of waveforms per unit for extraction. Defaults to 300.
+        
+        curate_first (bool, optional): Whether to curate units based on first-stage criteria (e.g., firing rate, ISI). Defaults to True.
+        curate_second (bool, optional): Whether to curate units based on second-stage criteria (e.g., consistency). Defaults to True.
+        
+        fr_min (float, optional): Minimum firing rate threshold for first curation (Hz). Defaults to 0.05.
+        isi_viol_max (float, optional): Maximum inter-spike interval violations allowed (%) for first curation. Defaults to 1.
+        snr_min (float, optional): Minimum signal-to-noise ratio threshold for first curation. Defaults to 5.
+        spikes_min_first (int, optional): Minimum spikes per unit for first curation. Defaults to 30.
+        
+        spikes_min_second (int, optional): Minimum spikes per unit for second curation. Defaults to 50.
+        std_norm_max (float, optional): Maximum normalized waveform standard deviation for second curation. Defaults to 1.
+        std_at_peak (bool, optional): Whether to use standard deviation at the waveform peak. Defaults to True.
+        std_over_window_ms_before (float, optional): Time window before peak for average standard deviation calculation. Defaults to 0.5.
+        std_over_window_ms_after (float, optional): Time window after peak for average standard deviation calculation. Defaults to 1.5.
+        
+        save_electrodes (bool, optional): Whether to save electrode information in the result files. Defaults to True.
+        save_spike_times (bool, optional): Whether to save spike times in result files. Defaults to True.
+        save_dl_data (bool, optional): Whether to save additional data for machine learning applications. Defaults to True.
+        
+        compile_single_recording (bool, optional): Whether to compile the results of a single recording. Defaults to True.
+        compile_to_mat (bool, optional): Whether to export results in MATLAB format. Defaults to False.
+        compile_to_npz (bool, optional): Whether to export results in NumPy (.npz) format. Defaults to True.
+        compile_waveforms (bool, optional): Whether to export waveforms with the compiled results. Defaults to False.
+        compile_all_recordings (bool, optional): Whether to compile all recordings' results. Defaults to False.
+        compiled_waveforms_ms_before (float, optional): Time window before waveform peak for saving in compiled results (ms). Defaults to 2.
+        compiled_waveforms_ms_after (float, optional): Time window after waveform peak for saving in compiled results (ms). Defaults to 2.
+        scale_compiled_waveforms (bool, optional): Whether to scale compiled waveforms to μV. Defaults to True.
+        
+        create_figures (bool, optional): Whether to generate summary figures for the results. Defaults to False.
+        figures_dpi (int, optional): DPI for generated figures. Defaults to None.
+        figures_font_size (int, optional): Font size for generated figures. Defaults to 12.
+        
+        bar_x_label (str, optional): X-axis label for the bar plot figure. Defaults to "Recording".
+        bar_y_label (str, optional): Y-axis label for the bar plot figure. Defaults to "Number of Units".
+        bar_label_rotation (int, optional): Rotation angle for bar labels (degrees). Defaults to 0.
+        bar_total_label (str, optional): Label for total number of units in the bar plot. Defaults to "First Curation".
+        bar_selected_label (str, optional): Label for selected units in the bar plot. Defaults to "Selected Curation".
+        
+        scatter_std_max_units_per_recording (int, optional): Max units per recording for scatter plot. Defaults to None.
+        scatter_recording_colors (list, optional): Colors for each recording in the scatter plot. Defaults to None.
+        scatter_recording_alpha (float, optional): Alpha transparency for scatter plot points. Defaults to 1.
+        scatter_x_label (str, optional): X-axis label for scatter plot. Defaults to "Number of Spikes".
+        scatter_y_label (str, optional): Y-axis label for scatter plot. Defaults to "avg. STD / amplitude".
+        scatter_x_max_buffer (int, optional): Maximum buffer for x-axis in scatter plot. Defaults to 300.
+        scatter_y_max_buffer (float, optional): Maximum buffer for y-axis in scatter plot. Defaults to 0.2.
+        
+        all_templates_color_curated (str, optional): Color for curated templates in waveform plots. Defaults to "#000000".
+        all_templates_color_failed (str, optional): Color for failed templates in waveform plots. Defaults to "#FF0000".
+        all_templates_per_column (int, optional): Number of templates per column in waveform plots. Defaults to 50.
+        all_templates_y_spacing (int, optional): Y-spacing between templates in waveform plots. Defaults to 50.
+        all_templates_y_lim_buffer (int, optional): Buffer for y-axis limits in waveform plots. Defaults to 10.
+        all_templates_window_ms_before_peak (float, optional): Time window before peak for template plots (ms). Defaults to 5.
+        all_templates_window_ms_after_peak (float, optional): Time window after peak for template plots (ms). Defaults to 5.
+        all_templates_line_ms_before_peak (float, optional): Time window before peak for vertical line in template plots (ms). Defaults to 1.
+        all_templates_line_ms_after_peak (float, optional): Time window after peak for vertical line in template plots (ms). Defaults to 4.
+        all_templates_x_label (str, optional): X-axis label for template plots. Defaults to "Time Rel. to Peak (ms)".
+        
+    Returns: 
+        None
+    """
+    
     if intermediate_folders is None:
         cur_datetime = datetime.datetime.now().strftime("%y%m%d_%H%M%S_%f")
         intermediate_folders = [Path(rec).parent / f"inter_kilosort2_{cur_datetime}" for rec in recording_files]
@@ -4764,15 +4509,6 @@ def run_kilosort2(
     if CREATE_FIGURES:
         assert len(SCATTER_RECORDING_COLORS) >= len(RECORDING_FILES) or not COMPILE_ALL_RECORDINGS, "The length of 'SCATTER_RECORDING_COLORS' must be at " \
                                                                     "least the length of 'RECORDING_FILES' if 'COMPILE_ALL_RECORDINGS' is True"
-    
-    # If True, script will automatically run the following commands which setup MATLAB environment for pod-gpu.cnsi.ucsb.edu:
-    # """
-    # export MW_NVCC_PATH=/usr/local/cuda-10.1/bin
-    # module load MatLab/R2019b    * On pod-gpu, there is a license error for R2021b 
-    # module load cuda/10.1
-    # """
-    # SETUP_POD_ENV = False
-    # global SETUP_POD_ENV
 
     # recordings_sorted = []
     for (rec_path, inter_path, results_path) in zip(RECORDING_FILES, INTERMEDIATE_FOLDERS, RESULTS_FOLDERS):
@@ -4797,10 +4533,6 @@ def run_kilosort2(
             # To conserve RAM: Replace w_e with a list containing path to saved recording, folder containing kilosort results, folder for root waveforms, and folder for w_e
             #                  Then write a new method for WaveformExtractor to load completely from folder paths (instead of passing a recording and sorting object)
             all_recs_compiler.add_recording(rec_name, w_e)
-    
-        # if compile_to_npz:
-        #     # return_values.append((rec_path, np.load(results_path / "sorted.npz", allow_pickle=True)))
-        #     recordings_sorted.append(np.load(Path(results_path) / "sorted.npz", allow_pickle=True))
 
     if compiled_results_folder.exists():
         with Tee(compiled_results_folder / "log.out", "w"):
@@ -4814,8 +4546,6 @@ def run_kilosort2(
         if delete_inter:
             for inter_path in INTERMEDIATE_FOLDERS:
                 shutil.rmtree(inter_path)
-
-    # return recordings_sorted
 
 if __name__ == "__main__":
     run_kilosort2(kilosort_path="/home/mea/SpikeSorting/kilosort/Kilosort2")

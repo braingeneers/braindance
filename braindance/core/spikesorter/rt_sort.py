@@ -83,6 +83,136 @@ def detect_sequences(
     verbose=True,
     debug=False
 ):
+    """
+    Detects sequences of spikes from a given recording using RT-Sort, a real-time spike detection and sorting algorithm.
+
+    This function supports detection using a neural network model and a set of configurable parameters 
+    to control the spike detection process. It also handles sequence formation, spike reassignment, and merging.
+
+    Note: The RT-Sort paper uses the term "intervals". Here, "intervals" is replaced with "latencies". 
+
+    Args:
+        recording (str or pathlib.Path or SpikeInterface Recording): 
+            The recording to process. Can be a SpikeInterface recording object or a path to a 
+            supported recording format (.h5 or .nwb for Maxwell MEA and Neurodata Without Borders, respectively).
+        inter_path (str or pathlib.Path): 
+            Path to a folder (existing or non-existing) where RT-Sort's intermediate cached data is stored.
+        detection_model (ModelSpikeSorter, str or pathlib.Path, optional): 
+            A `ModelSpikeSorter` object or a path to a folder containing a `ModelSpikeSorter` 
+            object's `init_dict.json` and `state_dict.pt`. Defaults to None, in which case a default model is loaded.
+        recording_window_ms (tuple, optional): 
+            A tuple `(start_ms, end_ms)` defining the portion of the recording (in milliseconds) to process. 
+            If None, the entire recording is used. Defaults to None.
+        stringent_thresh (float, optional): 
+            The stringent threshold for spike detection. Defaults to 0.275.
+        loose_thresh (float, optional): 
+            The loose threshold for spike detection. Defaults to 0.1.
+        inference_scaling_numerator (float, optional): 
+            Scaling factor for inference. Defaults to 12.6.
+        ms_before (float, optional): 
+            Time (in milliseconds) to consider before each detected spike for sequence formation. Defaults to 0.5 ms.
+        ms_after (float, optional): 
+            Time (in milliseconds) to consider after each detected spike for sequence formation. Defaults to 0.5 ms.
+        pre_median_ms (float, optional): 
+            Duration (in milliseconds) to compute the median for normalization. Defaults to 50 ms.
+        inner_radius (float, optional): 
+            Inner radius (in micrometers). Defaults to 50.
+        outer_radius (float, optional): 
+            Outer radius (in micrometers). Defaults to 100.
+        min_elecs_for_array_noise_n (int, optional): 
+            Minimum number of electrodes for array-wide noise filtering. Defaults to 100.
+        min_elecs_for_array_noise_f (float, optional): 
+            Minimum fraction of electrodes for array-wide noise filtering. Defaults to 0.1.
+        min_elecs_for_seq_noise_n (int, optional): 
+            Minimum number of electrodes for sequence-wide noise filtering. Defaults to 50.
+        min_elecs_for_seq_noise_f (float, optional): 
+            Minimum fraction of electrodes for sequence-wide noise filtering. Defaults to 0.05.
+        min_activity_root_cocs (int, optional): 
+            Minimum number of stringent spike detections on inner electrodes within 
+            the maximum propagation window that cause a stringent spike detection on a 
+            root electrode to be counted as a stringent codetection. Defaults to 2.
+        min_activity_hz (float, optional): 
+            Minimum activity rate of root detections (in Hz) for an electrode to be used as a root electrode. Defaults to 0.05 Hz.
+        max_n_components_latency (int, optional): 
+            Maximum number of latency components for Gaussian mixture model used for splitting latency distribution. Defaults to 4.
+        min_coc_n (int, optional): 
+            After splitting a cluster of codetections, a cluster is discarded if it 
+            does not have at least min_coc_n codetections. Defaults to 10.
+        min_coc_p (int, optional): 
+            After splitting a cluster of codetections, a cluster is discarded if it
+            does not have at least (min_coc_p * the total number of codetections before splitting) 
+            codetections. Defaults to 10.
+        min_extend_comp_p (int, optional): 
+            The required percentage of codetections before splitting that is
+            preserved after the split in order for the inner electrodes of the
+            current splitting electrode to be added to the total list of electrodes
+            used to further split the cluster. Defaults to 50.
+        elec_patience (int, optional): 
+            Number of electrodes considered for splitting that do not lead to a
+            split before terminating the splitting process. Defaults to 6.
+        split_coc_clusters_amps (bool, optional): 
+            Whether to split clusters based on amplitude. Defaults to True.
+        min_amp_dist_p (float, optional): 
+            The minimum Hartigan's dip test p-value for a distribution to be
+            considered unimodal. Defaults to 0.1.
+        max_n_components_amp (int, optional): 
+            Maximum number of componenst for Gaussian mixture model used for splitting amplitude distribution. Defaults to 4.
+        min_loose_elec_prob (float, optional): 
+            Minimum average detection score (smaller values are set to 0) in decimal form (ranging from 0 to 1). Defaults to 0.03.
+        min_inner_loose_detections (int, optional): 
+            Minimum inner loose electrode detections for assigning spikes / overlaps for merging. Defaults to 3.
+        min_loose_detections_n (int, optional): 
+            Minimum loose electrode detections for assiging spikes / overlaps for merging. Defaults to 4.
+        min_loose_detections_r_spikes (float, optional): 
+            Minimum ratio of loose electrode detections for assigning spikes. Defaults to 1/3.
+        min_loose_detections_r_sequences (float, optional): 
+            Minimum ratio of loose electrode detections overlaps for merging. Defaults to 1/3.
+        max_latency_diff_spikes (float, optional): 
+            Maximum allowed weighted latency difference for spike assignment. Defaults to 3.5.
+        max_latency_diff_sequences (float, optional): 
+            Maximum allowed weighted latency difference for sequence merging. Defaults to 3.5.
+        clip_latency_diff_factor (float, optional): 
+            Latency clip = clip_latency_diff_factor * max_latency_diff. Defaults to 2.
+        max_amp_median_diff_spikes (float, optional): 
+            Maximum allowed weighted percent amplitude difference for spike assignment. Defaults to 0.65.
+        max_amp_median_diff_sequences (float, optional): 
+            Maximum allowed weighted percent amplitude difference for sequence merging. Defaults to 0.65.
+        clip_amp_median_diff_factor (float, optional): 
+            Amplitude clip = clip_amp_median_diff_factor * max_amp_median_diff. Defaults to 2.
+        max_root_amp_median_std_spikes (float, optional): 
+            Maximum allowed root amplitude standard deviation for spike assignment. Defaults to 2.5.
+        max_root_amp_median_std_sequences (float, optional): 
+            Maximum allowed root amplitude standard deviation for sequence merging. Defaults to infinity (not used).
+        repeated_detection_overlap_time (float, optional): 
+            Time window (in seconds) for overlapping repeated detections. Defaults to 0.2 s.
+        min_seq_spikes_n (int, optional): 
+            Minimum number of spikes required for a valid sequence. Defaults to 10.
+        min_seq_spikes_hz (float, optional): 
+            Minimum spike rate for a valid sequence. Defaults to 0.05 Hz.
+        relocate_root_min_amp (float, optional): 
+            Minimum amplitude ratio for relocating a root electrode before first merging. Defaults to 0.8.
+        relocate_root_max_latency (float, optional): 
+            Maximum latency for relocating a root electrode before first merging. Defaults to -2.
+        return_spikes (bool, optional): 
+            Whether to return spike times instead of an RTSort object. Defaults to False.
+        delete_inter (bool, optional): 
+            Whether to delete the intermediate folder after processing. Defaults to False.
+        device (str, optional): 
+            The device for PyTorch operations ("cuda" or "cpu"). Defaults to "cuda".
+        num_processes (int, optional): 
+            Number of processes to use for parallelization. Defaults to None, which auto-selects the value based on the number of logical processors.
+        ignore_warnings (bool, optional): 
+            Whether to suppress warnings during execution. Defaults to True.
+        verbose (bool, optional): 
+            Whether to print detailed execution information. Defaults to True.
+        debug (bool, optional): 
+            Whether to enable debugging features such as saving intermediate steps. Defaults to False.
+
+    Returns:
+        RTSort or np.ndarray: 
+            If `return_spikes` is False, an RTSort object containing the detected sequences is returned. 
+            If `return_spikes` is True, a NumPy array of spike times is returned.
+    """
 
     with warnings.catch_warnings():
         if ignore_warnings:
@@ -91,6 +221,8 @@ def detect_sequences(
             warnings.filterwarnings('default')
     
         recording = load_recording(recording)
+        chan_ind = [int(i) for i in recording.get_channel_ids()]
+        chan_ind = None if chan_ind == list(range(len(chan_ind))) else chan_ind
         
         if detection_model is None:
             detection_model = ModelSpikeSorter.load_mea()
@@ -144,7 +276,7 @@ def detect_sequences(
         samp_freq = round(recording.get_sampling_frequency() / 1000)  # kHz
         num_elecs = recording.get_num_channels()
         params = {
-            "samp_freq": samp_freq, "elec_locs": recording.get_channel_locations(),
+            "samp_freq": samp_freq, "elec_locs": recording.get_channel_locations(), "chan_ind": chan_ind,
 
             "model_inter_path": model_inter_path,
             "stringent_thresh": stringent_thresh, "loose_thresh": loose_thresh,
@@ -263,11 +395,12 @@ def detect_sequences(
 
 
 class RTSort:
-    def __init__(self, sequences, model, params,
+    def __init__(self, sequences, model, params: dict,
                  buffer_size=100,
                  device="cuda", dtype=torch.float16):
         self.samp_freq = samp_freq = params['samp_freq']
         elec_locs = params['elec_locs']
+        self.chan_ind = params.get("chan_ind", None)  # None for backwards compatibility
         model_inter_path = params['model_inter_path']
         stringent_thresh = params['stringent_thresh']
         loose_thresh = params['loose_thresh']
@@ -453,33 +586,50 @@ class RTSort:
         self.ignore_spikes_before_minuend = self.input_size - self.end_buffer - self.seq_n_after  # ignore_spikes_before = self.ignore_spikes_before_minuend - num_new_frames
 
     def reset(self):
-        # Reset variables like pre_medians and input_scale that need to be reset for each experiment
-        # self.inference_scaling = None
+        """
+        Resets the internal state to prepare for a new experiment.
+
+        This method should be called before starting a new sorting session,
+        especially if the real-time data stream has paused or stopped for more than 50ms.
+
+        Args:
+            None
+
+        Returns:
+            None
+        """
+    
         self.latest_frame = 0
         self.cur_num_pre_median_frames = 0
         self.pre_medians = None
-        # self.pre_sub_medians = torch.full_like(self.pre_sub_medians, 0)
         self.pre_median_frames = torch.full_like(self.pre_median_frames, torch.nan)
         self.last_detections = torch.full_like(self.last_detections, -self.total_num_pre_median_frames)
 
-    def running_sort(self, obs, model_chunk=None, chan_ind=None, latest_frame=None):
+    def running_sort(self, obs, model_chunk=None, latest_frame=None):
         """
-        Sort data as it comes, keeping track of past data 
-        
-        Params
-            obs:
-                from env, obs = maxwell_env.step()
-                obs should have shape (num_samples, num_elecs)
-            model_obs: 
-                If None, use self.model to get model outputs on chunk
-                Else (for offline mode), model_obs should be a numpy array of shape (num_elecs, num_output_samples). This is so the model outputs do not have to be recomputed
-                    AND :obs: will not be median subtracted because it will be assumed that :obs: is from model_traces.npy and already extracted
-                    See implementation of self.sort_offline() for details
+        Sorts spikes in real time with incoming data while keeping track of past data for ongoing spike detection.
+
+        Args:
+            obs (numpy.ndarray): 
+                A NumPy array of shape (num_frames, num_electrodes) representing the most recent frames of data from the recording.
+                - The first 50ms of data passed after the last `rt_sort.reset()` is needed to initialize the RTSort object, so no spikes will be sorted during this time.
+                - `num_frames` must be at least 1, and can vary between calls to `running_sort()`. To minimize latency, `num_frames` should ideally match the time passed since the last call. For better spike removal, larger frame counts improve detection.
+            model_chunk (numpy.ndarray, optional): 
+                A NumPy array of shape (num_electrodes, num_output_samples) containing model outputs if available. This is typically used for offline processing. 
+                - If None, `self.model` will compute the model outputs based on `obs`.
+                - If provided, `obs` will not be median-subtracted because it is assumed to come from `model_traces.npy`.
+            latest_frame (int, optional): 
+                The latest (most recent) frame number in the recording. If None, the frame count will be incremented internally based on `obs`.
+
+        Returns:
+            list: 
+                Each element is a tuple of length 2, containing the data for a sorted spike:
+                - The 0th element is the ID number of the sequence the spike was assigned to.
+                - The 1st element is the time the spike occurred (in milliseconds), based on the number of frames passed to `running_sort()` since the last call to `rt_sort.reset()`. The internal clock tracks the elapsed time based on the number of frames, assuming no breaks in data.
         """
-        # TODO: Make sure that Maxwell MEA data is in uV
-        # obs = np.asarray(obs)
-        if chan_ind is not None:
-            obs = obs[:, chan_ind]
+        obs = np.asarray(obs)
+        if self.chan_ind is not None:
+            obs = obs[:, self.chan_ind]
 
         obs = torch.tensor(obs, device=self.device, dtype=self.dtype).T
         if model_chunk is not None:
@@ -489,11 +639,7 @@ class RTSort:
         num_new_frames = obs.shape[1]
 
         # Update internal traces cache
-        # TODO: May need to slice :obs: if maxwell sends data from unselected elecs
-        # self.input_chunk[:, :-self.buffer_size] = self.input_chunk[:, self.buffer_size:]
-        # self.input_chunk[:, -self.buffer_size:] = np.asarray(obs).T
-        self.pre_median_frames[:, :-num_new_frames] = self.pre_median_frames[:, num_new_frames:] # self.pre_median_frames[:, :-self.buffer_size] = self.pre_median_frames[:, self.buffer_size:]
-        # self.pre_median_frames[:, -self.buffer_size:] = torch.tensor(np.asarray(obs), device=self.device, dtype=self.dtype).T - self.pre_sub_medians  # Need to do "np.asarray(obs)" before converting to torch tensor because it is much faster (otherwise, frames are lost using 5ms buffer because it is so slow)
+        self.pre_median_frames[:, :-num_new_frames] = self.pre_median_frames[:, num_new_frames:] 
 
         self.pre_median_frames[:, -num_new_frames:] = obs
         
@@ -505,31 +651,8 @@ class RTSort:
         self.cur_num_pre_median_frames += num_new_frames # self.buffer_size
         if self.cur_num_pre_median_frames >= self.total_num_pre_median_frames:
             self.cur_num_pre_median_frames = 0
-            # self.pre_sub_medians = torch.median(self.pre_median_frames, dim=1, keepdim=True).values   # TODO: uncomment this
-            # Need to subtract self.pre_sub_medians on first full self.pre_median_frames (when there was not enough data to calculate self.pre_sub_medians)
-            # if self.pre_medians is None:
-            #     self.pre_median_frames -= self.pre_sub_medians
-
-            # rec_window = torch.tensor(self.pre_median_frames, dtype=self.dtype, device=self.device)
-            # pre_medians = rec_window[self.comp_elecs_flattened, :]
-            
-            # pre_medians = self.pre_median_frames[self.comp_elecs_flattened]
-            # # Pytorch median different than numpy median: https://stackoverflow.com/a/54310996
-            # pre_medians = torch.median(torch.abs(pre_medians), dim=1).values
-            # # a_min=0.5 to prevent dividing by zero when data is just 1s and 0s (median could equal 0)
-            # self.pre_medians = torch.clip(pre_medians / 0.6745, min=0.5, max=None)
             self.pre_medians = self.calc_pre_medians(self.pre_median_frames)
             
-            # if self.inference_scaling is None:
-            #     self.inference_scaling = 1
-            # if INFERENCE_SCALING_NUMERATOR is not None:
-            #     iqrs = scipy.stats.iqr(self.pre_median_frames, axis=1)
-            #     median = np.median(iqrs)
-            #     self.inference_scaling = self.inference_scaling_numerator / median
-            # else:
-            #     self.inference_scaling = 1  # self.inference_scaling=1 could be in __init__ BUT then another variable would be needed to wait for the first PRE_MEDIAN_FRAMES frames. Setting input_scale like this means another variable does not need to be set
-
-        #  if self.inference_scaling is None or self.pre_medians is None:
         if self.pre_medians is None:
             return []
 
@@ -544,25 +667,36 @@ class RTSort:
                      reset=True,
                      verbose=False):
         """
-        TODO: Give option to pass in model_traces_path? So when detecting sequences, the model does not need to be rerun on the recording when detecting sequences
-        
-        Params:
-            recording
-                Can be a numpy array of shape (n_channels, n_samples), path to scaled_traces.npy, or a recording object
-            inter_path
-                If :recording: is a recording object, where scaled_traces.npy will be saved
-                    If None, scaled_traces.npy will be saved to the current directory and deleted after sorting
-            recording_window_ms
-                If not None, use recording_window_ms to only sort a part of the recording
-                    Should be in format of (start_ms, end_ms)
-            model_outputs:
-                Can be a numpy array of shape (n_channels, n_samples) where this is the model outputs from run_detection_model, using param :recording: as the recording 
-                    Or can be a path to the saved numpy array
-                If None, this function will compute the model outputs on param :recording:
-            reset
-                Whether to call self.reset()
-                    In most cases, self.reset() should be called. 
+        Sorts spikes from a recording either from raw traces or precomputed model outputs.
+
+        Args:
+            recording (numpy.ndarray, str, pathlib.Path, or object):
+                The input recording data, which can be:
+                - A NumPy array of shape (n_channels, n_samples).
+                - A path to a NumPy file (.npy) containing the scaled traces.
+                - A SpikeInterface recording extractor object.
+            inter_path (str or pathlib.Path, optional):
+                Directory path to save `scaled_traces.npy` when the `recording` is a recording object.
+                If None, the file will be saved to the current directory and deleted after sorting.
+            recording_window_ms (tuple of (start_ms, end_ms), optional):
+                A time window (in milliseconds) to sort part of the recording. 
+                If None, the entire recording is used.
+            model_outputs (numpy.ndarray, str, or pathlib.Path, optional):
+                Precomputed model outputs for the recording, either as:
+                - A NumPy array of shape (n_channels, n_samples).
+                - A path to a saved `.npy` file.
+                If None, the model outputs will be computed using the provided `recording`.
+            reset (bool, optional):
+                Whether to reset the internal state of the sorter by calling `self.reset()`.
+                Typically, this should be True (default).
+            verbose (bool, optional):
+                If True, prints progress information during sorting. Default is False.
+
+        Returns:
+            numpy.ndarray:
+                A NumPy array of shape (num_seqs,), where each element is a list containing the detected spike times (in frames) for a given sequence.
         """
+        
         if reset:
             self.reset()
 

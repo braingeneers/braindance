@@ -39,81 +39,78 @@ def train_detection_model(recordings: list,
                           # run_kilosort2 parameters
                           **run_kilosort2_kwargs):
     """
-    Train a DL detection model with :recording_files:
-    
-    Params:
-        General parameters:
-            recordings:
-                A list containing the recordings to use for training the detection model. The length recordings must be at least two. 
-                Each element can be one of the following:
-                    - Path to a recording file in .h5 or .nwb format
-                    - Path to a folder containing “sorted.npz” and “scaled_traces.npy”. 
-                        This is used if the recordings have already been sorted, and you do not want to re-sort them. 
-                    - A recording object loaded with SpikeInterface. See SpikeInterface's Extractor Module (https://spikeinterface.readthedocs.io/en/latest/modules/extractors.html) for details
-            dl_folder_name:
-                For each recording that needs to be sorted, the results will be stored in the same folder as the recording in the folder dl_folder_name 
-        
-        Dataset parameters:
-            thresh_amp:
-                Only waveforms whose amplitude is at least thresh_amp (microvolts) will be selected to train and test the detection model
-            thresh_std:
-                Only waveforms in which the standard deviation of the trough divided by the amplitude is at most thresh_std will be selected to train and test the detection model
-            sample_size_ms:
-                The size of the input samples fed into the detection model (milliseconds)
-            recording_spike_before_ms:
-                When extracting noise from the recording, do not extract if there was a spike within recording_spike_before_ms milliseconds
-            recording_spike_after_ms:
-                When extracting noise from the recording, do not extract if there is a spike within recording_spike_after_ms milliseconds
-                
-        Training parameters:
-            samples_per_waveform:
-                The number of samples in an epoch equals samples_per_waveform * the total number of waveformsrms
-            num_wfs_probs:
-                The ith element refers to the probability (decimal) that i waveforms will appear in a training or validation sample.
-            isi_wf_min_ms:
-                If multiple waveforms are pasted into a sample, they must be at least isi_wf_min_ms milliseconds apart
-            isi_wf_max_ms:
-                If multiple waveforms are pasted into a sample, one waveform will be at most isi_wf_max_ms milliseconds apart from another waveform
-                If None, there is no limit
-            learning_rate:
-                The learning rate to use for training 
-            momentum:
-                The momentum value to use for training. See https://pytorch.org/docs/stable/generated/torch.optim.SGD.html
-            training_thresh:
-                If the validation loss does not decrease by training_thresh after an epoch, the patience counter increases by 1
-                If it does, the patience counter resets to 0
-            learning_rate_decay and learning_rate_patience:
-                If the patience counter reaches learning_rate_patience, the learning rate decreases by a factor of learning_rate_decay
-            epoch_patience:
-                If the patience counter reacehs epoch_patience, training stops for the recording
-            max_num_epochs:
-                Training stops after max_num_epochs even if the validation loss continues to decrease
-            batch_size:
-                The batch size used for training
-            num_workers:
-                The number of workers used to load data. See https://pytorch.org/docs/stable/data.html#single-and-multi-process-data-loading
-            shuffle:
-                Whether to randomly shuffle the training and validation data for each epoch
-            training_random_seed
-                The random seed set before trainings starts for reproducibility
-            
-        Detection model parameters:
-            input_scale:
-                The recording traces (μV) are multiplied by input_scale before being inputted into the detection model. 
-                If the training process indicates “nan” for the loss, then decrease input_scale because the traces are too large for the detection model. 
-            input_scale_decay:
-                If loss is np.nan, reduce input_scale by factor of input_scale_decay
-                
-        General parameters:
-            device
-                The device to use. "cuda" for GPU and "cpu" for CPU
-            dtype
-                The data type to use
-        
-        run_kilosort2 parameters
-            See braindance.core.spikesorter.kilosort2.py
+    Trains a deep learning detection model using the specified recordings.
 
-    """    
+    Args:
+        recordings (list): 
+            A list of recordings to use for training. Each element can be one of the following:
+            - Path to a recording file in .h5 or .nwb format.
+            - Path to a folder containing `sorted.npz` and `scaled_traces.npy` (for pre-sorted recordings).
+            - A recording object loaded with SpikeInterface.
+        dl_folder_name (str, optional): 
+            Folder name where results will be stored for each recording that needs sorting. Defaults to `"dl_folder"`.
+        validation_recording (str or None, optional): 
+            Path to a validation recording, if any.
+
+        thresh_amp (float, optional): 
+            Minimum amplitude (in µV) of waveforms to be used for training. Defaults to 18.88275.
+        thresh_std (float, optional): 
+            Maximum standard deviation of the trough-to-amplitude ratio for waveforms. Defaults to 0.6.
+        sample_size_ms (int, optional): 
+            Duration of input samples in milliseconds. Defaults to 10.
+        recording_spike_before_ms (int, optional): 
+            Minimum gap (in ms) before a spike for noise extraction. Defaults to 2.
+        recording_spike_after_ms (int, optional): 
+            Minimum gap (in ms) after a spike for noise extraction. Defaults to 2.
+
+        samples_per_waveform (int, optional): 
+            Number of samples in an epoch equals `samples_per_waveform * total_waveforms`. Defaults to 2.
+        num_wfs_probs (list, optional): 
+            Probabilities of the number of waveforms per sample. Defaults to `[0.5, 0.3, 0.12, 0.06, 0.02]`.
+        isi_wf_min_ms (float, optional): 
+            Minimum inter-spike interval (in ms) between waveforms in a sample. Defaults to 0.2.
+        isi_wf_max_ms (float or None, optional): 
+            Maximum inter-spike interval (in ms) between waveforms in a sample. Defaults to None.
+        learning_rate (float, optional): 
+            Initial learning rate for training. Defaults to 7.76e-4.
+        momentum (float, optional): 
+            Momentum for the optimizer. Defaults to 0.85.
+        training_thresh (float, optional): 
+            Minimum improvement in validation loss to reset the patience counter. Defaults to 0.01.
+        learning_rate_patience (int, optional): 
+            Number of epochs without improvement before decaying the learning rate. Defaults to 5.
+        learning_rate_decay (float, optional): 
+            Factor by which to decay the learning rate. Defaults to 0.4.
+        epoch_patience (int, optional): 
+            Maximum number of epochs without improvement before stopping training. Defaults to 10.
+        max_num_epochs (int, optional): 
+            Maximum number of epochs for training. Defaults to 200.
+        batch_size (int, optional): 
+            Number of samples per batch. Defaults to 1.
+        num_workers (int, optional): 
+            Number of workers for data loading. Defaults to 0.
+        shuffle (bool, optional): 
+            Whether to shuffle training data. Defaults to True.
+        training_random_seed (int, optional): 
+            Random seed for reproducibility. Defaults to 231.
+
+        input_scale (float, optional): 
+            Scale factor for input traces before feeding them into the detection model. Defaults to 0.01.
+        input_scale_decay (float, optional): 
+            Factor by which to reduce `input_scale` if the loss is NaN. Defaults to 0.1.
+
+        device (str, optional): 
+            Device to use for training, either `"cuda"` or `"cpu"`. Defaults to `"cuda"`.
+        dtype (torch.dtype, optional): 
+            Data type for training tensors. Defaults to `torch.float16`.
+
+        **run_kilosort2_kwargs: 
+            Additional parameters passed to the Kilosort2 spike sorting function.
+
+    Returns:
+        model (ModelSpikeSorter): 
+            The trained detection model.
+    """
     
     # Setup DL folders
     if validation_recording is not None:
