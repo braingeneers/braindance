@@ -33,7 +33,9 @@ To use Kilosort2, you must install [Kilosort2](https://github.com/jamesjun/Kilos
 - [spikeinterface](https://spikeinterface.readthedocs.io/en/stable/get_started/installation.html) 
 
 #### Open Ephys
-If you want to read data in real time from an Open Ephys GUI, install the Open Ephys Python package.
+If you want to read data in real time from an Open Ephys GUI, [install the Open Ephys GUI](https://open-ephys.github.io/gui-docs/User-Manual/Installing-the-GUI.html) and [Falcon Output plugin](https://open-ephys.github.io/gui-docs/User-Manual/Plugins/Falcon-Output.html).
+
+In your Python environment, install [the Open Ephys Python package](https://github.com/open-ephys/open-ephys-python-tools).
 ```bash
 pip install open-ephys-python-tools
 ```
