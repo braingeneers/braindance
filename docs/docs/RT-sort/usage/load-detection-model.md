@@ -7,7 +7,7 @@ sidebar_position: 1
 To use RT-Sort, you first need to load a detection model. Here's how to do it:
 
 ```python
-from braindance.core.spikedetector.model2 import ModelSpikeSorter
+from braindance.core.spikedetector.model import ModelSpikeSorter
 
 detection_model = ModelSpikeSorter.load(detection_model_path)
 ```

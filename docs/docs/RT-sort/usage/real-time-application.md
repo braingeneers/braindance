@@ -51,10 +51,28 @@ from braindance.core.maxwell_env import MaxwellEnv
 env = MaxwellEnv(**params)
 done = False
 while not done:
+    obs, done = env.step(buffer_size=100)
+    sequence_detections = rt_sort.running_sort(obs)
+    # Process sequence_detections
+```
+
+## Example with Open Ephys GUI
+
+Here's an example of how to use RT-Sort with a Maxwell MEA:
+
+First, start the Open Ephys GUI. Then, add a [Record Node](https://open-ephys.github.io/gui-docs/User-Manual/Building-a-signal-chain.html) and a [Falcon Output](https://open-ephys.github.io/gui-docs/User-Manual/Plugins/Falcon-Output.html) node. (See [this guide](https://open-ephys.github.io/gui-docs/User-Manual/Exploring-the-user-interface.html) for help with understanding the user interface). Optionally, [change the buffer size in the GUI](https://open-ephys.github.io/gui-docs/Tutorials/Closed-Loop-Latency.html#:~:text=The%20second%2C%20and,in%20most%20cases) (not through Python code) to achieve optimal performance. Finally, start sorting:
+
+```python
+from braindance.core.open_ephys_env import OpenEphysEnv
+
+env = OpenEphysEnv(**params)
+done = False
+while not done:
     obs, done = env.step()
     sequence_detections = rt_sort.running_sort(obs)
     # Process sequence_detections
 ```
+
 
 ## Next Steps
 
