@@ -1,10 +1,20 @@
 # BrainDance
 
-Making neural stimulation easier.
+## Making neural stimulation easier.
+
+[Please check out our wiki here!](https://braingeneers.github.io/braindance)
 
 ### Easy installation
+We recommend using [conda]([url](https://docs.anaconda.com/miniconda/miniconda-install/)) for setting up dependencies.
+
 ```bash
-pip install git+https://github.com/braingeneers/BrainDance
+conda create -n brain python=3.11
+conda activate brain
+```
+
+
+```bash
+pip install git+https://github.com/braingeneers/braindance
 ```
 
 #### RT-Sort installation
