@@ -31,3 +31,9 @@ To use RT-Sort, install the following additional libraries in your Python enviro
 To use Kilosort2, you must install [Kilosort2](https://github.com/jamesjun/Kilosort2) and install the following additional libraries in your Python environment:
 - [natsort](https://pypi.org/project/natsort/)
 - [spikeinterface](https://spikeinterface.readthedocs.io/en/stable/get_started/installation.html) 
+
+#### Open Ephys
+If you want to read data in real time from an Open Ephys GUI, install the Open Ephys Python package.
+```bash
+pip install open-ephys-python-tools
+```

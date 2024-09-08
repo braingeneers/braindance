@@ -1,61 +1,47 @@
+# base_env.py
+import time
+
+
 class BaseEnv:
-    """
-    A base class for environment implementations.
 
-    This class defines the basic interface for environments. All specific
-    environment implementations should inherit from this class and implement
-    its methods.
-    """
+    def __init__(self, max_time_sec=60, verbose=1):
+        self.max_time_sec = max_time_sec
+        self.verbose = verbose
 
-    def __init__(self):
-        """
-        Initialize the environment.
+    def _init_time_management(self):
+        self.start_time = self.cur_time = time.perf_counter()
 
-        Raises:
-            NotImplementedError: This method should be implemented by subclasses.
-        """
+    def time_elapsed(self):
+        '''Returns time since initialization of the environment.'''
+        return time.perf_counter() - self.start_time
+
+    @property
+    def dt(self):
+        '''Returns time since the last step.'''
+        return time.perf_counter() - self.cur_time
+
+    def _check_if_done(self):
+        if self.time_elapsed() > self.max_time_sec:
+            # Debugging
+            if self.verbose >= 1:
+                print(
+                    f'Max time {self.max_time_sec} reached at {self.time_elapsed():.1f}')
+            self._cleanup()
+
+            return True
+        return False
+
+    def _cleanup(self):
         raise NotImplementedError
 
     def step(self, action):
-        """
-        Take a step in the environment.
-
-        Args:
-            action: The action to be executed in the environment.
-
-        Returns:
-            This method should return the observation
-
-        Raises:
-            NotImplementedError: This method should be implemented by subclasses.
-        """
         raise NotImplementedError
 
     def reset(self):
-        """
-        Reset the environment to an initial state.
-
-        Returns:
-            This method should return the initial state of the environment.
-
-        Raises:
-            NotImplementedError: This method should be implemented by subclasses.
-        """
         raise NotImplementedError
 
     def render(self):
-        """
-        Render the current state of the environment.
-
-        This method is typically used for visualization purposes.
-        """
-        pass
+        raise NotImplementedError
 
     def close(self):
-        """
-        Close the environment and perform any necessary cleanup.
-
-        Raises:
-            NotImplementedError: This method should be implemented by subclasses.
-        """
         raise NotImplementedError

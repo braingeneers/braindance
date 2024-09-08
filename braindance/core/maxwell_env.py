@@ -93,21 +93,19 @@ class MaxwellEnv(BaseEnv):
                 *filepath* will use the first 30 seconds of data from the filepath
                 None will use the real maxwell server
         """
-
+        super().__init__(max_time_sec=max_time_sec, verbose=verbose)
 
         self.config = config
         self.config_data = Config(config)
         self.base_name = name
         self.name = name
-        self.max_time_sec = max_time_sec
         self.multiprocess = multiprocess
 
         self.stim_electrodes = stim_electrodes
         self.active_units = []
         self.num_channels = self.config_data.get_num_channels()
         self.observation_type = observation_type
-        
-        self.verbose = verbose
+
         self.array = None
         self.subscriber = None
 
@@ -169,7 +167,7 @@ class MaxwellEnv(BaseEnv):
         
 
         # Time management
-        self.start_time = self.cur_time = time.perf_counter()
+        self._init_time_management()
         self.last_stim_time = 0
         self.last_stim_times = np.zeros(len(stim_electrodes))
 
@@ -189,7 +187,7 @@ class MaxwellEnv(BaseEnv):
         Start the experiment by initializing time management, flushing the buffer, and starting the recording.
         """
         # Time management
-        self.start_time = self.cur_time = time.perf_counter()
+        self._init_time_management()
         self.last_stim_time = 0
         self.last_stim_times = np.zeros_like(self.last_stim_times)
 
@@ -385,10 +383,6 @@ class MaxwellEnv(BaseEnv):
 
         return obs, done
     
-    @property
-    def dt(self):
-        '''Returns time since the last step.'''
-        return time.perf_counter() - self.cur_time
     
     @property
     def stim_dt(self):
@@ -399,10 +393,6 @@ class MaxwellEnv(BaseEnv):
     def stim_dts(self):
         '''Returns time since last stimulation.'''
         return time.perf_counter() - self.last_stim_times
-
-    def time_elapsed(self):
-        '''Returns time since initialization of the environment.'''
-        return time.perf_counter() - self.start_time
     
     def close(self):
         '''Shuts down the environment and saves the data.'''
@@ -425,19 +415,6 @@ class MaxwellEnv(BaseEnv):
             print('Name of experiment: ', name)
             print('At ', os.path.join(self.save_dir, f'{name}.raw.h5'))
         self.name = name
-
-    
-
-    def _check_if_done(self):
-        if self.time_elapsed() > self.max_time_sec:
-            # Debugging
-            if self.verbose >=1:
-                print(f'Max time {self.max_time_sec} reached at {self.time_elapsed()}')
-            self._cleanup()
-
-            return True
-        return False
-    
 
     def _create_stim_pulse(self, stim_command):
         """
