@@ -21,7 +21,7 @@ from threadpoolctl import threadpool_limits
 from tqdm import tqdm
 
 from braindance.core.spikedetector.model import ModelSpikeSorter
-from spikedata import SpikeData
+# from spikedata import SpikeData
 
 neuropixels_params={
     "stringent_thresh": 0.175, "loose_thresh": 0.075,
@@ -221,8 +221,8 @@ def detect_sequences(
             warnings.filterwarnings('default')
     
         recording = load_recording(recording)
-        chan_ind = [int(i) for i in recording.get_channel_ids()]
-        chan_ind = None if chan_ind == list(range(len(chan_ind))) else chan_ind
+        chan_ids = [int(i) for i in recording.get_channel_ids()]
+        chan_ids = None if chan_ids == list(range(len(chan_ids))) else chan_ids
         
         if detection_model is None:
             detection_model = ModelSpikeSorter.load_mea()
@@ -276,7 +276,7 @@ def detect_sequences(
         samp_freq = round(recording.get_sampling_frequency() / 1000)  # kHz
         num_elecs = recording.get_num_channels()
         params = {
-            "samp_freq": samp_freq, "elec_locs": recording.get_channel_locations(), "chan_ind": chan_ind,
+            "samp_freq": samp_freq, "elec_locs": recording.get_channel_locations(), "chan_ids": chan_ids,
 
             "model_inter_path": model_inter_path,
             "stringent_thresh": stringent_thresh, "loose_thresh": loose_thresh,
@@ -400,7 +400,8 @@ class RTSort:
                  device="cuda", dtype=torch.float16):
         self.samp_freq = samp_freq = params['samp_freq']
         elec_locs = params['elec_locs']
-        self.chan_ind = params.get("chan_ind", None)  # None for backwards compatibility
+        self.chan_ids = params.get("chan_ids", None)  # None for backwards compatibility
+        self.max_chan_id = max(self.chan_ids) if self.chan_ids is not None else None
         model_inter_path = params['model_inter_path']
         stringent_thresh = params['stringent_thresh']
         loose_thresh = params['loose_thresh']
@@ -585,6 +586,9 @@ class RTSort:
         self.latest_frame = 0  # Spike times returned from self.sort() will be relative to the first frame of the first chunk received by RT-Sort
         self.ignore_spikes_before_minuend = self.input_size - self.end_buffer - self.seq_n_after  # ignore_spikes_before = self.ignore_spikes_before_minuend - num_new_frames
 
+        self.full_front_buffer = self.front_buffer + self.seq_n_before
+        self.full_end_buffer = self.end_buffer + self.seq_n_after
+
     def reset(self):
         """
         Resets the internal state to prepare for a new experiment.
@@ -628,8 +632,8 @@ class RTSort:
                 - The 1st element is the time the spike occurred (in milliseconds), based on the number of frames passed to `running_sort()` since the last call to `rt_sort.reset()`. The internal clock tracks the elapsed time based on the number of frames, assuming no breaks in data.
         """
         obs = np.asarray(obs)
-        if self.chan_ind is not None:
-            obs = obs[:, self.chan_ind]
+        if self.chan_ids is not None and obs.shape[1] > self.max_chan_id:
+            obs = obs[:, self.chan_ids]
 
         obs = torch.tensor(obs, device=self.device, dtype=self.dtype).T
         if model_chunk is not None:
@@ -700,6 +704,7 @@ class RTSort:
         if reset:
             self.reset()
 
+        # Set up recording
         remove_traces = False
         if isinstance(recording, np.ndarray):
             scaled_traces = recording
@@ -718,9 +723,11 @@ class RTSort:
         if recording_window_ms is not None:
             scaled_traces = scaled_traces[:, round(recording_window_ms[0] * self.samp_freq):round(recording_window_ms[1] * self.samp_freq)]
 
+        # Optionally set up model outputs
         if model_outputs is not None and str(model_outputs).endswith(".npy"):
              model_outputs = np.load(model_outputs, mmap_mode="r")
 
+        # Start sorting
         all_start_frames = range(0, scaled_traces.shape[1], self.buffer_size) 
         
         if verbose:
@@ -730,7 +737,6 @@ class RTSort:
         all_detections = [[] for _ in range(self.num_seqs)]
         model_chunk = None
         for start_frame in all_start_frames:
-            # .T because self.sort() expects data to be in obs format (which has channels last)
             if model_outputs is not None:
                 model_chunk_start_frame = start_frame+self.buffer_size-self.input_size
                 if model_chunk_start_frame >= 0:
@@ -743,7 +749,7 @@ class RTSort:
         # Can't use list comprehension because then if no sequences detect spikes, the array will have shape (num_seqs, 0)
         array_detections = np.empty(self.num_seqs, dtype=object) 
         for seq_idx, detections in enumerate(all_detections):
-            array_detections[seq_idx] = np.array(detections)
+            array_detections[seq_idx] = np.sort(detections)
 
         if remove_traces:
             os.remove(recording)
@@ -1010,7 +1016,7 @@ class RTSort:
         return [Unit(root_elec, spike_train, idx) for idx, (spike_train, root_elec) in 
                 enumerate(zip(self.seq_spike_trains, self.get_seq_root_elecs()))]
 
-    def to_spikedata(self, all_seq_detections=None) -> SpikeData:
+    def to_spikedata(self, all_seq_detections=None):
         """
         Params
             all_seq_detections
