@@ -45,6 +45,8 @@ from math import ceil
 import traceback
 import h5py
 
+from braindance.core.spikesorter.rt_sort import save_traces
+
 # print(f"Done. Time: {time.time() - _import_start:.2f}s")
 
 
@@ -4075,6 +4077,12 @@ def process_recording(rec_name, rec_path, inter_path, results_path, rec_loaded=N
 
         # Compile results
         compile_results(rec_name, rec_path, results_path, w_e_curated)
+        
+        # Save scaled traces for training detection model
+        if SAVE_DL_DATA:
+            save_stopwatch = Stopwatch("SAVING TRACES FOR DETECTION MODEL")
+            save_traces(rec_path if rec_loaded is None else rec_loaded, results_path)
+            save_stopwatch.log_time()
 
         print_stage(f"DONE WITH RECORDING")
         print(f"Recording: {rec_path}")
@@ -4548,4 +4556,8 @@ def run_kilosort2(
                 shutil.rmtree(inter_path)
 
 if __name__ == "__main__":
-    run_kilosort2(kilosort_path="/home/mea/SpikeSorting/kilosort/Kilosort2")
+    run_kilosort2(
+        recording_files=["/data/MEAprojects/organoid/intrinsic/dl/2950/data.raw.h5"],
+        intermediate_folders=["/data/MEAprojects/organoid/intrinsic/dl/2950/test"],
+        results_folders=["/data/MEAprojects/organoid/intrinsic/dl/2950/test_results"],
+        kilosort_path="/home/mea/SpikeSorting/kilosort/Kilosort2")
