@@ -1482,7 +1482,7 @@ def form_coc_clusters(root_elec, params):
     comp_elecs = sorted(comp_elecs.keys(), key=lambda elec: comp_elecs[elec])
     max_amp_elecs = sorted(max_amp_elecs.keys(),
                            key=lambda elec: max_amp_elecs[elec])
-    if len(max_amp_elecs) < 1:  # TODO: Change to 'len(comp_elecs) < 1'?
+    if len(comp_elecs) == 0:
         return []
 
     min_coc_prob = sigmoid_inverse(stringent_thresh)
@@ -1725,7 +1725,7 @@ def form_all_clusters(params):
     if verbose:
         print("Detecting sequences")
 
-    np.random.seed(1150)
+    # np.random.seed(1150)
     all_clusters = []
     tasks = [(root_elec, params) for root_elec in range(elec_locs.shape[0])]
     with Pool(processes=num_processes) as pool:
@@ -2094,6 +2094,7 @@ def setup_cluster(cluster, params, n_cocs=None):
     # Select random cocs
     spike_train = cluster.spike_train
     if n_cocs is not None and n_cocs < len(spike_train):
+        raise ValueError("n_cocs must be None because the merging of metrics assumes all spikes are extracted")
         spike_train = np.random.choice(spike_train, n_cocs, replace=False)
     output_frames = np.round(spike_train * samp_freq - front_buffer).astype(int)
     output_windows = outputs[
@@ -2157,8 +2158,20 @@ def setup_cluster(cluster, params, n_cocs=None):
     traces_windows = traces[
         array_elecs, output_frames[:, None, None] + np.arange(-pre_median_frames-n_before, n_after+1)
     ] # (num_spikes, num_elecs, num_frames)
-    pre_medians = np.median(np.abs(traces_windows[:, :, :pre_median_frames]), axis=2)  # (num_crossings, num_max_amp_elecs)
-    pre_medians = np.clip(pre_medians/0.6745, a_min=0.5, a_max=None)
+    
+    pre_medians = []  # (num_crossings, num_max_amp_elecs) 
+    num_cocs=300  # Only handle num_cocs at a time (np.abs loads entire traces into memory since it is only loaded as mmap before)
+    i = 0
+    while i < len(spike_train):
+        cur_traces_windows = traces_windows[i:i+300, :, :pre_median_frames]
+        cur_pre_medians = np.median(np.abs(cur_traces_windows), axis=2)
+        pre_medians.append(np.clip(cur_pre_medians/0.6745, a_min=0.5, a_max=None))
+        i += num_cocs
+    pre_medians = np.vstack(pre_medians)
+    # # Calculating the pre_medians all at once requires too much memory and sometimes results in crashing
+    # pre_medians = np.median(np.abs(traces_windows[:, :, :pre_median_frames]), axis=2)  # (num_crossings, num_max_amp_elecs)
+    # pre_medians = np.clip(pre_medians/0.6745, a_min=0.5, a_max=None)
+    
     all_amp_medians = np.abs(traces_windows[
         np.arange(output_frames.size)[:, None],  # (num_spikes, 1)
         array_elecs.T,  # (1, num_elecs)
