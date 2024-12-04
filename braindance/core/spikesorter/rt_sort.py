@@ -16,7 +16,7 @@ import torch
 from diptest import diptest
 import pynvml
 from spikeinterface.core import BaseRecording
-from spikeinterface.extractors import MaxwellRecordingExtractor, NwbRecordingExtractor
+from spikeinterface.extractors import MaxwellRecordingExtractor, NwbRecordingExtractor, NumpySorting
 from threadpoolctl import threadpool_limits 
 from tqdm import tqdm
 
@@ -668,7 +668,7 @@ class RTSort:
     def sort_offline(self, recording,
                      inter_path=None, recording_window_ms=None,
                      model_outputs=None,
-                     reset=True,
+                     reset=True, return_spikeinterface_sorter=False,
                      verbose=False):
         """
         Sorts spikes from a recording either from raw traces or precomputed model outputs.
@@ -693,18 +693,22 @@ class RTSort:
             reset (bool, optional):
                 Whether to reset the internal state of the sorter by calling `self.reset()`.
                 Typically, this should be True (default).
+            return_spikeinterface_sorter (bool, optional):
+                If True, returns a spikeinterface.extractors.NumpySorting object containing the sorted results.
             verbose (bool, optional):
                 If True, prints progress information during sorting. Default is False.
 
         Returns:
-            numpy.ndarray:
-                A NumPy array of shape (num_seqs,), where each element is a list containing the detected spike times (in frames) for a given sequence.
+            numpy.ndarray or spikeinterface.extractors.NumpySorting:
+                If `return_spikeinterface_sorter` is False, returns a NumPy array of shape (num_seqs,), where each element is a list containing the detected spike times (in milliseconds) for a given sequence.
+                If `return_spikeinterface_sorter` is True, returns a spikeinterface.extractors.NumpySorting object containing the sorted results.
         """
         
         if reset:
             self.reset()
 
         # Set up recording
+        og_recording = recording
         remove_traces = False
         if isinstance(recording, np.ndarray):
             scaled_traces = recording
@@ -754,7 +758,22 @@ class RTSort:
         if remove_traces:
             os.remove(recording)
 
-        return array_detections
+        if return_spikeinterface_sorter:
+            times_list = []
+            labels_list = []
+            for seq_idx, detections in enumerate(array_detections):
+                if len(detections) > 0:
+                    times_list.extend(np.round(detections * self.samp_freq).astype(int))
+                    labels_list.extend([seq_idx] * len(detections))
+            ind_order = np.argsort(times_list)
+            times = np.array(times_list)[ind_order]
+            labels = np.array(labels_list)[ind_order]
+            np_sorting = NumpySorting.from_times_labels([times], [labels], self.samp_freq * 1000, unit_ids=list(range(self.num_seqs)))
+            if isinstance(og_recording, BaseRecording):
+                np_sorting.register_recording(og_recording)
+            return np_sorting
+        else:
+            return array_detections
 
     def sort_chunk(self, chunk, torch_window=None,
                    spike_times_frame_offset=0, ignore_spikes_before=0):     
