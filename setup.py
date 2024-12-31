@@ -13,7 +13,8 @@ setup(
     include_package_data=True,
     package_data={
         '': ['*.npy', '*.json'],
-        'braindance': ['core/spikedetector/detection_models/*'],
+        'braindance': ['core/spikedetector/detection_models/mea/*',
+                       'core/spikedetector/detection_models/neuropixels/*'],
     },
     entry_points={
         'console_scripts': [
