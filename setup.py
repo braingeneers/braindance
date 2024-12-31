@@ -13,6 +13,7 @@ setup(
     include_package_data=True,
     package_data={
         '': ['*.npy', '*.json'],
+        'braindance': ['core/spikedetector/detection_models/*'],
     },
     entry_points={
         'console_scripts': [
