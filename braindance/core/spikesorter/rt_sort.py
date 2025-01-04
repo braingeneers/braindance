@@ -1,3 +1,4 @@
+from copy import deepcopy
 import h5py
 from math import ceil
 from multiprocessing import Pool, Manager
@@ -316,6 +317,8 @@ def detect_sequences(
             "verbose": verbose,
             "debug": debug
         }
+        if debug:
+            pickle_dump(params, inter_path / "params.pickle")
 
         # Actually detect sequences now
                 
@@ -370,6 +373,8 @@ def detect_sequences(
                 return []
             else:
                 return None
+        if debug:
+            pickle_dump(inter_merged_clusters, inter_path / "inter_merged_clusters.pickle")
         
         # Create RTSort object
         rt_sort = RTSort(inter_merged_clusters, detection_model, params)
@@ -419,10 +424,10 @@ class RTSort:
         max_root_amp_median_std_spikes = params['max_root_amp_median_std_spikes']
         repeated_detection_overlap_time = params['repeated_detection_overlap_time']
 
-        # self.sequences = sequences
+        # self.sequences = sequences  # This requires the sequence class to be importable and picklable --> not ideal
         self._seq_root_elecs = [seq.root_elec for seq in sequences]  # For posterity, used to retrieve sequence data, NOT used for sorting (like self.seq_root_elecs)
         self.seq_spike_trains = [seq.spike_train for seq in sequences]  # For posterity
-                
+        self.seq_comp_elecs = [seq.comp_elecs for seq in sequences]  # For select_seqs method        
         self.seq_locs = np.array([elec_locs[seq.root_elec] for seq in sequences])
         
         if buffer_size != 100:
@@ -971,6 +976,69 @@ class RTSort:
             # sorting_computation_times.append((end-start_sorting)*1000)
         return detections
 
+    def select_seqs(self, seq_ind: list):
+        """
+        Selects sequences from the detected sequences to keep for online sorting
+
+        Args:
+            seq_ind (list): 
+                A list of sequence indices to keep. 
+                Note that sequences that are not selected may be included if they are within the inner radius of a selected sequence.
+                This is needed for repeated detection removal. 
+                To account for this, the first len(seq_ind) sequences are the selected sequences, and the remaining sequences are 
+                the additional sequences needed for repeated detection removal. 
+
+        Returns:
+            RTSort: 
+                An RTSort object with the selected sequences and additional sequences needed for repeated detection removal.
+        """
+        other = deepcopy(self)  # TODO: Rather than deepcopy (which can be slow), instantiate new RTSort object
+        
+        other.seq_ind_og = seq_ind[:]
+        
+        seq_ind_full = set(seq_ind)  # Sequences to keep and all sequences within inner radius of sequences to keep
+        for seq_idx in seq_ind:
+            overlap_seqs = (self.seq_no_overlap_mask[seq_idx] == 0).nonzero().flatten().tolist()
+            seq_ind_full.update(overlap_seqs)
+            # May need to recursively add more sequences if overlap_seqs have overlap_seqs so detected spikes perfectly match before select_seqs
+
+        seq_ind_full = seq_ind + list(seq_ind_full.difference(seq_ind))  # Reorder so that original seq ind are first
+        seq_ind_full_2d_mask = torch.tensor(seq_ind_full)[:, None]
+        
+        other._seq_root_elecs = [self._seq_root_elecs[seq_idx] for seq_idx in seq_ind_full]
+        other.seq_spike_trains = [self.seq_spike_trains[seq_idx] for seq_idx in seq_ind_full]
+        other.seq_comp_elecs = [self.seq_comp_elecs[seq_idx] for seq_idx in seq_ind_full]
+        other.seq_locs = self.seq_locs[seq_ind_full]
+        
+        other.seq_no_overlap_mask = self.seq_no_overlap_mask[seq_ind_full, seq_ind_full]
+        
+        comp_elecs = set().union(*other.seq_comp_elecs)
+        comp_elecs = torch.tensor(list(comp_elecs), device=self.device)
+        comp_elecs_mask = torch.isin(self.comp_elecs_flattened, comp_elecs)
+                                
+        other.comp_elecs = self.comp_elecs[comp_elecs_mask]
+        other.comp_elecs_flattened = self.comp_elecs_flattened[comp_elecs_mask]
+        
+        other.seqs_root_elecs = list(set(other._seq_root_elecs))
+        
+        other.seqs_inner_loose_elecs = self.seqs_inner_loose_elecs[seq_ind_full_2d_mask, comp_elecs_mask]
+        other.seqs_loose_elecs = self.seqs_loose_elecs[seq_ind_full_2d_mask, comp_elecs_mask]
+        other.seqs_min_loose_elecs = self.seqs_min_loose_elecs[seq_ind_full]
+        other.seqs_latencies = self.seqs_latencies[seq_ind_full_2d_mask, comp_elecs_mask]
+        other.seqs_amps = self.seqs_amps[seq_ind_full_2d_mask, comp_elecs_mask]
+        other.seqs_latency_weights = self.seqs_latency_weights[seq_ind_full_2d_mask, comp_elecs_mask]
+        other.seqs_amp_weights = self.seqs_amp_weights[seq_ind_full_2d_mask, comp_elecs_mask]
+        other.seqs_root_amp_means = self.seqs_root_amp_means[seq_ind_full]
+        other.seqs_root_amp_stds = self.seqs_root_amp_stds[seq_ind_full]
+        
+        other.seqs_root_elecs_rel_comp_elecs = [torch.where(other.comp_elecs_flattened == root_elec)[0].item() for root_elec in other._seq_root_elecs]
+        
+        other.last_detections = self.last_detections[seq_ind_full]
+        
+        other.num_seqs = len(seq_ind_full)
+        
+        return other
+        
     def calc_pre_medians(self, pre_median_frames: torch.Tensor):
         # if isinstance(pre_median_frames, np.ndarray):
         #     pre_median_frames = self.to_tensor(pre_median_frames)
