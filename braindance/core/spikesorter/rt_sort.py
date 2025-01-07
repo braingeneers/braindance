@@ -222,8 +222,12 @@ def detect_sequences(
             warnings.filterwarnings('default')
     
         recording = load_recording(recording)
-        chan_ids = [int(i) for i in recording.get_channel_ids()]
-        chan_ids = None if chan_ids == list(range(len(chan_ids))) else chan_ids
+        
+        try:
+            chan_ids = [int(i) for i in recording.get_channel_ids()]
+            chan_ids = None if chan_ids == list(range(len(chan_ids))) else chan_ids
+        except ValueError:
+            chan_ids = None
         
         if detection_model is None:
             detection_model = ModelSpikeSorter.load_mea()
