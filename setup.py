@@ -7,9 +7,16 @@ def read_requirements():
 
 setup(
     name='braindance',
-    version='0.0.1',
+    version='0.1.7',
     packages=find_packages(),
     install_requires=read_requirements(),
+    extras_require={
+        "rt-sort": ["diptest",
+                    "natsort",
+                    "pynvml",
+                    "scikit-learn",
+                    "spikeinterface[full]"]
+    },
     include_package_data=True,
     package_data={
         '': ['*.npy', '*.json'],
