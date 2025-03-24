@@ -772,12 +772,12 @@ class RTSort:
             labels_list = []
             for seq_idx, detections in enumerate(array_detections):
                 if len(detections) > 0:
-                    times_list.extend(np.round(detections * self.samp_freq).astype(int))
+                    times_list.extend(np.round(detections * self.samp_freq).astype("int64"))
                     labels_list.extend([seq_idx] * len(detections))
             ind_order = np.argsort(times_list)
             times = np.array(times_list)[ind_order]
             labels = np.array(labels_list)[ind_order]
-            np_sorting = NumpySorting.from_times_labels([times], [labels], self.samp_freq * 1000, unit_ids=list(range(self.num_seqs)))
+            np_sorting = NumpySorting.from_samples_and_labels([times], [labels], self.samp_freq * 1000, unit_ids=list(range(self.num_seqs)))
             if isinstance(og_recording, BaseRecording):
                 np_sorting.register_recording(og_recording)
             return np_sorting
