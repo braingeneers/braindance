@@ -83,7 +83,7 @@ class PhaseManager:
             if isinstance(phase, list):
                 i = 0
                 for sub_phase in phase:
-                    writer.writerow([sub_phase.__class__.__name__, self.filenames[-i]])
+                    writer.writerow([sub_phase.__class__.__name__, self.filenames[-1]])
                     i += 1
             else:
                 writer.writerow([phase.__class__.__name__,
