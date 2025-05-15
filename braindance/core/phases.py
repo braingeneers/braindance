@@ -125,14 +125,14 @@ class PhaseManager:
                         print("Running sub phase:", sub_phase.__class__.__name__)
                         print("="*20)
                         sub_phase.run()
-                elif isinstance(phase, AnalysisPhase):
-                    # Make sure to close/save any previous phases
-                    # phase.run(cur_filename)
-                    # For testing
-                    if isinstance(phase, HeatmapPhase):
-                        self.analysis_dao = phase.run(self.analysis_dao, cur_filename)
-                    else:
-                        self.analysis_dao = phase.run(self.analysis_dao)
+                # elif isinstance(phase, AnalysisPhase):
+                #     # Make sure to close/save any previous phases
+                #     # phase.run(cur_filename)
+                #     # For testing
+                #     if isinstance(phase, HeatmapPhase):
+                #         self.analysis_dao = phase.run(self.analysis_dao, cur_filename)
+                #     else:
+                #         self.analysis_dao = phase.run(self.analysis_dao)
                 elif isinstance(phase, Phase):
                     phase.run()
                 self.env.close()
