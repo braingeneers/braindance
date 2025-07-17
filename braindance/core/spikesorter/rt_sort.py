@@ -1328,7 +1328,7 @@ def _save_traces_si(task):
     traces = recording.get_traces(start_frame=start_frame, 
                                   end_frame=end_frame, 
                                   channel_ids=[recording.get_channel_ids()[channel_idx]],
-                                  return_scaled=recording.has_scaled_traces()).flatten().astype(dtype)
+                                  return_scaled=recording.has_scaleable_traces()).flatten().astype(dtype)
     saved_traces = np.load(save_path, mmap_mode="r+")
     saved_traces[channel_idx] = traces
 
@@ -1371,7 +1371,7 @@ def save_traces_mea(rec_path, save_path,
         assert rec_h5['recordings']['rec0000']['well000']['groups']['routed']['raw'].shape == (rec_si.get_num_channels(), rec_si.get_total_samples()), "h5py file doesn't match what spikeinterface loads"
         chan_ind = list(range(rec_si.get_num_channels()))
         get_traces = _get_traces_mea_new
-    if rec_si.has_scaled_traces():
+    if rec_si.has_scaleable_traces():
         gain = rec_si.get_channel_gains()
     else:
         gain = np.full_like(chan_ind, default_gain, dtype="float16")

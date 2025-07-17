@@ -879,7 +879,7 @@ class WaveformExtractor:
         # return_scaled_corrected = RETURN_SCALED
         # if return_scaled_corrected:
         #     # Check if recording has scaled values:
-        #     if not self.recording.has_scaled_traces():
+        #     if not self.recording.has_scaleable_traces():
         #         print("Setting 'RETURN_SCALED' to False")
         #         return_scaled_corrected = False
         self.return_scaled = False  # return_scaled_corrected
@@ -3165,7 +3165,7 @@ class SortedUnit:
 
         template_mean = w_e.get_computed_template(unit_id=unit_id, mode="average")
         template_std = w_e.get_computed_template(unit_id=unit_id, mode="std")
-        if not SCALE_COMPILED_WAVEFORMS and w_e.recording.has_scaled_traces:
+        if not SCALE_COMPILED_WAVEFORMS and w_e.recording.has_scaleable_traces:
             gain = w_e.recording.get_channel_gains()
             offset = w_e.recording.get_channel_offsets()
             template_mean = ((template_mean - offset) / gain).astype("float32")
@@ -3194,7 +3194,7 @@ class SortedUnit:
 
         if COMPILE_WAVEFORMS:  # Avoid  <class 'OSError'>: [Errno 24] Too many open files  for recordings with 1000 units
             waveforms = w_e.get_waveforms(unit_id=unit_id)
-            if not SCALE_COMPILED_WAVEFORMS and w_e.recording.has_scaled_traces:
+            if not SCALE_COMPILED_WAVEFORMS and w_e.recording.has_scaleable_traces:
                 waveforms = ((waveforms - offset) / gain).astype("float32")
             self.waveforms = waveforms[:, w_e.peak_ind - self.nbefore:w_e.peak_ind + self.nafter, :]
 
