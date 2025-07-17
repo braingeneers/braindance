@@ -35,7 +35,7 @@ from braindance.core.base_env import BaseEnv
 # SpikeEvent is a named tuple that represents a single spike event
 SpikeEvent = namedtuple('SpikeEvent', 'frame channel amplitude')
 
-_spike_struct = '8xLif'
+_spike_struct = '@Lfhc0L'
 _spike_struct_size = struct.calcsize(_spike_struct)
 fs_ms = 20 # sampling rate in kHz
 
@@ -995,9 +995,9 @@ def parse_events_list(events_data):
     events = []
 
     if events_data is not None:
-        # The spike structure is 8 bytes of padding, a long frame
-        # number, an integer channel (the amplifier, not the
-        # electrode), and a float amplitude.
+        # The spike structure is a long frame number, a float amplitude, 
+        # a short channel number, and a character byte for the wellId.
+        # The struct is aligned to the size of the long.
 
         if len(events_data) % _spike_struct_size != 0:
             print(f'Events has {len(events_data)} bytes,',
