@@ -1,12 +1,18 @@
-import torch
-from torch import nn
+try:
+    import torch
+    from torch import nn
+except ImportError:
+    raise ImportError(
+        "PyTorch is required for the spike detection model but is not installed.\n"
+        "Install it with the appropriate CUDA version from https://pytorch.org/get-started/locally/\n"
+        "Or run: python -m braindance.install_check  to diagnose your environment."
+    )
 
-try: 
+try:
     import torch_tensorrt
     TENSORRT = True
-except ModuleNotFoundError:
+except (ModuleNotFoundError, ImportError):
     TENSORRT = False
-    # print("Cannot import torch_tensorrt")
 
 import numpy as np
 from scipy.signal import find_peaks
@@ -1026,7 +1032,12 @@ class ModelSpikeSorter(nn.Module):
         model = torch.jit.trace(model, [torch.rand(
             n_dim_0, self.num_channels_in, input_size, dtype=dtype, device=device)])
         if not TENSORRT:
-            print("Cannot compile detection model with torch_tensorrt because cannot load torch_tensorrt. Skipping NVIDIA compilation")
+            print(
+                "torch_tensorrt is not installed — skipping TensorRT compilation.\n"
+                "The model will still work with standard PyTorch (slower inference).\n"
+                "TensorRT is optional and only supported on Linux. "
+                "See https://pytorch.org/TensorRT/getting_started/installation.html"
+            )
             return model
         
         model = torch_tensorrt.compile(model,

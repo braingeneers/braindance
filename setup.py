@@ -25,7 +25,8 @@ setup(
     },
     entry_points={
         'console_scripts': [
-            'bdquery = braindance.core.maxwell.query_electrodes:main'
+            'bdquery = braindance.core.maxwell.query_electrodes:main',
+            'bdcheck = braindance.install_check:main',
         ],
     },
 )

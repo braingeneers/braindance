@@ -12,7 +12,15 @@ import warnings
 import numpy as np
 import scipy
 from sklearn.mixture import GaussianMixture
-import torch
+
+try:
+    import torch
+except ImportError:
+    raise ImportError(
+        "PyTorch is required for RT-Sort spike sorting but is not installed.\n"
+        "Install it with the appropriate CUDA version from https://pytorch.org/get-started/locally/\n"
+        "Or run: python -m braindance.install_check  to diagnose your environment."
+    )
 
 from diptest import diptest
 import pynvml
