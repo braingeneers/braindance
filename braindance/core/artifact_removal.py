@@ -1,3 +1,5 @@
+import itertools
+
 import numpy as np
 from numba import njit, prange
 from functools import wraps
@@ -78,8 +80,13 @@ LOOKUP_TABLE = np.array([
     20922789888000, 355687428096000, 6402373705728000,
     121645100408832000, 2432902008176640000], dtype='int64')
 
-@docstring_wrapper
 @njit
+def _fast_factorial(n):
+    if n > 20:
+        raise ValueError
+    return LOOKUP_TABLE[n]
+
+
 def fast_factorial(n):
     """
     Compute factorial using a lookup table for faster computation.
@@ -93,9 +100,7 @@ def fast_factorial(n):
     Raises:
         ValueError: If n is greater than 20.
     """
-    if n > 20:
-        raise ValueError
-    return LOOKUP_TABLE[n]
+    return _fast_factorial(n)
 
 @docstring_wrapper
 @njit
@@ -208,8 +213,8 @@ class ArtifactRemoval:
         for k in range(4):
             cur_sum = 0
             for l in range(k+1):
-                num = (-1)**(k-l)*fast_factorial(k)
-                den = fast_factorial(l)*fast_factorial(k-l)
+                num = (-1)**(k-l)*_fast_factorial(k)
+                den = _fast_factorial(l)*_fast_factorial(k-l)
                 cur_sum += num/den*Wp[l] 
             # print(v.shape)
             # print("nc + N + 1", nc + self.N + 1)
@@ -355,6 +360,18 @@ class ArtifactRemoval:
         arr[-1] = val
         return arr
     
+    def _reset_state(self):
+        '''Reset internal state so run() can be called for a new trace.'''
+        self.state = 'init'
+        self.init_ind = 0
+        self.v[:] = 0
+        self.W[:] = 0
+        self.Wp[:] = 0
+        self.moving_mean = 0
+        self.spike = False
+        self.depeg_count = 0
+        self.prev_a = None
+
     def run(self, data, return_artifacts=False, return_spikes=False, progress_bar=False, n_workers=1):
         '''Runs the process for the whole data input.
         If data is a 1D array, it will return the cleaned data
@@ -367,10 +384,11 @@ class ArtifactRemoval:
         else:
             def tqdm(x, *args, **kwargs):
                 return x
-        
+
         if len(data.shape) == 2:
-            all_spikes = [] 
+            all_spikes = []
             for ch, full_trace in tqdm(enumerate(data)):
+                self._reset_state()
                 output_data[ch], output_art[ch], spikes = self.run(full_trace, return_artifacts=True, return_spikes=True)
                 all_spikes.append(spikes)
             if return_artifacts and return_spikes:
@@ -381,18 +399,19 @@ class ArtifactRemoval:
                 return output_data, all_spikes
             else:
                 return output_data
-            
+
         spike_times = []
 
-        # Fit the first N points
-        output_data[:self.nc_start], output_art[:self.nc_start] = self.fit(data[:2*self.N+1], self.T, self.S)
-        
+        # Fit the first nc_start points (skip if nc_start == 0)
+        if self.nc_start > 0:
+            output_data[:self.nc_start], output_art[:self.nc_start] = self.fit(data[:2*self.N+1], self.T, self.S)
+
         for i, frame in tqdm(enumerate(data), total=len(data), desc="Processing data", leave=False):
             if i < self.nc_start:
                 continue
-            output_data[i-self.nc_start], output_art[i-self.nc_start], spike = self.fit_step(frame)
+            output_data[i], output_art[i], spike = self.fit_step(frame)
             if spike:
-                spike_times.append(i-self.nc_start)
+                spike_times.append(i)
 
         if return_artifacts and return_spikes:
             return output_data, output_art, spike_times

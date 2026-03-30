@@ -1078,10 +1078,31 @@ class RTSort:
         return torch.tensor(data, dtype=self.dtype, device=self.device)
 
     def save(self, pickle_path):
+        """
+        Save the RTSort object to a pickle file.
+
+        The compiled TensorRT/TorchScript model cannot be pickled, so it is
+        excluded from the saved file. After loading the pickle in a new
+        session, reattach the model before calling ``sort_offline``::
+
+            import pickle
+            from braindance.core.spikedetector.model import ModelSpikeSorter
+
+            rt_sort = pickle.load(open(pickle_path, "rb"))
+            rt_sort.model = ModelSpikeSorter.load_compiled(inter_path)
+            rt_sort.sort_offline(recording)
+
+        If the RTSort object was created via :func:`detect_sequences`, the
+        compiled model is cached at ``inter_path / "compiled.ts"``.
+
+        Args:
+            pickle_path (str or pathlib.Path): Destination path for the pickle
+                file. Parent directories are created if they do not exist.
+        """
         self.reset()
         model = self.model
         self.model = None
-        
+
         pickle_path = Path(pickle_path)
         pickle_path.parent.mkdir(exist_ok=True, parents=True)
         pickle_dump(self, pickle_path)
