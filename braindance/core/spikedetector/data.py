@@ -7,8 +7,15 @@ from scipy import signal
 from collections.abc import Iterable
 import json
 
-import torch
-from torch.utils.data import Dataset, DataLoader, ConcatDataset
+try:
+    import torch
+    from torch.utils.data import Dataset, DataLoader, ConcatDataset
+except ImportError:
+    raise ImportError(
+        "PyTorch is required for spike detection data utilities but is not installed.\n"
+        "Install it with the appropriate CUDA version from https://pytorch.org/get-started/locally/\n"
+        "Or run: python -m braindance.install_check  to diagnose your environment."
+    )
 
 from braindance.core.spikedetector import plot 
 from braindance.core.spikesorter.kilosort2 import run_kilosort2

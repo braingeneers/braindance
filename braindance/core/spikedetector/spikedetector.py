@@ -1,14 +1,26 @@
+try:
+    import torch
+except ImportError:
+    raise ImportError(
+        "PyTorch is required for spike detection but is not installed.\n"
+        "Install it with the appropriate CUDA version from https://pytorch.org/get-started/locally/\n"
+        "Or run: python -m braindance.install_check  to diagnose your environment."
+    )
+
 from braindance.core.spikedetector.model import ModelSpikeSorter
-import torch
 
 try:
     import torch_tensorrt
     model_path = '../core/spikedetector/model_256ch.pt'
-    print("Using TensorRT")
+    print("TensorRT available — using optimized model.")
 except ImportError:
     model_path = '../core/spikedetector/model_256ch_torch.pt'
-    map_location=torch.device('cpu')
-    print("Using PyTorch")
+    map_location = torch.device('cpu')
+    print(
+        "TensorRT not found — falling back to standard PyTorch model (slower inference).\n"
+        "TensorRT is optional and only supported on Linux. "
+        "See https://pytorch.org/TensorRT/getting_started/installation.html"
+    )
 
 
 

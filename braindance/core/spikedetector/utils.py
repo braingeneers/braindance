@@ -1,7 +1,15 @@
 import numpy as np
 import random
-import torch
 import datetime
+
+try:
+    import torch
+except ImportError:
+    raise ImportError(
+        "PyTorch is required for spike detection utilities but is not installed.\n"
+        "Install it with the appropriate CUDA version from https://pytorch.org/get-started/locally/\n"
+        "Or run: python -m braindance.install_check  to diagnose your environment."
+    )
 import shutil
 from pathlib import Path
 
