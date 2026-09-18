@@ -1,0 +1,2 @@
+# Source-checkout convenience; the installed package already declares these.
+-r ../../../requirements.txt

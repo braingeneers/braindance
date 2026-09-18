@@ -5,6 +5,7 @@ class Sequence:
         if DEBUG:
             print('Sequence created')
         self.sequence = []
+        self.token = self.sequence
 
     def append(self, item):
         self.sequence.append(item)

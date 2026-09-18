@@ -1,0 +1,83 @@
+# Generic NRP quick-job template. Placeholders substituted by nrp_run.sh via envsubst.
+# One rendered copy == one k8s Job. Code is shipped via the ${SCRIPT_CM} ConfigMap (no image rebuild).
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: ${JOB_NAME}
+  labels:
+    owner: hsch
+    kind: nrp-quick-job
+spec:
+  ttlSecondsAfterFinished: 172800      # auto-delete 48h after finish
+  backoffLimit: ${BACKOFF}
+  template:
+    metadata:
+      labels:
+        owner: hsch
+        kind: nrp-quick-job
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  # known-bad nodes (CUDA-init flakes / admission rejects) — keep blacklisted
+                  - key: kubernetes.io/hostname
+                    operator: NotIn
+                    values:
+                      - nautilus-it-gpu05.fullerton.edu
+                      - nautilus-it-gpu06.fullerton.edu
+                      - nautilus-it-gpu03.fullerton.edu
+                      - ry-gpu-01.sdsc.optiputer.net
+                  # HS 2026-08-10: do NOT add nodes to this list for performance
+                  # reasons. Placement is the cluster's call; steering it risks the
+                  # namespace's standing on NRP. Fix throughput by right-sizing
+                  # requests, not by excluding hosts. Observed-bad nodes are recorded
+                  # in memory/nrp_low_utilization_admission_block.md instead.
+      containers:
+        - name: quickjob
+          image: ${IMAGE}
+          imagePullPolicy: Always
+          command: ["/bin/bash", "-lc"]
+          args:
+            - |
+              set -euo pipefail
+              echo "[nrp-quick-job] host=$(hostname) script=${SCRIPT_NAME} args=${SCRIPT_ARGS}"
+              mkdir -p /app/data/outputs
+              cd /app/data/scripts
+              python3 "${SCRIPT_NAME}" ${SCRIPT_ARGS}
+              echo "[nrp-quick-job] DONE rc=$?"
+          env:
+            - {name: PYTHONUNBUFFERED, value: "1"}
+            # BLAS thread caps: without these, sklearn/numpy oversubscribe threads and
+            # many-small-matrix workloads (permutation nulls, per-window CV) crawl. Capped to the
+            # requested CPU count; for heavy perm loops even 1-2 is often faster (override via env).
+            - {name: OPENBLAS_NUM_THREADS, value: "${BLAS_THREADS}"}
+            - {name: OMP_NUM_THREADS, value: "${BLAS_THREADS}"}
+            - {name: MKL_NUM_THREADS, value: "${BLAS_THREADS}"}
+            - {name: NUMEXPR_NUM_THREADS, value: "${BLAS_THREADS}"}
+            - {name: VECLIB_MAXIMUM_THREADS, value: "${BLAS_THREADS}"}
+            - {name: PYTHONPATH, value: "/app/src"}
+            - {name: BRAINDANCE_DATA_DIR, value: "/app/data/cache"}
+            - {name: BRAINDANCE_OUTPUT_DIR, value: "/app/data/outputs"}
+            - {name: BRAINDANCE_AUTO_UPLOAD, value: "${AUTO_UPLOAD}"}
+            - {name: AWS_SHARED_CREDENTIALS_FILE, value: "/.aws/credentials"}
+            - {name: AWS_CONFIG_FILE, value: "/.aws/.s3cfg"}
+            - {name: AWS_ENDPOINT_URL, value: "https://s3-west.nrp-nautilus.io"}
+            - {name: AWS_REQUEST_CHECKSUM_CALCULATION, value: "when_required"}
+            - {name: AWS_RESPONSE_CHECKSUM_VALIDATION, value: "when_required"}
+          volumeMounts:
+            - {name: prp-s3-credentials, mountPath: "/.aws/credentials", subPath: "credentials"}
+            - {name: prp-s3-credentials, mountPath: "/.aws/.s3cfg", subPath: ".s3cfg"}
+            - {name: script-cm, mountPath: "/app/data/scripts"}
+            - {name: data-volume, mountPath: "/app/data/cache"}
+            - {name: dshm, mountPath: /dev/shm}
+          resources:
+            requests: {cpu: "${CPU}", memory: "${MEM}", ephemeral-storage: "${EPHEMERAL}"${GPU_LINE}}
+            limits:   {cpu: "${CPU}", memory: "${MEM}", ephemeral-storage: "${EPHEMERAL}"${GPU_LINE}}
+      volumes:
+        - {name: prp-s3-credentials, secret: {secretName: prp-s3-credentials}}
+        - {name: script-cm, configMap: {name: ${SCRIPT_CM}, defaultMode: 0755}}
+        - {name: data-volume, emptyDir: {}}
+        - {name: dshm, emptyDir: {medium: Memory, sizeLimit: 8Gi}}
+      restartPolicy: Never

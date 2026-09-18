@@ -6,9 +6,15 @@ import array
 import time
 import numpy as np
 import os
+import warnings
 
 from pathlib import Path
 from multiprocessing import Process, Queue
+
+try:
+    from tqdm import trange
+except ImportError:
+    trange = None
 
 try:
     import maxlab
@@ -24,7 +30,38 @@ except ImportError:
 
 # stop_process_using_port(7204) to stop dummy raw data if not stopped automatically (useful for Jupyter notebooks)
 import psutil
+def sleep_with_progress(seconds, desc, verbose=1):
+    if not verbose:
+        time.sleep(seconds)
+        return
 
+    if trange is None:
+        print(f"{desc} ({seconds}s)")
+        time.sleep(seconds)
+        return
+
+    for _ in trange(seconds, desc=desc, unit="s"):
+        time.sleep(1)
+
+
+def find_process_by_port(port):
+    for proc in psutil.process_iter(['pid', 'name']):
+        try:
+            for conn in proc.connections():
+                if conn.laddr.port == port:
+                    return proc
+        except psutil.AccessDenied:
+            pass  # Ignore processes we don't have permission to access
+    return None
+def stop_process_using_port(port):
+    proc = find_process_by_port(port)
+    if proc:
+        print(
+            f"Found process {proc.pid} ({proc.name()}) using port {port}. Stopping...")
+        proc.terminate()
+        proc.wait()  # Wait for the process to terminate
+    else:
+        print(f"No process found using port {port}")
 
 
 from collections import namedtuple
@@ -37,75 +74,142 @@ SpikeEvent = namedtuple('SpikeEvent', 'frame channel amplitude')
 
 _spike_struct = '@Lfhc0L'
 _spike_struct_size = struct.calcsize(_spike_struct)
+_spike_struct_formats = (
+    # Padded layout: frame, channel, amplitude.
+    ('padded', '8xLif', struct.calcsize('8xLif')),
+    # wellId layout: frame, amplitude, channel, wellId.
+    ('well_id', '@Lfhc0L', struct.calcsize('@Lfhc0L')),
+)
+_spike_struct_format = None
 fs_ms = 20 # sampling rate in kHz
 
 
 class MaxwellEnv(BaseEnv):
     """
-    The MaxwellEnv class extends from the BaseEnv class and implements a specific environment 
-    for running experiments on MaxWell's MaxOne system. This class is used to interact with the
-    MaxOne system, receive data, and send stimulation commands.
+    Maxwell acquisition environment with hardware and local replay sources.
 
-    Attributes:
-        config (str): Stores the config filepath in order to easily reload the array.
-        name (str): Stores the name of the environment instance.
-        max_time_sec (int): Stores the maximum experiment time.
-        save_file (str): The file where the data will be saved.
-        stim_electrodes (list): Stores the list of electrodes for stimulation.
-        verbose (int): Controls the verbosity of the environment's operations.
-        array (None): Initialized as None, to be updated in sub-classes as needed.
-        subscriber (None): Initialized as None, to be updated in sub-classes as needed.
-        save_dir (str): Stores the directory where the simulation data will be saved.
-        is_stimulation (bool): A flag that indicates whether a stimulation is going to occur.
-        stim_log_file (str or None): The file where the log of the stimulation is saved. If no stimulation is going to occur, this is None.
-        stim_units (None): Initialized as None, to be updated in sub-classes as needed.
-        stim_electrodes_dict (None): Initialized as None, to be updated in sub-classes as needed.
-        start_time (float): The time when the environment is initialized.
-        cur_time (float): The current time, updated at each step.
-        last_stim_time (float): The time when the last stimulation occurred.
-        smoke_test (bool): A flag that indicates whether the environment is being used for a smoke test.
+
+    Attributes
+    ----------
+    config : str
+        Stores the config filepath in order to easily reload the array.
+    name : str
+        Stores the name of the environment instance.
+    max_time_sec : int
+        Stores the maximum experiment time.
+    save_file : str
+        The file where the data will be saved.
+    stim_electrodes : list
+        Stores the list of electrodes for stimulation.
+    verbose : int
+        Controls the verbosity of the environment's operations.
+    array : None
+        Initialized as None, to be updated in sub-classes as needed.
+    subscriber : None
+        Initialized as None, to be updated in sub-classes as needed.
+    save_dir : str
+        Stores the directory where the simulation data will be saved.
+    is_stimulation : bool
+        A flag that indicates whether a stimulation is going to occur.
+    stim_log_file : str or None
+        The file where the log of the stimulation is saved. If no stimulation is going to occur, this is None.
+    stim_units : None
+        Initialized as None, to be updated in sub-classes as needed.
+    stim_electrodes_dict : None
+        Initialized as None, to be updated in sub-classes as needed.
+    start_time : float
+        The time when the environment is initialized.
+    cur_time : float
+        The current time, updated at each step.
+    last_stim_time : float
+        The time when the last stimulation occurred.
+    smoke_test : bool
+        A flag that indicates whether the environment is being used for a smoke test
+    skip_offset : bool
+        A flag that indicates whether to skip the offset calculation.
+        
     """
 
-    def __init__(self, config, name="", stim_electrodes=[], max_time_sec=60,
+    def __init__(self, config=None, name="", stim_electrodes=None, max_time_sec=60,
                 save_dir="data", multiprocess=False, render=False,
                 filt=False, observation_type='spikes', verbose = 1, 
-                smoke_test=False, dummy=None, start=True):
+                smoke_test=False, dummy=None, start=True, skip_offset=False,
+                replay=None):
         """
-        Initialize the Maxwell environment.
-
-        Args:
-            config (str): A path to the maxwell config file. This is usually made by the Maxwell GUI, 
-                and contains the information about the array.
-            name (str): The name of the environment instance. This is used for saving data.
-            stim_electrodes (list): A list of electrodes for stimulation. If no electrodes are specified, no stimulation will occur.
-            max_time_sec (int): The maximum experiment time in seconds.
-            save_dir (str): The directory where the stimulation data will be saved.
-            filt (bool): A flag that indicates whether a filter should be applied to the data. The filter is onboard the chip,
-                and is applied to the data before it is sent to the computer. It adds ~100ms of latency.
-            observation_type (str): A string that indicates the type of observation that the environment should return.
+        Parameters
+        ----------
+        config : str
+            A path to the maxwell config file. This is usually made by the Maxwell GUI, 
+            and contains the information about the array.
+        name : str
+            The name of the environment instance. This is used for saving data.
+        stim_electrodes : list
+            A list of electrodes for stimulation. If no electrodes are specified, no stimulation will occur.
+        max_time_sec : int
+            The maximum experiment time in seconds.
+        save_dir : str
+            The directory where the stimulation data will be saved.
+        filt : bool
+            A flag that indicates whether a filter should be applied to the data. The filter is onboard the chip,
+            and is applied to the data before it is sent to the computer. It adds ~100ms of latency.
+        observation_type : str
+            A string that indicates the type of observation that the environment should return.
                 'spikes' returns a list of spike events
                 'raw' returns the raw datastream frame with shape (ch,1) 
-            verbose (int): An integer that controls the verbosity of the environment's operations. 0 is silent, 1 is verbose.
-            smoke_test (bool): A flag that indicates whether the environment is being used for a smoke test. If True, the environment
-                will not save any data, will use dummy logic, and no hardware will be used.
-            dummy (str): A flag that will indicate whether to use a dummy maxwell server.
+        verbose : int
+            An integer that controls the verbosity of the environment's operations. 0 is silent, 1 is verbose.
+        smoke_test : bool
+            A flag that indicates whether the environment is being used for a smoke test. If True, the environment
+            will not save any data, will use dummy logic, and no hardware will be used.
+        dummy : str
+            A flag that will indicate whether to use a dummy maxwell server.
                 'sine' will use a sine wave for the data
-                *filepath* will use the first 30 seconds of data from the filepath
+                '{filepath}' will use the first 30 seconds of data from the filepath
                 None will use the real maxwell server
+
         """
         super().__init__(max_time_sec=max_time_sec, verbose=verbose)
 
+        if stim_electrodes is None:
+            stim_electrodes = []
+        if replay is None and dummy is not None:
+            warnings.warn(
+                "MaxwellEnv(dummy=...) is deprecated; use MaxwellEnv(replay={'source': ...})",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+            replay = {'source': dummy}
+        elif replay is not None and dummy is not None:
+            raise ValueError("Specify replay or dummy, not both")
+
+        self.is_replay = replay is not None
+        self._maxlab = maxlab
+        if self.is_replay:
+            # Local acquisition must remain local on machines with maxlab installed.
+            from braindance.core import dummy_maxlab
+            self._maxlab = dummy_maxlab
+        self.replay = dict(replay or {})
+        self.replay_source = None
+        self.replay_writer = None
+        self._replay_done = False
+        self._closed = False
+        self.latest_frame = None
+        self.latest_batch = None
+        if self.is_replay and (multiprocess or render):
+            raise ValueError("Replay mode does not support multiprocess or render")
+        if not self.is_replay and config is None:
+            raise ValueError("config is required when using Maxwell hardware")
+
         self.config = config
-        self.config_data = Config(config)
+        self.config_data = None if self.is_replay else Config(config)
         self.base_name = name
         self.name = name
         self.multiprocess = multiprocess
 
-        self.stim_electrodes = stim_electrodes
+        self.stim_electrodes = [int(e) for e in stim_electrodes]
         self.active_units = []
-        self.num_channels = self.config_data.get_num_channels()
         self.observation_type = observation_type
-
+        
         self.array = None
         self.subscriber = None
 
@@ -113,19 +217,38 @@ class MaxwellEnv(BaseEnv):
         self.plot_worker = None
         self.dummy = dummy
 
-        if self.dummy:
-            print("Launching dummy server")
-            launch_dummy_server(self.dummy)
-            
-            
+        if self.is_replay:
+            from braindance.core.replay import H5ReplaySource
 
-        
-        # Setup maxwell
-        self.subscriber, self.stim_units, self.stim_electrodes_dict = init_maxone(
-                config, stim_electrodes, filt=filt,
-                verbose=1, gain=1024, cutoff='1Hz',
-                spike_thresh=5, dummy=dummy
-        )
+            transport = self.replay.pop('transport', 'direct')
+            if transport != 'direct':
+                raise ValueError("MaxwellEnv replay transport must be 'direct'; use dummy_zmq_np for ZMQ tests")
+            self.replay_write_output = bool(self.replay.pop('write_output', True))
+            if 'source' not in self.replay:
+                raise ValueError("Replay configuration requires a source")
+            source = self.replay.pop('source')
+            if callable(getattr(source, 'read', None)):
+                required = ('num_channels', 'mapping', 'sampling_hz', 'lsb',
+                            'gain', 'hpf', 'finished', 'elapsed_s', 'close')
+                missing = [key for key in required if not hasattr(source, key)]
+                if missing or not callable(getattr(source, 'close', None)) or self.replay:
+                    raise ValueError(f"Custom source needs {missing}; configure source options on the source itself")
+                self.replay_source = source
+            else:
+                self.replay_source = H5ReplaySource(source=source, **self.replay)
+            self.num_channels = self.replay_source.num_channels
+            self.stim_units = [self._maxlab.chip.StimulationUnit(i) for i in range(len(stim_electrodes))]
+            self.stim_electrodes_dict = {
+                unit: electrode for unit, electrode in zip(self.stim_units, self.stim_electrodes)
+            }
+        else:
+            self.num_channels = self.config_data.get_num_channels()
+            # Setup Maxwell hardware and subscriber.
+            self.subscriber, self.stim_units, self.stim_electrodes_dict = init_maxone(
+                    config, stim_electrodes, filt=filt,
+                    verbose=1, gain=1024, cutoff='1Hz',
+                    spike_thresh=5, dummy=None, skip_offset=skip_offset
+            )
 
         # Setup saving
         self.save_dir = str(Path(save_dir).resolve())
@@ -158,8 +281,10 @@ class MaxwellEnv(BaseEnv):
                 self.plot_worker = Process(target=plot_worker, args=(self.data_queue,))
                 self.plot_worker.start()
 
-        if not dummy:
-            time.sleep(5) # Wait for the system to settle
+        if not self.is_replay:
+            # Let hardware settle, then drop packets accumulated during the wait.
+            sleep_with_progress(10, "Settling after Maxwell init", verbose=verbose)
+            ignore_remaining_packets(self.subscriber, verbose=verbose)
         
 
         
@@ -168,6 +293,8 @@ class MaxwellEnv(BaseEnv):
 
         # Time management
         self._init_time_management()
+        if self.is_replay:
+            self.cur_time = 0.0
         self.last_stim_time = 0
         self.last_stim_times = np.zeros(len(stim_electrodes))
 
@@ -183,9 +310,6 @@ class MaxwellEnv(BaseEnv):
             print("===================== Beginning experiment =====================")
         
     def start(self):
-        """
-        Start the experiment by initializing time management, flushing the buffer, and starting the recording.
-        """
         # Time management
         self._init_time_management()
         self.last_stim_time = 0
@@ -207,8 +331,11 @@ class MaxwellEnv(BaseEnv):
         """
         Reset the environment
         """
+        if self.is_replay:
+            raise NotImplementedError("Create a new MaxwellEnv to restart replay")
         print("===================== Resetting experiment =====================")
         self._cleanup()
+        self._closed = False
 
         # Change name
         self._validate_name()
@@ -240,53 +367,92 @@ class MaxwellEnv(BaseEnv):
         # Reset the environment with the same parameters
 
     def clear_buffer(self, num_successive_waits=10, min_wait_f=0.5, buffer_size=10,
-                     samp_freq_hz=20000):
+                     samp_freq_hz=20000, timeout_s=30):
         """
-        Clear the ZMQ socket buffer, so self.step() returns latest data.
-
+        Clear the ZMQ socket buffer, so self.step() returns latest data
         This is done by waiting until the time to receive buffer_size frames is at least to min_wait_f*buffer_size
-        for num_successive_waits successive method calls. There are two buffers: the ZMQ socket buffer and 
-        buffer_size used in self.step(buffer_size=buffer_size).
-
-        Args:
-            num_successive_waits (int): Number of successive waits before considering the buffer cleared.
-            min_wait_f (float): Minimum wait factor.
-            buffer_size (int): Size of the buffer.
-            samp_freq_hz (int): Sampling frequency in Hz.
+        for num_successive_waits successive method calls
+            There are two buffers: the ZMQ socket buffer and buffer_size used in self.step(buffer_size=buffer_size)
+        
+        Parameters
+        ----------
+        timeout_s : float
+            Maximum time in seconds to spend clearing the buffer before giving up.
+            Default 30s. Set to None to disable timeout (original behavior).
         """
+        if self.is_replay:
+            return
         print("Clearing buffer")
         
         from time import perf_counter
         
         total_start = perf_counter()
         cur_count = 0
+        iteration = 0
         while True:
             start = perf_counter()
             self.step(buffer_size=buffer_size)
             end = perf_counter()
-            frames = (end - start) * samp_freq_hz
+            elapsed_step = end - start
+            frames = elapsed_step * samp_freq_hz
             
             if frames/buffer_size >= min_wait_f:
                 cur_count += 1
             else:
                 cur_count = 0
+            
+            iteration += 1
+            
+            # Progress logging every 1000 iterations
+            if iteration % 1000 == 0:
+                total_elapsed = perf_counter() - total_start
+                print(f"  clear_buffer: {iteration} iterations, {total_elapsed:.1f}s elapsed, "
+                      f"cur_count={cur_count}/{num_successive_waits}, "
+                      f"last step: {elapsed_step*1000:.2f}ms ({frames:.1f} frames)")
                 
             if cur_count == num_successive_waits:
                 break
+            
+            # Timeout check
+            if timeout_s is not None:
+                total_elapsed = perf_counter() - total_start
+                if total_elapsed > timeout_s:
+                    print(f"WARNING: clear_buffer timed out after {total_elapsed:.1f}s "
+                          f"({iteration} iterations, cur_count={cur_count}/{num_successive_waits}). "
+                          f"Proceeding anyway.")
+                    break
+
         total_end = perf_counter()
-        print(f"Time to clear buffer: {total_end-total_start:.2f}s")
+        print(f"Time to clear buffer: {total_end-total_start:.2f}s ({iteration} iterations)")
         
 
     def get_observation(self, buffer_size=None):
-        """
-        Create the observation from the electrodes or spike events.
+        '''
+        Create the observation from the electrodes or spike events
+        '''
+        if self.is_replay:
+            count = 1 if buffer_size is None else int(buffer_size)
+            batch = self.replay_source.read(
+                count=count,
+                convert_raw=self.observation_type == 'raw',
+            )
+            if batch is None:
+                self._replay_done = True
+                return [] if self.observation_type == 'spikes' else None
+            self.latest_batch = batch
+            if self.replay_writer is not None:
+                self.replay_writer.append(batch)
+            self.latest_frame = int(batch['frame_numbers'][-1])
+            self._replay_done = self.replay_source.finished
 
-        Args:
-            buffer_size (int, optional): Size of the buffer for raw data observation.
+            if self.observation_type == 'spikes':
+                return [event for frame_events in batch['events'] for event in frame_events]
+            if self.observation_type == 'raw':
+                # Packed buffers avoid a Python conversion for every channel/sample.
+                frames = [array.array('f', frame.tobytes()) for frame in batch['raw_float32']]
+                return frames[0] if buffer_size is None else frames
+            raise ValueError(f"Unsupported observation_type: {self.observation_type}")
 
-        Returns:
-            list or numpy.ndarray: Observation data.
-        """
         if self.observation_type == 'spikes':
             # Receive data
             if self.multiprocess:
@@ -295,10 +461,12 @@ class MaxwellEnv(BaseEnv):
 
             else:
                 frame_number, frame_data, events_data = receive_packet(self.subscriber) #TODO: Get all frames, populate buffer
+                if frame_number is not None:
+                    self.latest_frame = frame_number
                 # frame = self._parse_frame(frame_data) # Raw datastream
 
                 # If events on >15% of channels, then we assume that the data is bad -> stim artifact
-                n_events = np.nan if events_data is None else len(events_data)//_spike_struct_size
+                n_events = np.nan if events_data is None else len(events_data)//get_spike_struct_size(events_data)
                 if n_events < self.num_channels * .15:
                     obs = parse_events_list(events_data) # Spike events
                 else:
@@ -311,6 +479,8 @@ class MaxwellEnv(BaseEnv):
             # ---------------------------
             if buffer_size is not None:
                 frame_numbers, frames, event = receive_packet(self.subscriber, buffer_size=buffer_size)
+                if not frame_numbers:
+                    return None
                 obs_list = []
                 for frame in frames:
                     obs_list.append(parse_frame(frame))
@@ -324,24 +494,28 @@ class MaxwellEnv(BaseEnv):
             else:
                 frame_number, frame_data, events_data = receive_packet(self.subscriber)
                 obs = parse_frame(frame_data)
+                if frame_number is not None:
+                    self.latest_frame = frame_number
             return obs 
 
 
     def step(self, action=None, tag=None, buffer_size=None):
-        """
-        Receive events published since last time step() was called.
+        '''
+        Recieve events published since last time step() was called.
         This includes spike events and raw datastream.
 
-        Args:
-            action (list, optional): A list of stimulation commands. Each command is a tuple of the form 
-                (electrode_index, amplitude_mV, phase_length_us).
-            tag (str, optional): A tag for the stimulation log.
-            buffer_size (int, optional): Size of the buffer for observation.
-
-        Returns:
-            tuple: A tuple containing the observation and a boolean indicating if the episode is done.
-        """
-        self.cur_time = time.perf_counter()
+        Parameters
+        ----------
+        action : list 
+            Either
+                1) a tuple of the form (maxlab sequence, [electrode_inds])
+                2) a tuple of the form (stim_command, electrode_inds)
+                3) a tuple of the form (stim_command, electrode_inds, tag) # TODO: Update
+            where stim_command is a list of tuples of the form ('stim', [neuron inds], mv, us per phase)
+            electrode_inds is a list of electrode indices to stimulate
+        
+        '''
+        self.cur_time = self._clock_now()
 
         # Receive data
         if self.multiprocess:
@@ -362,37 +536,76 @@ class MaxwellEnv(BaseEnv):
 
 
         if action is not None:
-            if type(action[0][0]) == str:
-                self._create_stim_pulse_sequence(action)
-                electrode_inds = action[0][1]
-            else: 
-                self._create_stim_pulse(action)
-                electrode_inds = action[0]
-
-            
-            self.seq.send()
-            self._log_stimulation(action, tag=tag)
-            self.last_stim_time = self.cur_time
-            self.last_stim_times[[electrode_inds]] = self.cur_time
-
-            if self.verbose >=2:
-                print(f'Stimulating at t={self.cur_time} with command:', self.seq.token)
-
-
-        done = self._check_if_done()
-
+            self.stimulate(action, tag=tag)
+        done = self._replay_done or self._check_if_done()
         return obs, done
-    
+
+    def stimulate(self, action, tag=None):
+        """Dispatch after acquisition without consuming another batch.
+
+        Replay logs the command and notifies an optional source callback. It
+        never sends a hardware sequence, even when real maxlab is installed.
+        """
+        if self._closed:
+            raise RuntimeError("Cannot stimulate a closed environment")
+        if not self.is_stimulation:
+            raise ValueError("No stimulation electrodes configured")
+        manual = isinstance(action[0], str) and action[0] == "manual"
+        if manual and self.is_replay:
+            raise ValueError("Replay requires explicit pulse commands, not manual sequences")
+        if manual:
+            self.seq, electrode_inds = action[1], action[2]
+        elif isinstance(action[0][0], str):
+            electrode_inds = sorted({i for cmd in action if cmd[0] == 'stim' for i in cmd[1]})
+            if any(not 0 <= i < len(self.stim_electrodes) for i in electrode_inds):
+                raise ValueError("Stimulation index outside configured electrodes")
+            self._create_stim_pulse_sequence(action)
+        else:
+            electrode_inds = action[0]
+            if any(not 0 <= i < len(self.stim_electrodes) for i in electrode_inds):
+                raise ValueError("Stimulation index outside configured electrodes")
+            self._create_stim_pulse(action)
+        if self.is_replay:
+            callback = getattr(self.replay_source, 'on_stimulation', None)
+            if callback is not None:
+                callback(action, frame=self.latest_frame, stim_electrodes=self.stim_electrodes)
+        else:
+            self.seq.send()
+        self._log_stimulation(action, tag=tag)
+        stim_time = self._clock_now()
+        self.last_stim_time = stim_time
+        self.last_stim_times[electrode_inds] = stim_time
+        if self.verbose >= 2:
+            print(f'Stimulating at t={stim_time} with command:', self.seq.token)
+
+    def _clock_now(self):
+        if self.is_replay and self.replay_source is not None:
+            return self.replay_source.elapsed_s
+        return time.perf_counter()
+
+    def time_elapsed(self):
+        """Experiment time: source-frame time in replay, wall time on hardware."""
+        if self.is_replay and self.replay_source is not None:
+            return self.replay_source.elapsed_s
+        return super().time_elapsed()
+
+    def wall_time_elapsed(self):
+        """Wall time since environment initialization, for diagnostics."""
+        return super().time_elapsed()
+
+    @property
+    def dt(self):
+        return self._clock_now() - self.cur_time
     
     @property
     def stim_dt(self):
         '''Returns time since last stimulation.'''
-        return time.perf_counter() - self.last_stim_time
+        return self._clock_now() - self.last_stim_time
     
     @property
     def stim_dts(self):
         '''Returns time since last stimulation.'''
-        return time.perf_counter() - self.last_stim_times
+        return self._clock_now() - self.last_stim_times
     
     def close(self):
         '''Shuts down the environment and saves the data.'''
@@ -416,26 +629,34 @@ class MaxwellEnv(BaseEnv):
             print('At ', os.path.join(self.save_dir, f'{name}.raw.h5'))
         self.name = name
 
+
+    
+
     def _create_stim_pulse(self, stim_command):
-        """
-        Create a pulse sequence that sets the DAC amplitude in a pulse shape for a brief period.
+        '''
+        Create a pulse sequence that just sets the DAC amplitude in a pulse shape for a brief
+        period. This should be combined with code that connects electrodes to the DAC in order
+        to actually generate stimulus behavior.
 
-        Args:
-            stim_command (tuple): A tuple of the form (stim_electrodes, amplitude_mV, phase_length_us)
-                stim_electrodes (list): A list of electrode numbers to stimulate.
-                amplitude_mV (float): The amplitude of the square wave, in mV.
-                phase_length_us (float): The length of each phase of the square wave, in us.
-
-        Returns:
-            maxlab.Sequence: The created stimulation sequence.
-        """
-        self.seq = maxlab.Sequence()
+        Parameters
+        ----------
+        stim_command : tuple
+            A tuple of the form (stim_electrodes, amplitude_mV, phase_length_us)
+                stim_electrodes : list
+                    A list of electrode numbers to stimulate.
+                amplitude_mV : float
+                    The amplitude of the square wave, in mV.
+                phase_length_us : float
+                    The length of each phase of the square wave, in us.
+        '''
+        self.seq = self._maxlab.Sequence()
         self.active_units = []
         
         neurons, amplitude_mV, phase_length_us = stim_command # phase length in us
         
         # Append each neuron that needs to be stimmed in order
         for n in neurons:
+            # print(f'Adding neuron {n} to stim sequence')
             unit = self.stim_units[n]
             self.active_units.append(unit)
             self.seq.append(unit.power_up(True))
@@ -479,7 +700,7 @@ class MaxwellEnv(BaseEnv):
         period triggered by the freq_Hz
         -------------------------------------------------
         '''
-        self.seq = maxlab.Sequence()
+        self.seq = self._maxlab.Sequence()
         self.active_units = []
         stim_commands = stim_commands.copy()
 
@@ -507,7 +728,7 @@ class MaxwellEnv(BaseEnv):
             
             # ----------------- delay --------------------
             if command == 'delay':
-                self.seq.append( maxlab.system.DelaySamples(params[0]*fs_ms))
+                self.seq.append( self._maxlab.system.DelaySamples(params[0]*fs_ms))
                 
             # ----------------- next --------------------
             if command == 'next':
@@ -537,14 +758,14 @@ class MaxwellEnv(BaseEnv):
         duty_time_samp = round(phase_length_us * .02)
 
         # Not sure what the 3rd argument should be -- user_id?
-        self.seq.append(maxlab.system.Event(0, 1, 0, f"custom_id {self.stim_num}"))
+        self.seq.append(self._maxlab.system.Event(0, 1, 0, f"custom_id {self.stim_num}"))
         
-        self.seq.append( maxlab.chip.DAC(0, 512 - amplitude_lsbs) )
-        self.seq.append( maxlab.system.DelaySamples(duty_time_samp) )
-        self.seq.append( maxlab.chip.DAC(0, 512 + amplitude_lsbs) )
-        self.seq.append( maxlab.system.DelaySamples(duty_time_samp) )
-        self.seq.append( maxlab.chip.DAC(0, 512) )
-        self.seq.append( maxlab.system.DelaySamples(2) )
+        self.seq.append( self._maxlab.chip.DAC(0, 512 - amplitude_lsbs) )
+        self.seq.append( self._maxlab.system.DelaySamples(duty_time_samp) )
+        self.seq.append( self._maxlab.chip.DAC(0, 512 + amplitude_lsbs) )
+        self.seq.append( self._maxlab.system.DelaySamples(duty_time_samp) )
+        self.seq.append( self._maxlab.chip.DAC(0, 512) )
+        self.seq.append( self._maxlab.system.DelaySamples(2) )
 
 
     def _insert_sine_wave(self, amplitude_mV=50, frequency_Hz=1):
@@ -570,8 +791,8 @@ class MaxwellEnv(BaseEnv):
         sine_wave = 512 + amplitude_lsbs * np.sin(t)
 
         for sample in sine_wave:
-            self.seq.append(maxlab.chip.DAC(0, int(sample)))
-            self.seq.append(maxlab.system.DelaySamples(1))
+            self.seq.append(self._maxlab.chip.DAC(0, int(sample)))
+            self.seq.append(self._maxlab.system.DelaySamples(1))
     
     #==========================================================================
     #=========================  Saving Functions  =============================
@@ -581,7 +802,22 @@ class MaxwellEnv(BaseEnv):
         Initialize the save file for the environment.
         Saved in self.save_dir with name self.name.
         '''
-        self.saver = maxlab.saving.Saving()
+        if self.is_replay:
+            if not self.replay_write_output:
+                return
+            from braindance.core.replay import H5ReplayWriter
+
+            self.replay_writer = H5ReplayWriter(
+                self.save_file + '.raw.h5',
+                mapping=self.replay_source.mapping,
+                sampling_hz=self.replay_source.sampling_hz,
+                lsb=self.replay_source.lsb,
+                gain=self.replay_source.gain,
+                hpf=self.replay_source.hpf,
+            )
+            return
+
+        self.saver = self._maxlab.saving.Saving()
         self.saver.open_directory(self.save_dir)
         self.saver.set_legacy_format(False)
         self.saver.group_delete_all()
@@ -597,7 +833,10 @@ class MaxwellEnv(BaseEnv):
             self.stim_log_file = open(self.stim_log_file, 'a+', newline='')
             self.stim_log_writer = writer(self.stim_log_file)
             # write first row: stim time, amplitude
-            self.stim_log_writer.writerow(['time', 'amplitude', 'duty_time_ms', 'stim_electrodes', 'tag'])
+            columns = ['time', 'amplitude', 'duty_time_ms', 'stim_electrodes', 'tag']
+            if self.is_replay:
+                columns.append('replay_frame')
+            self.stim_log_writer.writerow(columns)
 
     def _log_stimulation(self, stim_command, tag=None):
         '''
@@ -607,24 +846,39 @@ class MaxwellEnv(BaseEnv):
         if self.stim_log_file is not None:
             if tag is None:
                 tag = ''
-            if type(stim_command[0][0]) == str:
+            if isinstance(stim_command[0],str) and stim_command[0] == "manual":
+                elecs = [self.stim_electrodes[i] for i in stim_command[2]]
+                row = [self.time_elapsed(), "custom", 'manual', elecs, tag]
+            elif type(stim_command[0][0]) == str:
                 # We just write the first one since it becomes too complicated to write all of them
                 elecs = []
                 for cmd in stim_command:
                     if cmd[0] == 'stim':
                         elecs.append([self.stim_electrodes[i] for i in cmd[1]])
-                self.stim_log_writer.writerow([self.time_elapsed(),
-                                        stim_command[0][1], stim_command[0][2], elecs, tag])
+                row = [self.time_elapsed(), stim_command[0][1], stim_command[0][2], elecs, tag]
             else:
                 elecs = [self.stim_electrodes[i] for i in stim_command[0]]
-                self.stim_log_writer.writerow([self.time_elapsed(),
-                                        stim_command[1], stim_command[2], elecs, tag])
+                row = [self.time_elapsed(), stim_command[1], stim_command[2], elecs, tag]
+            if self.is_replay:
+                row.append(self.latest_frame)
+            self.stim_log_writer.writerow(row)
+            self.stim_log_file.flush()
 
     def _cleanup(self):
         '''Shuts down the environment and saves the data.'''
-        self.saver.stop_recording()
-        self.saver.stop_file()
-        self.saver.group_delete_all()
+        if self._closed:
+            return
+        self._closed = True
+        if self.is_replay:
+            if self.replay_writer is not None:
+                self.replay_writer.close()
+                self.replay_writer = None
+            if self.replay_source is not None:
+                self.replay_source.close()
+        else:
+            self.saver.stop_recording()
+            self.saver.stop_file()
+            self.saver.group_delete_all()
         if self.stim_log_file is not None:
             self.stim_log_file.close()
             self.stim_log_file = None
@@ -638,7 +892,7 @@ class MaxwellEnv(BaseEnv):
     def disconnect_all(self):
         '''Disconnect all stimulation units.'''
 
-        seq = maxlab.Sequence()
+        seq = self._maxlab.Sequence()
         for unit in self.stim_units:
             seq.append(unit.power_up(False).connect(False))
         seq.send()
@@ -650,7 +904,7 @@ class MaxwellEnv(BaseEnv):
                 raise Exception('Must specify either units or inds')
             units = [self.stim_units[i] for i in inds]
             
-        seq = maxlab.Sequence()
+        seq = self._maxlab.Sequence()
         for unit in units:
             seq.append(unit.power_up(False).connect(True))
         seq.send()
@@ -780,58 +1034,47 @@ def stim_process(
     stim_shm.close()
 
 
-#==========================================================================
-#=========================  DUMMY FUNCTIONS  ==============================
-#==========================================================================
-
-def find_process_by_port(port):
-    for proc in psutil.process_iter(['pid', 'name']):
-        try:
-            for conn in proc.connections():
-                if conn.laddr.port == port:
-                    return proc
-        except psutil.AccessDenied:
-            pass  # Ignore processes we don't have permission to access
-    return None
-def stop_process_using_port(port):
-    proc = find_process_by_port(port)
-    if proc:
-        print(
-            f"Found process {proc.pid} ({proc.name()}) using port {port}. Stopping...")
-        proc.terminate()
-        proc.wait()  # Wait for the process to terminate
-    else:
-        print(f"No process found using port {port}")
-
 
 #==========================================================================
 #=========================  MAXWELL FUNCTIONS  ============================
 #==========================================================================
 
 def init_maxone(config, stim_electrodes,filt=True, verbose=1, gain=512, cutoff='1Hz',
-                spike_thresh=5, dummy=False):
+                spike_thresh=5, dummy=False, skip_offset=False):
     """
-    Initialize MaxOne, set electrodes, and setup subscribers.
+    Initialize MaxOne, set electrodes, and setup subscribers
 
-    Args:
-        config (str): Path to the config file for the electrodes.
-        stim_electrodes (list): List of electrode numbers to stimulate.
-        filt (bool): Whether to use the high-pass filter.
-        verbose (int): Verbosity level. 0: No print statements, 1: Print initialization statements, 2: Print all statements.
-        gain (int): Gain of the amplifier. Options: 512, 1024, 2048.
-        cutoff (str): Cutoff frequency of the high-pass filter. Options: '1Hz', '300Hz'.
-        spike_thresh (int): Threshold for spike detection, in units of standard deviations.
-        dummy (bool): Whether to use dummy data.
+    Parameters
+    ----------
+    config : str
+        Path to the config file for the electrodes
 
-    Returns:
-        tuple: A tuple containing the subscriber, stimulation units, and stimulation electrodes dictionary.
+    stim_electrodes : list  
+        List of electrode numbers to stimulate
+
+    filt : bool
+        Whether to use the high-pass filter
+
+    verbose : int   
+        0: No print statements
+        1: Print initialization statements
+        2: Print all statements
+
+    gain : int, {512, 1024, 2048}   
+        Gain of the amplifier
+
+    cutoff : str, {'1Hz', '300Hz'}  
+        Cutoff frequency of the high-pass filter
+
+    spike_thresh : int  
+        Threshold for spike detection, in units of standard deviations
     """
 
     init_maxone_settings(gain=gain, cutoff=cutoff, spike_thresh=spike_thresh, verbose=verbose)
     subscriber = setup_subscribers(filt=filt, verbose=verbose)
     stim_units, stim_electrodes_dict = select_electrodes(config,
                                                         stim_electrodes, verbose=verbose,
-                                                        dummy=dummy)
+                                                        dummy=dummy, skip_offset=skip_offset)
     ignore_first_packet(subscriber)
     ignore_remaining_packets(subscriber)
     return subscriber, stim_units, stim_electrodes_dict
@@ -894,7 +1137,7 @@ def setup_subscribers(filt, verbose=1):
     return subscriber
 
 
-def select_electrodes(config, stim_electrodes, verbose=1, dummy=False):
+def select_electrodes(config, stim_electrodes, verbose=1, dummy=False, skip_offset=False):
     # Electrode selection logic
     array = maxlab.chip.Array('stimulation')
     array.reset() #delete previous array
@@ -937,15 +1180,17 @@ def select_electrodes(config, stim_electrodes, verbose=1, dummy=False):
     if verbose >= 1:
         print(f'Electrodes selected for stimulation: {stim_electrodes}')
 
-    power_cycle_stim_electrodes(stim_units)
-    if not dummy:
-        time.sleep(15)
+    if not skip_offset:
+        power_cycle_stim_electrodes(stim_units)
+        if not dummy:
+            # Let stimulation units settle after power cycling before recalculating offsets.
+            sleep_with_progress(15, "Settling before offset", verbose=verbose)
+        maxlab.util.offset()
         if verbose:
-            print('Sleeping before offset for 15 seconds')
-    maxlab.util.offset()
-    if verbose:
-        print("Offseting")
-        
+            print("Offseting")
+    else:
+        if verbose:
+            print("Skipping power cycle and offset")
     return stim_units, stim_electrodes_dict
 
 
@@ -988,6 +1233,72 @@ def connect_stim_electrodes(stim_units):
     seq.send()
 
 
+def _unpack_spike_event(name, fmt, event_data):
+    unpacked = struct.unpack(fmt, event_data)
+    if name == 'well_id':
+        frame, amplitude, channel, _well_id = unpacked
+    else:
+        frame, channel, amplitude = unpacked
+
+    return SpikeEvent(frame, channel, amplitude)
+
+
+def _score_spike_events(events):
+    score = 0
+    for ev in events:
+        if ev.frame >= 0:
+            score += 1
+        if 0 <= int(ev.channel) < 4096:
+            score += 1
+        if np.isfinite(ev.amplitude) and abs(ev.amplitude) < 10000:
+            score += 1
+    return score
+
+
+def _detect_spike_struct_format(events_data):
+    global _spike_struct_format
+
+    if (_spike_struct_format is not None
+            and len(events_data) % _spike_struct_format[2] == 0):
+        return _spike_struct_format
+
+    candidates = [
+        (name, fmt, size)
+        for name, fmt, size in _spike_struct_formats
+        if len(events_data) % size == 0
+    ]
+
+    if not candidates:
+        expected_sizes = ', '.join(str(size) for _, _, size in _spike_struct_formats)
+        print(f'Events has {len(events_data)} bytes,',
+            f'not divisible by expected spike sizes ({expected_sizes})', file=sys.stderr)
+        return None
+
+    best_format = None
+    best_score = -1
+    for name, fmt, size in candidates:
+        try:
+            parsed_events = [
+                _unpack_spike_event(name, fmt, events_data[i:i+size])
+                for i in range(0, len(events_data), size)
+            ]
+        except (struct.error, ValueError, OverflowError):
+            continue
+
+        score = _score_spike_events(parsed_events)
+        if score > best_score:
+            best_format = (name, fmt, size)
+            best_score = score
+
+    _spike_struct_format = best_format
+    return _spike_struct_format
+
+
+def get_spike_struct_size(events_data=None):
+    spike_format = None if events_data is None else _detect_spike_struct_format(events_data)
+    return _spike_struct_size if spike_format is None else spike_format[2]
+
+
 def parse_events_list(events_data):
     '''
     Parse the raw binary events data into a list of SpikeEvent objects.
@@ -995,20 +1306,18 @@ def parse_events_list(events_data):
     events = []
 
     if events_data is not None:
-        # The spike structure is a long frame number, a float amplitude, 
-        # a short channel number, and a character byte for the wellId.
-        # The struct is aligned to the size of the long.
+        spike_format = _detect_spike_struct_format(events_data)
+        if spike_format is None:
+            return events
 
-        if len(events_data) % _spike_struct_size != 0:
+        name, fmt, size = spike_format
+        if len(events_data) % size != 0:
             print(f'Events has {len(events_data)} bytes,',
-                f'not divisible by {_spike_struct_size}', file=sys.stderr)
+                f'not divisible by detected spike size {size}', file=sys.stderr)
+            return events
 
-        # Iterate over consecutive slices of the raw events
-        # data and unpack each one into a new struct.
-        for i in range(0, len(events_data), _spike_struct_size):
-            ev = SpikeEvent(*struct.unpack(_spike_struct,
-                events_data[i:i+_spike_struct_size]))
-            events.append(ev)
+        for i in range(0, len(events_data), size):
+            events.append(_unpack_spike_event(name, fmt, events_data[i:i+size]))
 
     return events
     
@@ -1050,6 +1359,8 @@ def receive_packet(subscriber, buffer_size=None):
                     events_data = subscriber.recv()
                     events.append(events_data)
 
+            except zmq.Again:
+                pass
             except Exception as e:
                 print(e)
             
@@ -1071,8 +1382,10 @@ def receive_packet(subscriber, buffer_size=None):
         if subscriber.getsockopt(zmq.RCVMORE):
             events_data = subscriber.recv()
 
+    except zmq.Again:
+        pass
     except Exception as e:
-        print(e)
+        print("Error receiving packet:", e)
 
     return frame_number, frame_data, events_data
 
@@ -1152,12 +1465,10 @@ def ignore_remaining_packets(subscriber, verbose=1):
     a non-blocking recv() to ensure that it only reads available data and
     stops when there are no more packets.
     '''
-    more = True
-    while more:
+    while True:
         try:
             # Using NOBLOCK to ensure non-blocking operation
             _ = subscriber.recv(flags=zmq.NOBLOCK)
-            more = subscriber.getsockopt(zmq.RCVMORE)
         except zmq.Again:
             # zmq.Again is raised when there's no more data to read
             break
@@ -1170,16 +1481,17 @@ def launch_dummy_server(dummy):
     print("====================================")
     print("Using dummy data: \n\t", dummy)
     print("====================================")
-    # run dummy_zmq_np.py in a separate process
+    
     import braindance.core.dummy_zmq_np
     import atexit
-    # dummy_process = Process(target=braindance.core.dummy_zmq_np.run)
-    # Add dummy process with the parmeter which is a string
+    from multiprocessing import Process
+    
+    # Directly use the run function from the module
     dummy_process = Process(target=braindance.core.dummy_zmq_np.run, args=(dummy,))
     dummy_process.start()
     atexit.register(dummy_process.terminate)
 
-    # Dummy server may take more than 5 seconds to setup
+    # Rest of the function remains the same
     ready = False
     subscriber = setup_subscribers(False, verbose=False)
     while not ready:
@@ -1195,18 +1507,7 @@ def launch_dummy_server(dummy):
 
 
 class Config:
-    """
-    Class to handle configuration file parsing and management.
-    """
-
-
     def __init__(self, filename):
-        """
-        Initialize the Config object.
-
-        Args:
-            filename (str): Path to the configuration file.
-        """
 
         self.config = []
         self.mappings = []
@@ -1222,42 +1523,15 @@ class Config:
         self.config = [(int(m[0]), int(m[1]), float(m[2]), float(m[3])) for m in self.config]
 
     def get_channels(self):
-        """
-        Get all channels from the configuration.
-
-        Returns:
-            list: List of channel numbers.
-        """
         return [m.channel for m in self.mappings]
     
     def get_electrodes(self):
-        """
-        Get all electrodes from the configuration.
-
-        Returns:
-            list: List of electrode numbers.
-        """
         return [m.electrode for m in self.mappings]
 
     def get_channels_for_electrodes(self, electrodes):
-        """
-        Get channels corresponding to given electrodes.
-
-        Args:
-            electrodes (list): List of electrode numbers.
-
-        Returns:
-            list: List of corresponding channel numbers.
-        """
         return [m.channel for m in self.mappings if m.electrode in electrodes]
     
     def get_num_channels(self):
-        """
-        Get the total number of channels in the configuration.
-
-        Returns:
-            int: Number of channels.
-        """
         return len(self.get_channels())
 
     class Mapping:

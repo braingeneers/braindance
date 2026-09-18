@@ -1,5 +1,6 @@
 from copy import deepcopy
 import h5py
+import io
 from math import ceil
 from multiprocessing import Pool, Manager
 import os
@@ -12,15 +13,7 @@ import warnings
 import numpy as np
 import scipy
 from sklearn.mixture import GaussianMixture
-
-try:
-    import torch
-except ImportError:
-    raise ImportError(
-        "PyTorch is required for RT-Sort spike sorting but is not installed.\n"
-        "Install it with the appropriate CUDA version from https://pytorch.org/get-started/locally/\n"
-        "Or run: python -m braindance.install_check  to diagnose your environment."
-    )
+import torch
 
 from diptest import diptest
 import pynvml
@@ -29,8 +22,23 @@ from spikeinterface.extractors import MaxwellRecordingExtractor, NwbRecordingExt
 from threadpoolctl import threadpool_limits 
 from tqdm import tqdm
 
+try:
+    from numba import jit, prange
+except ImportError:
+    print("Numba not found, using torch for sorting")
+
+    def jit(*jit_args, **jit_kwargs):
+        if jit_args and callable(jit_args[0]) and len(jit_args) == 1 and not jit_kwargs:
+            return jit_args[0]
+
+        def decorator(func):
+            return func
+
+        return decorator
+
+    prange = range
+
 from braindance.core.spikedetector.model import ModelSpikeSorter
-# from spikedata import SpikeData
 
 neuropixels_params={
     "stringent_thresh": 0.175, "loose_thresh": 0.075,
@@ -208,6 +216,7 @@ def detect_sequences(
             Whether to delete the intermediate folder after processing. Defaults to False.
         device (str, optional): 
             The device for PyTorch operations ("cuda" or "cpu"). Defaults to "cuda".
+            CPU uses float32 and supports offline sorting only.
         num_processes (int, optional): 
             Number of processes to use for parallelization. Defaults to None, which auto-selects the value based on the number of logical processors.
         ignore_warnings (bool, optional): 
@@ -238,9 +247,9 @@ def detect_sequences(
             chan_ids = None
         
         if detection_model is None:
-            detection_model = ModelSpikeSorter.load_mea()
+            detection_model = ModelSpikeSorter.load_mea(device=device)
         elif not isinstance(detection_model, ModelSpikeSorter):  # detection model is a path
-            detection_model = ModelSpikeSorter.load(detection_model)
+            detection_model = ModelSpikeSorter.load(detection_model, device=device)
         
         # Set up paths
         inter_path = model_inter_path = Path(inter_path)
@@ -389,7 +398,7 @@ def detect_sequences(
             pickle_dump(inter_merged_clusters, inter_path / "inter_merged_clusters.pickle")
         
         # Create RTSort object
-        rt_sort = RTSort(inter_merged_clusters, detection_model, params)
+        rt_sort = RTSort(inter_merged_clusters, detection_model, params, device=device)
         
         if return_spikes:  # Reassign spikes
             if verbose:
@@ -414,7 +423,10 @@ def detect_sequences(
 class RTSort:
     def __init__(self, sequences, model, params: dict,
                  buffer_size=100,
-                 device="cuda", dtype=torch.float16):
+                 device="cuda", dtype=None):
+        device = str(torch.device(device))
+        if dtype is None:
+            dtype = torch.float32 if torch.device(device).type == "cpu" else torch.float16
         self.samp_freq = samp_freq = params['samp_freq']
         elec_locs = params['elec_locs']
         self.chan_ids = params.get("chan_ids", None)  # None for backwards compatibility
@@ -449,6 +461,7 @@ class RTSort:
         self.device = device
         self.dtype = dtype
 
+
         torch.backends.cudnn.benchmark = True
 
         if device == "cuda":
@@ -457,7 +470,7 @@ class RTSort:
             else:
                 self.model = model.compile(len(elec_locs), None)
         else:
-            self.model = model.model.conv.to(device)
+            self.model = model.model.conv.to(device=device, dtype=dtype).eval()
         self.front_buffer = model.buffer_front_sample
         self.end_buffer = model.buffer_end_sample
 
@@ -472,6 +485,10 @@ class RTSort:
                 if calc_dist(*elec_locs[seq.root_elec], *elec_locs[seq_b.root_elec]) > inner_radius:
                     seq_no_overlap_mask[a, b] = 1
         self.seq_no_overlap_mask = seq_no_overlap_mask
+
+                # Inits
+        self._seq_no_overlap_mask_np = self.seq_no_overlap_mask.cpu().numpy()
+
 
         all_comp_elecs = list(all_comp_elecs)
         seq_n_before = n_before
@@ -626,9 +643,10 @@ class RTSort:
         self.pre_median_frames = torch.full_like(self.pre_median_frames, torch.nan)
         self.last_detections = torch.full_like(self.last_detections, -self.total_num_pre_median_frames)
 
-    def running_sort(self, obs, model_chunk=None, latest_frame=None):
+    def running_sort(self, obs, model_chunk=None, latest_frame=None, use_numba=False, remove_median=True):
         """
         Sorts spikes in real time with incoming data while keeping track of past data for ongoing spike detection.
+        CPU sorters raise RuntimeError; use sort_offline() for CPU processing.
 
         Args:
             obs (numpy.ndarray): 
@@ -641,13 +659,25 @@ class RTSort:
                 - If provided, `obs` will not be median-subtracted because it is assumed to come from `model_traces.npy`.
             latest_frame (int, optional): 
                 The latest (most recent) frame number in the recording. If None, the frame count will be incremented internally based on `obs`.
-
+            use_numba (bool, optional):
+                If True, uses numba to sort spikes. If False, uses torch.
+            remove_median (bool, optional):
+                If True (the default), removes each channel's median from raw
+                observations. Set False when observations are already centered.
         Returns:
             list: 
                 Each element is a tuple of length 2, containing the data for a sorted spike:
                 - The 0th element is the ID number of the sequence the spike was assigned to.
                 - The 1st element is the time the spike occurred (in milliseconds), based on the number of frames passed to `running_sort()` since the last call to `rt_sort.reset()`. The internal clock tracks the elapsed time based on the number of frames, assuming no breaks in data.
         """
+        if torch.device(self.device).type == "cpu":
+            raise RuntimeError(
+                "CPU RT-sort supports offline sorting only. Use sort_offline() "
+                "or a CUDA sorter for real-time running_sort().")
+        return self._running_sort(obs, model_chunk, latest_frame, use_numba, remove_median)
+
+    def _running_sort(self, obs, model_chunk=None, latest_frame=None, use_numba=False, remove_median=True):
+        """Shared chunk processing for offline sorting and the guarded live API."""
         obs = np.asarray(obs)
         if self.chan_ids is not None and obs.shape[1] > self.max_chan_id:
             obs = obs[:, self.chan_ids]
@@ -655,7 +685,7 @@ class RTSort:
         obs = torch.tensor(obs, device=self.device, dtype=self.dtype).T
         if model_chunk is not None:
             model_chunk = torch.tensor(model_chunk, device=self.device, dtype=self.dtype)
-        else:
+        elif remove_median:
             obs -= torch.median(obs, dim=1, keepdim=True).values
         num_new_frames = obs.shape[1]
 
@@ -678,10 +708,17 @@ class RTSort:
             return []
 
         traces_torch = self.pre_median_frames[:, -self.input_size:]
-        return self.sort_chunk(traces_torch, torch_window=model_chunk,
+ 
+        if use_numba:
+            return self.sort_chunk_numba(traces_torch, torch_window=model_chunk,
+                               spike_times_frame_offset=self.latest_frame - self.input_size, 
+                               ignore_spikes_before=self.ignore_spikes_before_minuend - num_new_frames)
+        else:
+            return self.sort_chunk(traces_torch, torch_window=model_chunk,
                                spike_times_frame_offset=self.latest_frame - self.input_size, 
                                ignore_spikes_before=self.ignore_spikes_before_minuend - num_new_frames)
 
+    @torch.no_grad()
     def sort_offline(self, recording,
                      inter_path=None, recording_window_ms=None,
                      model_outputs=None,
@@ -763,7 +800,7 @@ class RTSort:
                 if model_chunk_start_frame >= 0:
                     model_chunk = model_outputs[:, model_chunk_start_frame:model_chunk_start_frame+self.model_num_output_locs]                
                 
-            detections = self.running_sort(scaled_traces[:, start_frame:start_frame+self.buffer_size].T, model_chunk=model_chunk)
+            detections = self._running_sort(scaled_traces[:, start_frame:start_frame+self.buffer_size].T, model_chunk=model_chunk)
             for seq_idx, spike_time in detections:
                 all_detections[seq_idx].append(spike_time)
                 
@@ -988,6 +1025,103 @@ class RTSort:
             # sorting_computation_times.append((end-start_sorting)*1000)
         return detections
 
+            
+        
+    def sort_chunk_numba(self, chunk, torch_window=None,
+                                spike_times_frame_offset=0, ignore_spikes_before=0):
+        """
+        Numba-optimized version of sort_chunk_faster.
+        Keeps GPU computation for the heavy parallel work, uses Numba for the sequential loop.
+        """
+        # ============ Keep all original GPU computation ============
+        pre_medians = self.pre_medians
+        
+        if torch_window is None:
+            torch_window = self.model(chunk[:, None, :] * self.input_scale)[:, 0, :]
+
+        rec_window = chunk[:, self.front_buffer:-self.end_buffer]
+
+        # Peak detection (keep on GPU)
+        window = torch_window[self.seqs_root_elecs, self.seq_n_before-1:-self.seq_n_after+1]
+        main = window[:, 1:-1]
+        greater_than_left = main > window[:, :-2]
+        greater_than_right = main > window[:, 2:]
+        peaks = greater_than_left & greater_than_right
+        crosses = main >= self.stringent_thresh_logit
+        peak_ind_flat = torch.nonzero(peaks & crosses, as_tuple=True)[1]
+        peak_ind_flat = peak_ind_flat[torch.sum(torch_window[:, peak_ind_flat+self.seq_n_before]
+                                                >= self.loose_thresh_logit, dim=0) <= self.min_elecs_for_array_noise]
+        
+        if torch.numel(peak_ind_flat) == 0:
+            return []
+
+        # All the heavy computation stays on GPU
+        peak_ind = peak_ind_flat[:, None, None]
+        spike_window = torch_window[self.comp_elecs, peak_ind + self.spike_arange]
+
+        elec_probs, latencies = self.max_pool(spike_window)
+        elec_crosses = (elec_probs >= self.loose_thresh_logit).transpose(1, 2)
+        num_inner_loose = torch.sum(elec_crosses & self.seqs_inner_loose_elecs, dim=2)
+        pass_inner_loose = num_inner_loose >= self.min_inner_loose_detections
+
+        num_loose = torch.sum(elec_crosses & self.seqs_loose_elecs, dim=2)
+        pass_loose = num_loose >= self.seqs_min_loose_elecs
+
+        latencies_float = latencies.transpose(1, 2).to(self.dtype)
+        latency_diff = latencies_float - self.seqs_latencies
+        torch.abs_(latency_diff)
+        torch.clamp_(latency_diff, max=self.clip_latency_diff)
+        latency_diff = torch.sum(latency_diff * self.seqs_latency_weights, axis=2)
+        pass_latency = latency_diff <= self.max_latency_diff_spikes
+
+        amps = torch.abs(rec_window[self.comp_elecs, peak_ind + latencies].transpose(1, 2)) / pre_medians
+
+        root_amp_z = torch.abs(amps[:, 0, self.seqs_root_elecs_rel_comp_elecs] -
+                            self.seqs_root_amp_means) / self.seqs_root_amp_stds
+        pass_root_amp_z = root_amp_z <= self.max_root_amp_median_std_spikes
+
+        amp_diff = amps - self.seqs_amps
+        torch.abs_(amp_diff)
+        amp_diff /= self.seqs_amps
+        torch.clamp_(amp_diff, max=self.clip_amp_median_diff)
+        amp_diff = torch.sum(amp_diff * self.seqs_amp_weights, axis=2)
+        pass_amp_diff = amp_diff <= self.max_amp_median_diff_spikes
+
+        strict_crosses_root = spike_window[:, self.seqs_root_elecs_rel_comp_elecs,
+                                        self.seq_n_before] >= self.stringent_thresh_logit
+
+        can_spike = strict_crosses_root & pass_inner_loose & pass_loose & pass_latency & pass_root_amp_z & pass_amp_diff
+        
+        elec_crosses_sum = torch.sum(elec_crosses, dim=2)
+        
+        spike_scores = latency_diff / self.max_latency_diff_spikes + amp_diff / self.max_amp_median_diff_spikes - (num_loose / elec_crosses_sum * 0.5)
+        spike_scores = 2.1 - spike_scores
+        spike_scores *= can_spike
+        
+        # ============ Convert to numpy and use Numba for the loop ============
+        spike_scores_np = spike_scores.cpu().numpy().astype(np.float32)
+        peak_ind_flat_np = peak_ind_flat.cpu().numpy().astype(np.int32)
+        
+
+        # Call the Numba-compiled function
+        seq_n_before_front = self.seq_n_before + self.front_buffer
+        samp_freq_inv = 1.0 / self.samp_freq
+        
+        detections = process_spikes_numba(
+            spike_scores_np,
+            peak_ind_flat_np,
+            self._seq_no_overlap_mask_np,
+            seq_n_before_front,
+            spike_times_frame_offset,
+            samp_freq_inv,
+            ignore_spikes_before,
+            self.overlap,
+            self.num_seqs
+        )
+        
+        return detections
+    
+
     def select_seqs(self, seq_ind: list):
         """
         Selects sequences from the detected sequences to keep for online sorting
@@ -1062,7 +1196,7 @@ class RTSort:
 
     def set_model(self, model, num_elecs=None, input_size=None):
         if not isinstance(model, ModelSpikeSorter):  # If detection_model is a path
-            model = ModelSpikeSorter.load(model)
+            model = ModelSpikeSorter.load(model, device=self.device, dtype=self.dtype)
         if num_elecs is None:
             num_elecs = self.num_elecs
         else:
@@ -1071,7 +1205,7 @@ class RTSort:
         if input_size is None:
             input_size = self.input_size
             
-        self.model = model.compile(num_elecs, input_size=input_size, device=self.device)
+        self.model = model.compile(num_elecs, input_size=input_size, device=self.device, dtype=self.dtype)
         self.input_size = input_size
 
     def to_tensor(self, data):
@@ -1123,28 +1257,104 @@ class RTSort:
                 If not None, should be the return value of method self.sort_offline 
         """
         
+        from spikelab import SpikeData
+
         if all_seq_detections is None:
             all_seq_detections = self.seq_spike_trains
             
         return SpikeData(all_seq_detections, N=self.num_seqs)
+    
 
     @staticmethod
-    def load_from_file(pickle_path, model=None):
+    def load_from_file(pickle_path, model=None, device=None):
         """
         Need to specify model because cannot save model in .pickle
         
         Params
             model
                 Can be a ModelSpikeSorter object, a path to one (str or Path), or None
-                If None, self.model needs to be set later before the sorting functions work 
+                If None, self.model needs to be set later before the sorting functions work
+            device
+                Optional device override, including migration of saved CUDA tensors.
+                CPU uses float32 and supports sort_offline() only.
         """
-        rt_sort = pickle_load(pickle_path)
+        if device is None:
+            rt_sort = pickle_load(pickle_path)
+        else:
+            device = str(torch.device(device))
+
+            class DeviceUnpickler(pickle.Unpickler):
+                def find_class(self, module, name):
+                    if module == "torch.storage" and name == "_load_from_bytes":
+                        return lambda data: torch.load(
+                            io.BytesIO(data), map_location=device, weights_only=False)
+                    return super().find_class(module, name)
+
+            with open(pickle_path, "rb") as file:
+                rt_sort = DeviceUnpickler(file).load()
+            rt_sort.device = device
+            if torch.device(device).type == "cpu":
+                rt_sort.dtype = torch.float32
+            for name, value in vars(rt_sort).items():
+                if isinstance(value, torch.Tensor):
+                    dtype = rt_sort.dtype if value.is_floating_point() else value.dtype
+                    setattr(rt_sort, name, value.to(device=device, dtype=dtype))
+            rt_sort.reset()
         if model is not None:
             rt_sort.set_model(model)
         else:
             rt_sort.model = None
             
         return rt_sort  # type: RTSort
+
+
+# NUMBA
+@jit(nopython=True, cache=True, fastmath=True)
+def process_spikes_numba(spike_scores_np, peak_ind_flat_np, seq_no_overlap_mask_np,
+                         seq_n_before_front, spike_times_frame_offset, samp_freq_inv,
+                         ignore_spikes_before, overlap, num_seqs):
+    """
+    Numba-compiled spike processing loop.
+    Returns list of (seq_idx, spike_time) tuples.
+    """
+    detections = []
+    spike_scores_flat = spike_scores_np.ravel()
+    n_total = spike_scores_flat.shape[0]
+    
+    while True:
+        # Find maximum score
+        max_idx = 0
+        max_score = spike_scores_flat[0]
+        for i in range(1, n_total):
+            if spike_scores_flat[i] > max_score:
+                max_score = spike_scores_flat[i]
+                max_idx = i
+        
+        if max_score == 0:
+            break
+        
+        # Convert flat index to 2D indices
+        spike_idx = max_idx // num_seqs
+        seq_idx = max_idx % num_seqs
+        
+        offset_spike_time = peak_ind_flat_np[spike_idx]
+        spike_time_in_chunk = offset_spike_time + seq_n_before_front
+        
+        if spike_time_in_chunk >= ignore_spikes_before:
+            spike_time = (spike_time_in_chunk + spike_times_frame_offset) * samp_freq_inv
+            detections.append((seq_idx, spike_time))
+        
+        # Update scores - zero out overlapping sequences and peaks
+        # This is the most expensive part, so we optimize it carefully
+        for i in range(num_seqs):
+            if not seq_no_overlap_mask_np[seq_idx, i]:
+                # These sequences overlap spatially
+                for j in range(len(peak_ind_flat_np)):
+                    if abs(peak_ind_flat_np[j] - offset_spike_time) <= overlap:
+                        # Zero out this spike-sequence combination
+                        spike_scores_flat[j * num_seqs + i] = 0.0
+    
+    return detections
 
 
 def rt_sort_maxwell_env_process(process_ready, obs_ready, stim_ready, env_done,
@@ -1417,8 +1627,9 @@ def _get_traces_mea_new(rec_path):
 def _save_traces_mea(task):
     rec_path, save_path, start_frame, chan_ind, chunk_start, chunk_size, gain, dtype, get_traces = task
     sig = get_traces(rec_path)
-    traces = sig[chan_ind, chunk_start:chunk_start + chunk_size].astype(dtype) * gain
     saved_traces = np.load(save_path, mmap_mode="r+")
+    chunk_end = min(chunk_start + chunk_size, start_frame + saved_traces.shape[1])
+    traces = sig[chan_ind, chunk_start:chunk_end].astype(dtype) * gain
     saved_traces[:, chunk_start-start_frame:chunk_start - start_frame+traces.shape[1]] = traces  # using traces.shape[1] in case chunk_start is within chunk_size of the end of the file (does not raise index error)
 
 
@@ -1448,6 +1659,7 @@ def run_detection_model(recording,
         model_outputs_path = Path(scaled_traces_path).parent / "model_outputs.npy"
 
     torch.backends.cudnn.benchmark = True
+    dtype = torch.float32 if torch.device(device).type == "cpu" else torch.float16
     np_dtype = "float16"
 
     # region Load model
@@ -1459,7 +1671,7 @@ def run_detection_model(recording,
     # Compile detection model
     if verbose:
         print(f"Compiling detection model for {recording.get_num_channels()} elecs ...")
-    model_compiled = model.compile(recording.get_num_channels(), model_save_path=model_inter_path, device=device)
+    model_compiled = model.compile(recording.get_num_channels(), model_save_path=model_inter_path, device=device, dtype=dtype)
     # model_compiled = ModelSpikeSorter.load_compiled(model_inter_path)
     # endregion
 
@@ -1467,6 +1679,8 @@ def run_detection_model(recording,
     scaled_traces = np.load(scaled_traces_path, mmap_mode="r")
 
     num_chans, rec_duration = scaled_traces.shape
+    if rec_duration < sample_size:
+        raise ValueError(f"Recording must contain at least {sample_size} samples for spike detection")
 
     all_start_frames = list(range(0, rec_duration-sample_size+1, num_output_locs))  # Some frames at the end of the recording may not be included because they can not be a part of a window that 1) does not overlap with a previous window 2) is duration sample_size (10ms)
 
@@ -1496,7 +1710,7 @@ def run_detection_model(recording,
     print("Running model ...")
     with torch.no_grad():
         for start_frame in tqdm(all_start_frames):
-            traces_torch = torch.tensor(scaled_traces[:, start_frame:start_frame+sample_size], device=device, dtype=torch.float16)
+            traces_torch = torch.tensor(scaled_traces[:, start_frame:start_frame+sample_size], device=device, dtype=dtype)
             traces_torch -= torch.median(traces_torch, dim=1, keepdim=True).values
             outputs = model_compiled(traces_torch[:, None, :] * input_scale * inference_scaling).cpu()
 
@@ -1506,12 +1720,12 @@ def run_detection_model(recording,
     # Check if there is data remaining at end of recording that was not included in all_start_frames for-loop
     remaining_frames = rec_duration - (start_frame + sample_size)
     if remaining_frames > 0:
-        traces_torch = torch.tensor(scaled_traces[:, -sample_size:], device=device, dtype=torch.float16)
+        traces_torch = torch.tensor(scaled_traces[:, -sample_size:], device=device, dtype=dtype)
         traces_torch -= torch.median(traces_torch, dim=1, keepdim=True).values
         with torch.no_grad():
-            outputs = model(traces_torch[:, None, :] * input_scale * inference_scaling).cpu()
+            outputs = model_compiled(traces_torch[:, None, :] * input_scale * inference_scaling).cpu()
         traces_all[:, -remaining_frames:] = traces_torch[:, -remaining_frames:].cpu()
-        outputs_all[:, -remaining_frames:] = outputs[:, -remaining_frames:]
+        outputs_all[:, -remaining_frames:] = outputs[:, 0, -remaining_frames:]
             
     # endregion
 
@@ -2102,7 +2316,8 @@ def reassign_spikes_to_clusters(all_clusters, model, params):
                                               model_outputs=model_inter_path / "model_outputs.npy",
                                               verbose=verbose)
         del rt_sort  # Save memory
-        torch.cuda.empty_cache()
+        if torch.device(device).type == "cuda":
+            torch.cuda.empty_cache()
         for seq, spike_train in zip(seqs, all_detections):
             seq._spike_train = spike_train
 

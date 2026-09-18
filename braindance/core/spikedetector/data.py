@@ -7,20 +7,17 @@ from scipy import signal
 from collections.abc import Iterable
 import json
 
-try:
-    import torch
-    from torch.utils.data import Dataset, DataLoader, ConcatDataset
-except ImportError:
-    raise ImportError(
-        "PyTorch is required for spike detection data utilities but is not installed.\n"
-        "Install it with the appropriate CUDA version from https://pytorch.org/get-started/locally/\n"
-        "Or run: python -m braindance.install_check  to diagnose your environment."
-    )
+import torch
+from torch.utils.data import Dataset, DataLoader, ConcatDataset
 
 from braindance.core.spikedetector import plot 
 from braindance.core.spikesorter.kilosort2 import run_kilosort2
 from braindance.core.spikesorter.rt_sort import save_traces
 
+"""
+Monkey and a Typewriter:
+    Change Recording + WaveformDataset --> MultiRecordingDataset dynamic to Recording --> RecordingDataset
+"""
 
 class Recording:
     """
@@ -1079,11 +1076,12 @@ def setup_dl_folders(recording_files, dl_folders,
     run_kilsort2_kwargs['save_dl_data'] = True
     run_kilosort2(recording_files, inter_folders, dl_folders, **run_kilsort2_kwargs)
     
-    # Save scaled traces 
-    for rec_path, inter_folder in zip(recording_files, dl_folders):
-        print(f"\nRecording: {rec_path}")
-        inter_folder = Path(inter_folder)
-        save_traces(rec_path, inter_folder)
+    # # Now handled by run_kilosort2
+    # # Save scaled traces 
+    # for rec_path, inter_folder in zip(recording_files, dl_folders):
+    #     print(f"\nRecording: {rec_path}")
+    #     inter_folder = Path(inter_folder)
+    #     save_traces(rec_path, inter_folder)
 
     return dl_folders
 

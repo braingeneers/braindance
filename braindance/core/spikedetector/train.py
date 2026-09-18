@@ -1,17 +1,9 @@
 from pathlib import Path
 
 import numpy as np
-from spikeinterface.extractors import BaseRecording
-
-try:
-    import torch
-    from torch.utils.data import DataLoader
-except ImportError:
-    raise ImportError(
-        "PyTorch is required for training spike detection models but is not installed.\n"
-        "Install it with the appropriate CUDA version from https://pytorch.org/get-started/locally/\n"
-        "Or run: python -m braindance.install_check  to diagnose your environment."
-    )
+from spikeinterface.core import BaseRecording
+import torch
+from torch.utils.data import DataLoader
 
 from braindance.core.spikedetector import data, utils
 from braindance.core.spikedetector.model import ModelSpikeSorter
@@ -235,4 +227,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-    

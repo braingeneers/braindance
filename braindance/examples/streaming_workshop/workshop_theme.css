@@ -1,0 +1,221 @@
+/* Quiet category cues shared by setup, navigation and live views.
+   The phase board defines its own interaction and node styling. */
+:root {
+  --page: #e9edf1;
+  --surface: #ffffff;
+  --field: #ffffff;
+  --border: #cbd3dc;
+  --workshop-inset: #f0f3f6;
+  --workshop-raised: #ffffff;
+  --workshop-edge: #b5c1ce;
+  --workshop-shadow: 0 1px 3px #23364d0d;
+  --workshop-green: #296346;
+  --workshop-green-wash: #edf5ef;
+  --workshop-blue: #34648b;
+  --workshop-blue-wash: #eef4f8;
+  --workshop-amber: #946020;
+  --workshop-amber-wash: #faf3e8;
+  --workshop-violet: #70518b;
+  --workshop-violet-wash: #f4f0f8;
+}
+:root[data-theme=dark] {
+  --page: #141b23;
+  --surface: #232c37;
+  --field: #151e28;
+  --border: #465464;
+  --workshop-inset: #1b242f;
+  --workshop-raised: #2b3643;
+  --workshop-edge: #5a6b7f;
+  --workshop-shadow: 0 1px 3px #00000026;
+  --workshop-green: #9dccac;
+  --workshop-green-wash: #27382e;
+  --workshop-blue: #9dbddd;
+  --workshop-blue-wash: #273440;
+  --workshop-amber: #dfb77e;
+  --workshop-amber-wash: #3c3427;
+  --workshop-violet: #c5addc;
+  --workshop-violet-wash: #342d40;
+}
+.app-header strong { letter-spacing: -.025em; }
+.app-header strong::before {
+  content: "";
+  display: inline-block;
+  width: 8px;
+  height: 18px;
+  margin-right: 9px;
+  border-radius: 2px;
+  background: var(--workshop-green);
+  vertical-align: -2px;
+}
+.app-nav button {
+  --nav-color: var(--workshop-green);
+  --nav-wash: var(--workshop-green-wash);
+  min-height: 38px;
+  border-radius: 5px;
+  border-left: 3px solid transparent;
+}
+.app-nav button[data-view=functions] {
+  --nav-color: var(--workshop-violet);
+  --nav-wash: var(--workshop-violet-wash);
+}
+.app-nav button[data-view=monitor] {
+  --nav-color: var(--workshop-blue);
+  --nav-wash: var(--workshop-blue-wash);
+}
+.app-nav button[data-view=playground] {
+  --nav-color: var(--workshop-amber);
+  --nav-wash: var(--workshop-amber-wash);
+}
+.app-nav button[aria-current=page] {
+  color: var(--nav-color);
+  background: var(--nav-wash);
+  border-left-color: var(--nav-color);
+}
+.app-nav button:hover { background: var(--hover); }
+.app-nav button[aria-current=page]:hover { background: var(--nav-wash); }
+.experiment-tabs button {
+  min-height: 36px;
+  border-radius: 5px;
+}
+.experiment-tabs button[aria-current=page] {
+  color: var(--workshop-green);
+  background: var(--workshop-green-wash);
+  box-shadow: inset 0 -2px var(--workshop-green);
+}
+.view-title { letter-spacing: -.02em; }
+#view-experiment .setup-grid { gap: 20px; }
+#view-experiment .setup-grid > fieldset {
+  background: var(--workshop-inset);
+  border-top: 3px solid var(--border);
+}
+#view-experiment .setup-grid > fieldset:nth-child(1) {
+  border-top-color: var(--workshop-blue);
+}
+#view-experiment .setup-grid > fieldset:nth-child(2) {
+  border-top-color: var(--workshop-amber);
+}
+#view-experiment .setup-grid > fieldset:nth-child(3) {
+  border-top-color: var(--workshop-violet);
+}
+#view-experiment .setup-grid legend { margin-bottom: 16px; }
+#sourceLabel {
+  padding: 9px 10px;
+  border-radius: 4px;
+  background: var(--workshop-blue-wash);
+  color: var(--workshop-blue);
+}
+#view-experiment .phase-card {
+  border-radius: 6px;
+  background: var(--workshop-raised);
+  box-shadow: var(--workshop-shadow);
+  border-left-color: var(--workshop-green);
+}
+#view-experiment .phase-card h3 { color: var(--workshop-green); }
+#view-experiment .phase-card:has(.missing) {
+  border-left-color: var(--workshop-amber);
+}
+#view-experiment .phase-card:has(.missing) h3 { color: var(--workshop-amber); }
+#run, #launchExperiment {
+  background: #296346;
+  border-color: #296346;
+  color: #fff;
+  font-weight: 600;
+}
+#run:hover:not(:disabled), #launchExperiment:hover:not(:disabled) {
+  background: #204e37;
+  border-color: #204e37;
+}
+#stop:not(:disabled) { color: var(--workshop-amber); }
+#verify, #verifyExperiment {
+  color: var(--workshop-green);
+  background: var(--workshop-green-wash);
+}
+#saveProfile {
+  color: var(--workshop-violet);
+  background: var(--workshop-violet-wash);
+}
+#view-functions > details { border-top: 3px solid var(--workshop-violet); }
+#verifyResult[data-ok=true] { color: var(--workshop-green); }
+#view-monitor .panel:has(#scene) { border-top: 3px solid var(--workshop-green); }
+#view-monitor .panel:has(#encodePlot),
+#view-monitor .panel:has(#causalMatrix) { border-top: 3px solid var(--workshop-amber); }
+#view-monitor .panel:has(#decodePlot) { border-top: 3px solid var(--workshop-violet); }
+#view-monitor .panel:has(#raw),
+#view-monitor .panel:has(#raster) { border-top: 3px solid var(--workshop-blue); }
+#view-monitor .phase-progress li[aria-current=step] {
+  color: var(--workshop-green);
+  border-color: var(--workshop-green);
+  background: var(--workshop-green-wash);
+}
+#view-simulation .simulation-settings { border-top: 3px solid var(--workshop-blue); }
+.app-nav button:focus-visible, .experiment-tabs button:focus-visible,
+.run-controls button:focus-visible, .view:not(#view-sequence) :is(button,input,select,textarea):focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 3px;
+}
+@media (max-width: 650px) {
+  .experiment-tabs { gap: 4px; }
+  .experiment-tabs button { padding-inline: 8px; }
+  #view-experiment .setup-grid { gap: 14px; }
+}
+#view-experiment .phase-card[data-kind=analysis] { border-left-color: var(--workshop-violet); }
+#view-experiment .phase-card[data-kind=analysis] h3 { color: var(--workshop-violet); }
+@media (max-width: 650px) {
+  .app-header .execution-status { display: none; }
+  .app-header strong { white-space: nowrap; font-size: 16px; }
+  body .app-header #themeToggle { margin-left: auto; font-size: 12px; white-space: nowrap; }
+}
+
+.file-drop{padding:16px;border:2px dashed var(--border);border-radius:6px}.file-drop.drag-over{border-color:var(--blue);background:var(--hover)}
+
+/* Shared configuration stays at the foot of the application navigation. */
+.app-nav { display: flex; flex-direction: column; overflow-y: auto; }
+.app-nav .settings-nav { margin-top: auto; padding-top: 12px; border-top: 1px solid var(--border); }
+.global-settings { max-width: 960px; }
+.global-settings .settings-effective { overflow-wrap: anywhere; }
+.global-settings .field input { width: 100%; }
+.global-features { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; }
+.global-feature { border: 1px solid var(--border); border-radius: 5px; padding: 14px; }
+.global-feature strong { display: block; margin-bottom: 8px; }
+.feature-badge { font-size: 12px; font-weight: 600; }
+.feature-badge[data-available=true] { color: #237341; }
+.feature-badge[data-available=false], #globalSettingsStatus[data-failed=true] { color: #b22e2e; }
+:root[data-theme=dark] .feature-badge[data-available=true] { color: #9dccac; }
+:root[data-theme=dark] .feature-badge[data-available=false],
+:root[data-theme=dark] #globalSettingsStatus[data-failed=true] { color: #ffa5a5; }
+#saveRunDialog{max-width:480px;width:calc(100% - 48px);box-sizing:border-box;padding:24px;color:var(--ink);background:var(--surface);border:1px solid var(--border);border-radius:8px}
+#saveRunDialog::backdrop{background:rgba(0,0,0,.45)}
+#saveRunDialog input{width:100%;box-sizing:border-box}
+#saveRunDialog .toolbar{justify-content:flex-end}
+#confirmSaveRun{background:var(--blue);color:white}
+#saveRunError{color:var(--orange)}
+
+/* Separate the page, enclosing panels, inset groups and editable surfaces.
+   Keep category accents and interaction states in their existing rules. */
+.panel, .view > details {
+  box-shadow: var(--workshop-shadow);
+}
+.panel :is(.panel, details),
+.global-feature {
+  background: var(--workshop-inset);
+}
+.phase-card .phase-contract,
+.phase-card details,
+.native-inputs details,
+.code-workspace > details,
+#analysisPanel details {
+  background: var(--workshop-inset);
+}
+body :is(input, select, textarea):not(.editor textarea) {
+  background-color: var(--field);
+  border-color: var(--workshop-edge);
+}
+.file-drop {
+  background: var(--workshop-inset);
+  border-color: var(--workshop-edge);
+}
+.file-drop.drag-over { background: var(--workshop-blue-wash); }
+.catalog-table th { background: var(--workshop-inset); }
+.catalog-table tbody tr:nth-child(even) {
+  background: color-mix(in srgb, var(--workshop-inset) 60%, var(--surface));
+}

@@ -1,96 +1,155 @@
 # BrainDance
+Making neural stimulation easier.
 
-## Making neural stimulation easier.
+## Paper examples
 
-[Please check out our wiki here!](https://braingeneers.github.io/braindance)
-
----
+The [numbered base examples](braindance/examples/README.md) cover **1. CartPole**
+(including the historical pair-ranking workflow), **2. rapid pairing**, and
+**3. BusyBee**. The guide includes configuration, provenance, and remaining
+validation work.
 
 ## Installation
 
-We recommend using [conda](https://docs.anaconda.com/miniconda/miniconda-install/) for setting up dependencies.
+Use Python 3.11 (Python 3.11–3.12 supported). The default install includes SpikeLab analysis, plotting, the CPU simulator, and CartPole, FoodLand, and Ant. No GPU, Maxwell hardware, or recordings are needed.
 
 ```bash
-conda create -n brain python=3.11
+conda create -n brain python=3.11 pip -y
 conda activate brain
+git clone https://github.com/braingeneers/BrainDance
+cd BrainDance
+python -m pip install .[foodland,ant]
 ```
 
-### Core only (no GPU features)
-
-Installs the base library — environments, phases, data loading, artifact removal.
+For development, use `python -m pip install -e .` instead.
+For the full CPU-friendly install, including the Qt experiment launcher:
 
 ```bash
-pip install git+https://github.com/braingeneers/braindance
+python -m pip install -e '.[full]'
 ```
 
-### With spike detection / RT-Sort (GPU recommended)
+`all` is an alias for `full`. Neither installs RL training, GPU sorters, or vendor
+hardware SDKs; those remain explicit extras. The default install is larger than
+the former simulator-only install, and includes MuJoCo for Ant.
+These packaging changes are not published yet. After release, `python -m pip install braindance` will replace the clone and local install steps.
 
-Spike detection and RT-Sort require **PyTorch**. Install PyTorch first with the CUDA version that matches your GPU driver, then install BrainDance with the `rt-sort` extra.
+### Platform notes
+
+- **Windows:** CPU and NVIDIA GPU paths below. Use `python -X utf8` if redirected output has Unicode errors.
+- **Linux:** Same commands; NVIDIA GPU support requires a compatible driver.
+- **macOS:** See the native Apple Silicon setup below. RT-sort currently uses CUDA, so its GPU path is unavailable on macOS.
+
+### Mac setup (Apple Silicon)
+
+The default/full install selects Intel Mac wheels for Numba/llvmlite and MuJoCo
+when Python runs under Rosetta. After pulling updates,
+run `python -m pip install -e '.[full]' --only-binary=numba,llvmlite,mujoco`.
+The binary flag prevents a lengthy source build if no matching wheel is available.
+The dependency limits apply only to Intel macOS Python.
+
+Use native ARM Python, including when your existing Conda installation runs through
+Rosetta, for native execution. From the cloned repository, create a separate environment:
 
 ```bash
-# Step 1 — Install PyTorch (pick ONE line matching your platform)
-# See https://pytorch.org/get-started/locally/ for the latest commands
-
-# Linux / Windows — CUDA 12.6
-pip install torch --index-url https://download.pytorch.org/whl/cu126
-
-# Linux / Windows — CUDA 12.4
-pip install torch --index-url https://download.pytorch.org/whl/cu124
-
-# Linux / Windows — CUDA 11.8
-pip install torch --index-url https://download.pytorch.org/whl/cu118
-
-# CPU only (no GPU acceleration — slower inference)
-pip install torch --index-url https://download.pytorch.org/whl/cpu
-
-# Step 2 — Install BrainDance with RT-Sort extras
-pip install git+https://github.com/braingeneers/braindance#egg=braindance[rt-sort]
+CONDA_SUBDIR=osx-arm64 conda create -n brain-mac python=3.11 pip -y
+conda activate brain-mac
+conda config --env --set subdir osx-arm64
+export LC_ALL=en_US.UTF-8
+python -c "import platform; print(platform.machine())"  # must print arm64
+python -m pip install .
 ```
 
-### TensorRT (optional, Linux only)
-
-TensorRT significantly speeds up real-time spike detection inference but is **optional** and **Linux-only**. If you skip this, BrainDance falls back to standard PyTorch automatically.
+This installs **analysis, CartPole, FoodLand, and Ant**. The `rl` extra is for training and
+is not needed to play any of them. Stop any workshop started from the old `brain`
+environment with Ctrl+C, then launch from the new environment:
 
 ```bash
-# Install torch_tensorrt matching your PyTorch version
-pip install torch_tensorrt
+conda activate brain-mac
+python -m braindance.examples.streaming_workshop.main
 ```
 
-See the [Torch-TensorRT installation guide](https://pytorch.org/TensorRT/getting_started/installation.html) for details.
+If FoodLand reports missing pygame or Ant reports missing MuJoCo, check
+`python -c "import sys; print(sys.executable)"`: it must point into `brain-mac`.
+For development, use `python -m pip install -e .` (or `-e '.[full]'` for Qt).
+The locale setting avoids a Conda `readline` crash seen with `C.UTF-8` on macOS.
+To save it for future activations, run
+`conda env config vars set LC_ALL=en_US.UTF-8` while this environment is active.
 
-### Version compatibility
+An `x86_64` Python on Apple Silicon uses Intel packages, which can fail to resolve
+or try compiling dependencies. Creating the environment above leaves your old
+`brain` environment intact. The new default with all games has not been verified
+on an Intel Mac. Modern
+[PyTorch no longer ships Intel Mac builds](https://dev-discuss.pytorch.org/t/pytorch-macos-x86-builds-deprecation-starting-january-2024/1690),
+so `rl` is not supported by the current dependency set on Intel Python.
 
-The table below lists tested combinations. Your NVIDIA driver's CUDA version (shown by `nvidia-smi`) must be **equal to or higher than** the CUDA version PyTorch was built for.
+### GPU / RT-sort
 
-| CUDA (driver) | PyTorch   | torch_tensorrt | Notes              |
-|----------------|-----------|----------------|--------------------|
-| 12.6           | 2.6.x     | 2.6.x          | Latest recommended |
-| 12.4           | 2.5.x     | 2.5.x          |                    |
-| 12.1           | 2.4.x     | 2.4.x          |                    |
-| 11.8           | 2.3.x     | 2.3.x          | Legacy CUDA        |
-
-**Not sure what you have?** Run the built-in diagnostic:
+On Windows or Linux with an NVIDIA GPU, install CUDA-enabled [PyTorch](https://pytorch.org/get-started/locally/) first, then the RT-sort extra. For example, the tested CUDA 12.4 setup:
 
 ```bash
-python -m braindance.install_check
+python -m pip install torch==2.6.0 --index-url https://download.pytorch.org/whl/cu124
+python -m pip install ".[rtsort]"
+python -c "import torch; assert torch.cuda.is_available(); print(torch.cuda.get_device_name(0))"
 ```
 
-This detects your OS, GPU, CUDA version, and installed packages, and prints exactly what to install or fix.
+The extra includes diptest, NVML bindings, scikit-learn, and SpikeInterface. Pretrained detection models are bundled; sorting a recording still needs its own sequence templates. [Torch-TensorRT](https://pytorch.org/TensorRT/getting_started/installation.html) is optional; RT-sort works without it.
 
----
+### Other features
 
-## Additional integrations
+Install extras from the checkout with `python -m pip install ".[extra]"`, or combine them: `".[analysis,gui]"`.
+Analysis and all three workshop games are included by default; their named extras
+remain supported for existing installation commands.
 
-### Kilosort2
+| Extra | Adds |
+| --- | --- |
+| `analysis` | SpikeLab analysis and plotting (also included by default) |
+| `full` / `all` | Default analysis and games plus the Qt launcher; no GPU/training dependencies |
+| `gui` | Legacy Qt experiment launcher (`braindance-gui` command) |
+| `rl` | Stable Baselines3 and Atari support |
+| `foodland` / `ant` | Workshop games (also included by default) |
+| `kilosort` | Python dependencies for [Kilosort2](https://github.com/jamesjun/Kilosort2), which must be installed separately |
+| `open-ephys` | `open-ephys-python-tools` for Open Ephys integration |
+| `dev` | Build and test tools |
 
-To use Kilosort2 within BrainDance, see the public Kilosort2 [GitHub repository](https://github.com/jamesjun/Kilosort2) for installation.
+Live Maxwell acquisition requires the vendor's `maxlab` SDK and a configured workstation.
 
-### Open Ephys
-
-If you want to read data in real time from an Open Ephys GUI, [install the Open Ephys GUI](https://open-ephys.github.io/gui-docs/User-Manual/Installing-the-GUI.html) and [Falcon Output plugin](https://open-ephys.github.io/gui-docs/User-Manual/Plugins/Falcon-Output.html).
-
-In your Python environment, install [the Open Ephys Python package](https://github.com/open-ephys/open-ephys-python-tools):
+## Get the tutorial data
 
 ```bash
-pip install open-ephys-python-tools
+python -m braindance.examples.get_tutorial_data
+python -m braindance.examples.get_tutorial_data --validate
 ```
+
+The default download includes all three original H5 recordings and supporting
+files (about 1.1 GB), excluding RT-Sort intermediate traces. Use `--version 1`
+for the original small processed-only sample.
+The first command downloads and verifies the cached files; `--validate` also
+checks the recording, spikes, stimulation log, mapping, and binning. Use
+`--cache-dir /path/to/cache` to choose a location, or `--offline` to reuse a
+verified download. Data installs under `tutorials/closed-loop-small/`, with the
+project/chip/experiment/recording hierarchy preserved. Existing version folders
+migrate automatically; use `--update` for subsequent dataset releases. Refresh the
+workshop Catalog to discover the tutorial experiment, or add its parent folder
+if you downloaded elsewhere. The old `validate_tutorial_data` command still works.
+See [tutorial details](docs/tutorial-data.md) and the
+[SpikeLab migration notes](docs/spikelab-migration.md).
+
+## Try the workshop
+
+```bash
+python -m pip check
+braindance
+```
+
+Reinstall after pulling (`python -m pip install -e '.[full]'`) to update console
+commands. `braindance --help` lists workshop options; for example,
+`braindance --no-browser --port 8766`. The module command still works. The old Qt
+launcher is available as `braindance-gui` with the `gui` or `full` extra.
+
+Open <http://127.0.0.1:8765> and click **Run experiment**. Stop with Ctrl+C.
+If installation reports an error, stop and fix it before launching. `pip check`
+only checks packages already installed; it does not prove BrainDance was installed.
+See the [workshop guide](braindance/examples/streaming_workshop/README.md) for replay, profiles, and experiment setup.
+
+Windows CPU/CUDA and native Apple Silicon workshop installs were checked outside
+the checkout. The Mac check includes all three games. See
+[validation details](docs/installation-validation.md) for results and remaining platform checks.

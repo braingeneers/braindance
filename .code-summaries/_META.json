@@ -1,0 +1,3182 @@
+{
+  "commit": "04ea8b2e3b1f063d891e22d58b1d5f17d58b0c20",
+  "generated": "2026-09-17",
+  "mode": "path",
+  "files_refreshed": 15,
+  "source_roots": [
+    "braindance/"
+  ],
+  "hash_normalization": "CRLF to LF",
+  "files": {
+    "braindance/__init__.py": {
+      "sha256": "b25bded2a705beb1ac2de91953254aae8e15bd37754c145530181b7757b3afb7",
+      "symbols": [
+        "Config",
+        "PACKAGE_RESOURCES",
+        "__getattr__",
+        "__version__",
+        "_config",
+        "data_dir",
+        "get_data_path",
+        "get_module_path",
+        "get_resource_path",
+        "get_rt_sort_path"
+      ],
+      "uses": [
+        "braindance.config.get_auto_extract_spike_info",
+        "braindance.config.get_catalog_path",
+        "braindance.config.get_data_dir",
+        "braindance.config.set_auto_extract_spike_info",
+        "braindance.config.set_catalog_path",
+        "braindance.config.set_data_dir"
+      ]
+    },
+    "braindance/analysis/causal_connectivity.py": {
+      "sha256": "8160d78f4d698917877198a0a9ce9f7c6ceb36afdff476af5ab81c68dc4347a1",
+      "symbols": [
+        "_clean_stim_response",
+        "_clean_stim_responses",
+        "_clean_stim_responses_all",
+        "_deprecated",
+        "causal_connectivity_metrics",
+        "causal_reactions",
+        "clean_stim_response",
+        "clean_stim_responses",
+        "clean_stim_responses_all",
+        "get_spikes",
+        "main",
+        "main_kosik",
+        "main_rt_sort",
+        "params",
+        "remove_duplicate_chans_elecs",
+        "sorter",
+        "sorter_params",
+        "threshold_data"
+      ],
+      "uses": [
+        "braindance.analysis.data_loader",
+        "braindance.analysis.mapping",
+        "braindance.core.artifact_removal.ArtifactRemoval",
+        "braindance.core.artifact_removal.cubic_fit5",
+        "braindance.core.spikedetector.model2.ModelSpikeSorter",
+        "braindance.core.spikesorter.rt_sort.RTSort",
+        "braindance.core.spikesorter.rt_sort.detect_sequences",
+        "braindance.experiments.causal_freq_sort_intrinsic.sort_intrinsic"
+      ]
+    },
+    "braindance/analysis/connectivity.py": {
+      "sha256": "ed8d2380bc7fac977e5283fd4900f270984b1cec074851ee0588044f6abbcc5e",
+      "symbols": [
+        "ccg"
+      ],
+      "uses": []
+    },
+    "braindance/analysis/data_helper.py": {
+      "sha256": "1e1d3b0b6338def26918c58efff518ee80e39e8446d1ae216269272580026623",
+      "symbols": [
+        "get_footprints"
+      ],
+      "uses": [
+        "braindance.core.phases_analysis.FootprintPhase"
+      ]
+    },
+    "braindance/analysis/data_loader.py": {
+      "sha256": "7557d9409a6f4b4fe7db5a37abda517c05e92cdb840d5323076f629e472736bf",
+      "symbols": [
+        "AnalysisDAO",
+        "NumpyEncoder",
+        "adjust_stim_times",
+        "adjust_stim_times2",
+        "adjust_stim_times3",
+        "apply_literal_eval_stim_log",
+        "convert_uint16_maxwell",
+        "get_stim_electrodes",
+        "load_data_maxwell",
+        "load_info_maxwell",
+        "load_mapping_maxwell",
+        "load_stim_log",
+        "load_windows_maxwell",
+        "set_stim_patterns"
+      ],
+      "uses": [
+        "braindance.io.open_file"
+      ]
+    },
+    "braindance/analysis/intermediate_rt_sorting/rt_sort.py": {
+      "sha256": "f7aa23f62ae4b857389354039cff132f15faa9b303b2edf809feb09affecf709",
+      "symbols": [
+        "CocCluster",
+        "Merge",
+        "Patience",
+        "RTSort",
+        "_form_all_clusters",
+        "_get_traces_mea_new",
+        "_get_traces_mea_old",
+        "_intra_merge",
+        "_save_traces_mea",
+        "_save_traces_si",
+        "_setup_coc_clusters_parallel",
+        "branch_coc_cluster",
+        "calc_dist",
+        "calc_pre_median",
+        "detect_sequences",
+        "filter_clusters",
+        "form_all_clusters",
+        "form_coc_clusters",
+        "get_gpu_free_memory",
+        "inter_merge",
+        "intra_merge",
+        "load_recording",
+        "main",
+        "merge_coc_clusters",
+        "merge_verbose",
+        "neuropixels_params",
+        "order_sequences",
+        "pickle_dump",
+        "pickle_load",
+        "reassign_spikes_to_clusters",
+        "rec_ms_to_output_frame",
+        "relocate_root",
+        "relocate_root_latency",
+        "relocate_root_prob",
+        "rt_sort_maxwell_env_process",
+        "run_detection_model",
+        "save_traces",
+        "save_traces_mea",
+        "save_traces_si",
+        "set_warning_level",
+        "setup_cluster",
+        "setup_coc_clusters",
+        "setup_coc_clusters_parallel",
+        "setup_elec_stats",
+        "sigmoid",
+        "sigmoid_inverse"
+      ],
+      "uses": [
+        "braindance.analysis.select_units.Unit",
+        "braindance.core.maxwell_env.Config",
+        "braindance.core.spikedetector.model.ModelSpikeSorter"
+      ]
+    },
+    "braindance/analysis/mapping.py": {
+      "sha256": "8a1287860f761aa0b9dcaa36abb25428f8ff275a58b8a851493cfbeb959ea0c5",
+      "symbols": [
+        "Mapping"
+      ],
+      "uses": [
+        "braindance.analysis.data_loader",
+        "braindance.io.open_file"
+      ]
+    },
+    "braindance/analysis/plot_helper.py": {
+      "sha256": "7a1d540ffe37329a515ab6b518d1b4ada2f251ded2c7ae8d6d636ac8ab7a34ea",
+      "symbols": [
+        "get_footprints",
+        "plot_causal_connectivity",
+        "plot_causal_connectivity_experiment",
+        "plot_footprint",
+        "plot_footprints",
+        "plot_heatmap",
+        "plot_heatmap_spikes",
+        "plot_reactivity",
+        "plot_reactivity_traces",
+        "plot_reactivity_traces_experiment"
+      ],
+      "uses": [
+        "braindance.core.phases_analysis.FootprintPhase"
+      ]
+    },
+    "braindance/analysis/process_causal.py": {
+      "sha256": "b1ca3048c6ed03a27250c7ebc97c632fa71186e86c919bf651d3155ad1955619",
+      "symbols": [
+        "analysis_obj",
+        "args",
+        "causal_analysis",
+        "channels",
+        "data_dir",
+        "data_path",
+        "electrodes",
+        "parser",
+        "rec_name",
+        "save",
+        "stim_electrodes",
+        "stim_log",
+        "tag"
+      ],
+      "uses": [
+        "braindance.analysis.analysis_helper",
+        "braindance.analysis.data_loader",
+        "braindance.core.phases_analysis.CausalAnalysis"
+      ]
+    },
+    "braindance/analysis/select_units.py": {
+      "sha256": "c28be5c6a87eee9c9fb24f20e7f5ff7cb641cf0acbd7b6ecef2b0ed1a3669c8d",
+      "symbols": [
+        "Filters",
+        "Unit",
+        "calc_dist",
+        "calc_sttc",
+        "get_matching_events",
+        "get_unit_pairs"
+      ],
+      "uses": []
+    },
+    "braindance/analysis/utils.py": {
+      "sha256": "384308ce21e5ddd8c687ad6c4676a6950edb997a97f0d52753f7d461ef256992",
+      "symbols": [
+        "colors_from_mapping"
+      ],
+      "uses": []
+    },
+    "braindance/cli/replay.py": {
+      "sha256": "a890f76289127da95be85a566f6394b4849d610da91e746cef9b22b113dd6b3f",
+      "symbols": [
+        "EXAMPLE_H5_SHA256",
+        "EXAMPLE_H5_URL",
+        "_parse_speed",
+        "_print_recording",
+        "_zmq_loopback",
+        "build_parser",
+        "doctor_command",
+        "list_command",
+        "main",
+        "run_command"
+      ],
+      "uses": [
+        "braindance.analysis.data_loader.load_data_maxwell",
+        "braindance.config.get_data_dir",
+        "braindance.config.get_output_dir",
+        "braindance.core.maxwell_env.MaxwellEnv",
+        "braindance.core.phases_v3.experiment_v3.Experiment",
+        "braindance.core.phases_v3.phases3.FrequencyStimPhaseV3",
+        "braindance.core.phases_v3.phases3.RecordPhaseV3",
+        "braindance.core.replay.SpikeEvent",
+        "braindance.core.replay.find_recordings",
+        "braindance.core.replay.inspect_recording",
+        "braindance.core.replay.pack_replay_packet",
+        "braindance.core.replay.resolve_replay_source",
+        "braindance.core.replay.unpack_replay_packet"
+      ]
+    },
+    "braindance/config.py": {
+      "sha256": "596e5ae408fe3c8a05710bd8473f32d9011ae9fecb7bf255438c108bfee3eea4",
+      "symbols": [
+        "get_auto_extract_spike_info",
+        "get_catalog_path",
+        "get_data_dir",
+        "get_global_settings",
+        "get_output_dir",
+        "main",
+        "save_global_settings",
+        "set_auto_extract_spike_info",
+        "set_catalog_path",
+        "set_data_dir",
+        "set_output_dir"
+      ],
+      "uses": []
+    },
+    "braindance/core/artifact_removal.py": {
+      "sha256": "bbcad6e4f560ed17e022fd6436636339c83d7b5553be1cbc00c79818839e985c",
+      "symbols": [
+        "ArtifactRemoval",
+        "ArtifactRemoval2",
+        "LOOKUP_TABLE",
+        "Timer",
+        "cubic_fit5",
+        "cubic_fit5_parallel",
+        "fast_factorial",
+        "fast_median",
+        "fast_mmean"
+      ],
+      "uses": []
+    },
+    "braindance/core/artifact_removal_archive.py": {
+      "sha256": "fc45ad5b14b98d920d344bc3c0a1b916f1875c2554b2ea08f99268b2c0a6aa2b",
+      "symbols": [
+        "ArtifactRemoval",
+        "ArtifactRemoval2",
+        "LOOKUP_TABLE_FACT",
+        "LOOKUP_TABLE_NP_TO_K",
+        "LOOKUP_TABLE_NUM_DEN",
+        "LOOKUP_TABLE_N_TO_K",
+        "Timer",
+        "cubic_fit",
+        "cubic_fit4",
+        "cubic_fit5",
+        "fast_factorial",
+        "fast_median",
+        "fast_mmean",
+        "precompute_n_to_k",
+        "precompute_np_to_k",
+        "precompute_num_den"
+      ],
+      "uses": []
+    },
+    "braindance/core/artifact_removal_new.py": {
+      "sha256": "d4235e6e1e345f2d5d4e9f88e9e62c86277c898e94c4161634379ba75cfe2e26",
+      "symbols": [
+        "LOOKUP_TABLE",
+        "_compute_S",
+        "_compute_T",
+        "_compute_W",
+        "_compute_W_rec",
+        "_compute_a",
+        "cubic_fit2d",
+        "cubic_fit5",
+        "fast_factorial",
+        "fast_median",
+        "fast_mmean",
+        "mean_numba",
+        "savgol_filter"
+      ],
+      "uses": []
+    },
+    "braindance/core/artifact_removal_new2.py": {
+      "sha256": "10998fd2ed0e1a59995b644058802d266f9afe3fccd0b1b8161d9b181cbacc06",
+      "symbols": [
+        "LOOKUP_TABLE",
+        "cubic_fit2d",
+        "cubic_fit5",
+        "fast_factorial",
+        "fast_median",
+        "fast_mmean",
+        "mean_numba"
+      ],
+      "uses": []
+    },
+    "braindance/core/base_env.py": {
+      "sha256": "7c66414dbc31e59d94dbc98ab25b4ba3878220a1f6f3e0990fd33cdcb895d23d",
+      "symbols": [
+        "BaseEnv"
+      ],
+      "uses": []
+    },
+    "braindance/core/dummy_maxlab.py": {
+      "sha256": "1abb73d51dc913f4257fa8d58b6b4fa35e409cbd0628b4888418e79ce0c1dceb",
+      "symbols": [
+        "Amplifier",
+        "Core",
+        "DEBUG",
+        "Sequence",
+        "chip",
+        "saving",
+        "send",
+        "send_raw",
+        "system",
+        "unit",
+        "util"
+      ],
+      "uses": []
+    },
+    "braindance/core/dummy_zmq.py": {
+      "sha256": "c473d6f4599feda9e12f05538f0e49efbe24b5d92afab880582a738376236e2e",
+      "symbols": [
+        "SpikeEvent",
+        "_spike_struct",
+        "_spike_struct_size",
+        "context",
+        "events_data",
+        "frame_number",
+        "fs",
+        "n_channels",
+        "publisher_filtered",
+        "publisher_unfiltered",
+        "start_time"
+      ],
+      "uses": []
+    },
+    "braindance/core/dummy_zmq_np.py": {
+      "sha256": "bada5f44163eb4bce56d093aaeec01e23dfa2c6d0b29c0eaada09e3e51c5d4ce",
+      "symbols": [
+        "run"
+      ],
+      "uses": [
+        "braindance.core.replay.H5ReplaySource",
+        "braindance.core.replay.pack_replay_packet"
+      ]
+    },
+    "braindance/core/envs/base_env.py": {
+      "sha256": "ab597c7ed098c1a7e772d2095b33a7ae1573cd333dd02062daeb48fd94f7db05",
+      "symbols": [
+        "BaseEnv"
+      ],
+      "uses": []
+    },
+    "braindance/core/envs/maxwell_env.py": {
+      "sha256": "0f512620f93d32fbd722b08ae55b4f454f8c2a3c0ca692f2d3c10dc44cbc9e98",
+      "symbols": [
+        "__all__"
+      ],
+      "uses": [
+        "braindance.core.maxwell_env.Config",
+        "braindance.core.maxwell_env.MaxwellEnv",
+        "braindance.core.maxwell_env.MaxwellStim"
+      ]
+    },
+    "braindance/core/maxwell/maxwell_utils.py": {
+      "sha256": "d0671c22fc9f24176ba379ce5a2be3883ba8b11f1908c44eaf1932fbed097fd1",
+      "symbols": [
+        "get_maxwell_status"
+      ],
+      "uses": []
+    },
+    "braindance/core/maxwell/query_electrodes.py": {
+      "sha256": "9188375ca726924f843f9111c5f42a05189e6a0b415a65b67322c0cbdb74ba5e",
+      "symbols": [
+        "main",
+        "query_config",
+        "query_electrode_list"
+      ],
+      "uses": []
+    },
+    "braindance/core/maxwell/select_electrodes.py": {
+      "sha256": "01b0c7044d372547cfa6c96a6021e5fb59e54d8a6dd879731d24503e69ab039e",
+      "symbols": [
+        "a",
+        "args",
+        "b",
+        "bd_path",
+        "c",
+        "elec_arr",
+        "parser",
+        "stim_electrodes"
+      ],
+      "uses": []
+    },
+    "braindance/core/maxwell_env.py": {
+      "sha256": "bfe9b2f8426818e001b0d370bf6ca5446fa8d7a212f7b385344bf525be3032d6",
+      "symbols": [
+        "Config",
+        "MaxwellEnv",
+        "MaxwellStim",
+        "SpikeEvent",
+        "_detect_spike_struct_format",
+        "_score_spike_events",
+        "_spike_struct",
+        "_spike_struct_format",
+        "_spike_struct_formats",
+        "_spike_struct_size",
+        "_unpack_spike_event",
+        "connect_stim_electrodes",
+        "disconnect_stim_electrodes",
+        "find_process_by_port",
+        "fs_ms",
+        "get_spike_struct_size",
+        "ignore_first_packet",
+        "ignore_remaining_packets",
+        "init_maxone",
+        "init_maxone_settings",
+        "launch_dummy_server",
+        "parse_events_list",
+        "parse_frame",
+        "plot_worker",
+        "power_cycle_stim_electrodes",
+        "receive_packet",
+        "select_electrodes",
+        "setup_subscribers",
+        "sleep_with_progress",
+        "socket_worker",
+        "stim_process",
+        "stop_process_using_port"
+      ],
+      "uses": [
+        "braindance.core.base_env.BaseEnv",
+        "braindance.core.dummy_maxlab",
+        "braindance.core.dummy_zmq_np",
+        "braindance.core.replay.H5ReplaySource",
+        "braindance.core.replay.H5ReplayWriter"
+      ]
+    },
+    "braindance/core/open_ephys_env.py": {
+      "sha256": "701aaeff8b007aff4c791bf5bae58c8779435cc757fd2e920b587e7191a0bda9",
+      "symbols": [
+        "AddMessageId",
+        "AddNChannels",
+        "AddNSamples",
+        "AddSampleNum",
+        "AddSampleRate",
+        "AddSamples",
+        "AddStream",
+        "AddTimestamp",
+        "ContinuousData",
+        "ContinuousDataAddMessageId",
+        "ContinuousDataAddNChannels",
+        "ContinuousDataAddNSamples",
+        "ContinuousDataAddSampleNum",
+        "ContinuousDataAddSampleRate",
+        "ContinuousDataAddSamples",
+        "ContinuousDataAddStream",
+        "ContinuousDataAddTimestamp",
+        "ContinuousDataEnd",
+        "ContinuousDataStart",
+        "ContinuousDataStartSamplesVector",
+        "End",
+        "OpenEphysEnv",
+        "Start",
+        "StartSamplesVector"
+      ],
+      "uses": [
+        "braindance.core.base_env.BaseEnv"
+      ]
+    },
+    "braindance/core/params.py": {
+      "sha256": "fe42f71a8abd8757d58adc44c3df24ce562e0d56043b083d7aa7e9f2cd548cb5",
+      "symbols": [
+        "maxwell_params"
+      ],
+      "uses": []
+    },
+    "braindance/core/phases.py": {
+      "sha256": "dc45547d30b70993c0d637d04a2cdd4de587797297bb17ee000592e728f57ad5",
+      "symbols": [
+        "CartPolePhase",
+        "FrequencyStimPhase",
+        "NeuralSweepPhase",
+        "Phase",
+        "PhaseManager",
+        "RecordPhase"
+      ],
+      "uses": [
+        "braindance.core.artifact_removal.ArtifactRemoval",
+        "braindance.core.base_env",
+        "braindance.core.phases_analysis.AnalysisPhase",
+        "braindance.core.phases_analysis.HeatmapPhase",
+        "braindance.games.cartpole_continuous"
+      ]
+    },
+    "braindance/core/phases2.py": {
+      "sha256": "4149e9d108a3bcfffffeaec675d47cdbe698e8ece5797a83be5aceb60bf73772",
+      "symbols": [
+        "AntPhase",
+        "CartPolePhase",
+        "FrequencyStimPhase",
+        "NeuralAntPhase",
+        "NeuralSweepPhase",
+        "Phase",
+        "PhaseManager",
+        "RecordPhase"
+      ],
+      "uses": [
+        "braindance.core.artifact_removal.ArtifactRemoval",
+        "braindance.core.base_env",
+        "braindance.core.phases_analysis.AnalysisPhase",
+        "braindance.core.phases_analysis.HeatmapPhase",
+        "braindance.games.cartpole_continuous",
+        "braindance.utils.rt_linear_art_removal.LinearArtifactRemoval"
+      ]
+    },
+    "braindance/core/phases2_loop.py": {
+      "sha256": "8e6525109b89f2103e409137521397990a7f4e24492fb800101268f85095f2bc",
+      "symbols": [
+        "AntPhase",
+        "ClosedLoopPhase",
+        "NeuralAntPhase"
+      ],
+      "uses": [
+        "braindance.core.base_env",
+        "braindance.core.phases2.Phase",
+        "braindance.core.stim_commands.generate_stimulations",
+        "braindance.utils.rt_linear_art_removal.LinearArtifactRemoval"
+      ]
+    },
+    "braindance/core/phases_analysis.py": {
+      "sha256": "21282f73fd1710dc59692462845dd57bf0fe26dc55377b44204954a55e7ef4e5",
+      "symbols": [
+        "AnalysisPhase",
+        "CausalAnalysis",
+        "FootprintPhase",
+        "HeatmapPhase"
+      ],
+      "uses": [
+        "braindance.analysis",
+        "braindance.analysis.data_loader",
+        "braindance.analysis.plot_helper",
+        "braindance.core.artifact_removal.ArtifactRemoval",
+        "braindance.core.artifact_removal.cubic_fit5",
+        "braindance.core.phases.Phase"
+      ]
+    },
+    "braindance/core/phases_analysis_2.py": {
+      "sha256": "ad163a18b400f08de986835ef4bb1b23ff866984eda0854e24c63865503d0386",
+      "symbols": [
+        "ActivityPhase",
+        "AnalysisPhase",
+        "CausalAnalysis",
+        "FootprintPhase",
+        "RTSortPhase"
+      ],
+      "uses": [
+        "braindance.analysis",
+        "braindance.analysis.causal_connectivity",
+        "braindance.analysis.data_loader",
+        "braindance.analysis.plot_helper",
+        "braindance.analysis.plot_helper.plot_causal_connectivity_experiment",
+        "braindance.analysis.plot_helper.plot_footprints",
+        "braindance.analysis.plot_helper.plot_reactivity_traces_experiment",
+        "braindance.core.artifact_removal_new2",
+        "braindance.core.phases.Phase",
+        "braindance.core.spikedetector.model2.ModelSpikeSorter",
+        "braindance.core.spikesorter.rt_sort.detect_sequences"
+      ]
+    },
+    "braindance/core/phases_env.py": {
+      "sha256": "e7d253a69cf634b2f6835558f65266ca197450a0c2a35b1a645adbfb7d65c49a",
+      "symbols": [
+        "FoodLandPhase"
+      ],
+      "uses": [
+        "braindance.core.artifact_removal.ArtifactRemoval",
+        "braindance.core.base_env",
+        "braindance.core.phases.Phase",
+        "braindance.games.food_land.FoodLandEnv"
+      ]
+    },
+    "braindance/core/phases_v3/cartpole_viz_helper.py": {
+      "sha256": "7efab5a99e76ee1a642edcea1f323b2b67d237a6b6b332d780852dbd414dc492",
+      "symbols": [
+        "NeuralRLVisualizer",
+        "add_visualization_to_phase"
+      ],
+      "uses": []
+    },
+    "braindance/core/phases_v3/codec.py": {
+      "sha256": "8f29c261be842cb71ce3bed0407f377ae75bfb3167ca5b63eb154751174913ac",
+      "symbols": [
+        "ContinuousOutputPPO",
+        "DiscreteOutputPPO",
+        "InputPolicyActorCritic",
+        "PPORolloutBuffer",
+        "compute_gae",
+        "compute_gradient_magnitude",
+        "ppo_update",
+        "sigmoid"
+      ],
+      "uses": []
+    },
+    "braindance/core/phases_v3/data_context.py": {
+      "sha256": "0aa0b61d000c46585264124b8468d694d31d5646d27e5e11882ffca69f39827b",
+      "symbols": [
+        "DataContext",
+        "DataDependencyTracker",
+        "DataValidator"
+      ],
+      "uses": []
+    },
+    "braindance/core/phases_v3/experiment_v3.py": {
+      "sha256": "7b76b499b20e790038d0e414fe904c23bfff007a96d4b0fe5e9297f6f236b56c",
+      "symbols": [
+        "Experiment"
+      ],
+      "uses": [
+        "braindance.analysis.mapping.Mapping",
+        "braindance.config.get_data_dir",
+        "braindance.core.maxwell_env.MaxwellEnv",
+        "braindance.core.params.maxwell_params",
+        "braindance.core.phases_v3.data_context.DataContext",
+        "braindance.core.phases_v3.data_context.DataDependencyTracker",
+        "braindance.core.phases_v3.phase_base_v3.AnalysisPhaseV3",
+        "braindance.core.phases_v3.phase_base_v3.PhaseGroup",
+        "braindance.core.phases_v3.phase_base_v3.PhaseV3",
+        "braindance.core.phases_v3.phase_base_v3.PhaseValidator",
+        "braindance.core.phases_v3.phase_base_v3.ValidationError"
+      ]
+    },
+    "braindance/core/phases_v3/phase_base_v3.py": {
+      "sha256": "76e4055f8947f611ff873ae8042ebfa49aa061cbd1fa708d31ba0638a9ab617f",
+      "symbols": [
+        "AnalysisPhaseV3",
+        "PhaseGroup",
+        "PhaseV3",
+        "PhaseValidator",
+        "QuickPhaseV3",
+        "ValidationError",
+        "_PhaseContractMeta",
+        "phase",
+        "quick_phase"
+      ],
+      "uses": [
+        "braindance.core.phases_v3.data_context.DataContext"
+      ]
+    },
+    "braindance/core/phases_v3/phases3.py": {
+      "sha256": "bbf708c7d54e64732b7d1fdcc63f0fc943fe464e67c2a71a22c0608c672cfb6b",
+      "symbols": [
+        "CartPolePhaseV3",
+        "FrequencyStimPhaseV3",
+        "NeuralSweepPhaseV3",
+        "RecordPhaseV3"
+      ],
+      "uses": [
+        "braindance.core.base_env.BaseEnv",
+        "braindance.core.phases_v3.phase_base_v3.AnalysisPhaseV3",
+        "braindance.core.phases_v3.phase_base_v3.PhaseV3"
+      ]
+    },
+    "braindance/core/phases_v3/phases3_ant.py": {
+      "sha256": "bd0819344ba6540049a4aeb778e1c5b9303b068562a1ad08ae34f2632d1dd887",
+      "symbols": [
+        "AntPhaseV3"
+      ],
+      "uses": [
+        "braindance.analysis.data_loader.convert_uint16_maxwell",
+        "braindance.core.phases_v3.codec.ContinuousOutputPPO",
+        "braindance.core.phases_v3.codec.InputPolicyActorCritic",
+        "braindance.core.phases_v3.codec.PPORolloutBuffer",
+        "braindance.core.phases_v3.codec.ppo_update",
+        "braindance.core.phases_v3.codec.sigmoid",
+        "braindance.core.phases_v3.experiment_v3.Experiment",
+        "braindance.core.phases_v3.phase_base_v3.PhaseV3",
+        "braindance.core.trainer.ContextualTrainer",
+        "braindance.core.trainer.TetanusTrainer",
+        "braindance.core.trainer.generate_tetanus_pattern",
+        "braindance.games.ant.AntFeatureEnv",
+        "braindance.get_rt_sort_path"
+      ]
+    },
+    "braindance/core/phases_v3/phases3_ant_cpg.py": {
+      "sha256": "b2a87349682f038b2f187c8b419a32b88b9b2d47f9209180e27c3bf0767147db",
+      "symbols": [
+        "AntCPGPhaseV3"
+      ],
+      "uses": [
+        "braindance.analysis.data_loader.convert_uint16_maxwell",
+        "braindance.core.phases_v3.codec.ContinuousOutputPPO",
+        "braindance.core.phases_v3.codec.PPORolloutBuffer",
+        "braindance.core.phases_v3.codec.ppo_update",
+        "braindance.core.phases_v3.experiment_v3.Experiment",
+        "braindance.core.phases_v3.phase_base_v3.PhaseV3",
+        "braindance.core.trainer.AdaptiveTetanusTrainer",
+        "braindance.core.trainer.ContextualTrainer",
+        "braindance.core.trainer.TetanusTrainer",
+        "braindance.core.trainer.generate_tetanus_pattern",
+        "braindance.games.ant.AntFeatureEnv",
+        "braindance.get_rt_sort_path"
+      ]
+    },
+    "braindance/core/phases_v3/phases3_foodland.py": {
+      "sha256": "912f5681bbc7e5370f45e4368402ca4e522d9d80bbf2f4f26fe98f38752c1a0b",
+      "symbols": [
+        "FoodLandFeatureEnv",
+        "FoodLandPhaseV3"
+      ],
+      "uses": [
+        "braindance.analysis.data_loader.convert_uint16_maxwell",
+        "braindance.core.phases_v3.codec.ContinuousOutputPPO",
+        "braindance.core.phases_v3.codec.InputPolicyActorCritic",
+        "braindance.core.phases_v3.codec.PPORolloutBuffer",
+        "braindance.core.phases_v3.codec.ppo_update",
+        "braindance.core.phases_v3.codec.sigmoid",
+        "braindance.core.phases_v3.experiment_v3.Experiment",
+        "braindance.core.phases_v3.phase_base_v3.PhaseV3",
+        "braindance.core.trainer.ContextualTrainer",
+        "braindance.core.trainer.TetanusTrainer",
+        "braindance.core.trainer.generate_tetanus_pattern",
+        "braindance.games.food_land.FoodLandEnv",
+        "braindance.get_rt_sort_path"
+      ]
+    },
+    "braindance/core/phases_v3/phases3_loop.py": {
+      "sha256": "9944b7b6ff5370de10aaa8cbfbb0f0771ffb3369fe03383eee66431e3b6aa5ee",
+      "symbols": [
+        "CartPolePhasWithViz",
+        "CartPolePhase",
+        "ClosedLoopPhaseV3",
+        "PolicyNetwork"
+      ],
+      "uses": [
+        "braindance.analysis.data_loader.convert_uint16_maxwell",
+        "braindance.core.phases_v3.cartpole_viz_helper.NeuralRLVisualizer",
+        "braindance.core.phases_v3.experiment_v3.Experiment",
+        "braindance.core.phases_v3.phase_base_v3.PhaseV3",
+        "braindance.core.trainer.ContextualTrainer",
+        "braindance.core.trainer.TetanusTrainer",
+        "braindance.core.trainer.generate_tetanus_pattern",
+        "braindance.games.cartpole_continuous",
+        "braindance.get_rt_sort_path"
+      ]
+    },
+    "braindance/core/phases_v3/phases3_pacman.py": {
+      "sha256": "3d6b59309fb6b5ec19285327368cc6b6163b9b09da140c4fc7b94de767998287",
+      "symbols": [
+        "MsPacManPhase",
+        "MsPacManPhaseWithViz"
+      ],
+      "uses": [
+        "braindance.analysis.data_loader.convert_uint16_maxwell",
+        "braindance.core.phases_v3.cartpole_viz_helper.NeuralRLVisualizer",
+        "braindance.core.phases_v3.codec.DiscreteOutputPPO",
+        "braindance.core.phases_v3.codec.InputPolicyActorCritic",
+        "braindance.core.phases_v3.codec.PPORolloutBuffer",
+        "braindance.core.phases_v3.codec.ppo_update",
+        "braindance.core.phases_v3.codec.sigmoid",
+        "braindance.core.phases_v3.experiment_v3.Experiment",
+        "braindance.core.phases_v3.phase_base_v3.PhaseV3",
+        "braindance.core.trainer.ContextualTrainer",
+        "braindance.core.trainer.TetanusTrainer",
+        "braindance.core.trainer.generate_tetanus_pattern",
+        "braindance.games.mspacman.MsPacmanFeatureEnv",
+        "braindance.get_rt_sort_path"
+      ]
+    },
+    "braindance/core/phases_v3/phases3_selection.py": {
+      "sha256": "91d6d3cac5bfdcbae57777e26dd9a0b1972aa818cfdf7d60463fecd212a64df5",
+      "symbols": [
+        "ActivitySelectionPhaseV3",
+        "SelectionPhaseV3",
+        "SpatialSelectionPhaseV3"
+      ],
+      "uses": [
+        "braindance.core.phases_v3.phase_base_v3.AnalysisPhaseV3"
+      ]
+    },
+    "braindance/core/phases_v3/phases3_walker2d.py": {
+      "sha256": "1d89c5e3a74658b9ff6aba8ddb2062a96a94b20591586d2f2cc53933d32f9614",
+      "symbols": [
+        "LinearOutputPPO",
+        "Walker2dPhaseV3"
+      ],
+      "uses": [
+        "braindance.analysis.data_loader.convert_uint16_maxwell",
+        "braindance.core.phases_v3.codec.InputPolicyActorCritic",
+        "braindance.core.phases_v3.codec.PPORolloutBuffer",
+        "braindance.core.phases_v3.codec.ppo_update",
+        "braindance.core.phases_v3.experiment_v3.Experiment",
+        "braindance.core.phases_v3.phase_base_v3.PhaseV3",
+        "braindance.core.trainer.ContextualTrainer",
+        "braindance.core.trainer.TetanusTrainer",
+        "braindance.core.trainer.generate_tetanus_pattern",
+        "braindance.games.walker2d.Walker2dFeatureEnv",
+        "braindance.get_rt_sort_path"
+      ]
+    },
+    "braindance/core/phases_v3/phases3_walker2d_cpg.py": {
+      "sha256": "0e3a47540b3882a8de269ef1a4c6e8ec33527b578c75ada210ed795bcd956fa1",
+      "symbols": [
+        "Walker2dCPGPhaseV3"
+      ],
+      "uses": [
+        "braindance.analysis.data_loader.convert_uint16_maxwell",
+        "braindance.core.phases_v3.codec.PPORolloutBuffer",
+        "braindance.core.phases_v3.codec.ppo_update",
+        "braindance.core.phases_v3.experiment_v3.Experiment",
+        "braindance.core.phases_v3.phase_base_v3.PhaseV3",
+        "braindance.core.phases_v3.phases3_walker2d.LinearOutputPPO",
+        "braindance.core.trainer.ContextualTrainer",
+        "braindance.core.trainer.TetanusTrainer",
+        "braindance.core.trainer.generate_tetanus_pattern",
+        "braindance.games.walker2d.Walker2dFeatureEnv",
+        "braindance.get_rt_sort_path"
+      ]
+    },
+    "braindance/core/phases_v3/phases_analysis_3.py": {
+      "sha256": "a8a674fd6052cd335eb8c4c9b6514dcfc2b3909d8c606b70314fa47927fe402c",
+      "symbols": [
+        "ActivityPhaseV3",
+        "CausalAnalysisV3",
+        "ConnectivityPhaseV3",
+        "FootprintPhaseV3",
+        "RTSortPhaseV3"
+      ],
+      "uses": [
+        "braindance.analysis.data_loader",
+        "braindance.analysis.data_loader.load_data_maxwell",
+        "braindance.core.phases_v3.experiment_v3.Experiment",
+        "braindance.core.phases_v3.phase_base_v3.AnalysisPhaseV3",
+        "braindance.core.spikesorter.kilosort2.RunKilosort",
+        "braindance.core.spikesorter.rt_sort.RTSort",
+        "braindance.core.spikesorter.rt_sort.detect_sequences",
+        "braindance.get_rt_sort_path"
+      ]
+    },
+    "braindance/core/phases_v3/phases_binned.py": {
+      "sha256": "162a65660f160c2e747c59d9174bcbcd310b26c37d43758f19f6f269957f3cb4",
+      "symbols": [
+        "BinnedPhaseV3",
+        "BinnedRecordingPhaseV3",
+        "BinnedRuntime",
+        "MappedEnvironmentPhaseV3",
+        "ResponseProbePhaseV3"
+      ],
+      "uses": [
+        "braindance.core.phases_v3.phase_base_v3.PhaseV3"
+      ]
+    },
+    "braindance/core/replay.py": {
+      "sha256": "5b61256f3a559750a26c9bbbe2f9f2de57dabe09e96bb77f22f78c1f68429891",
+      "symbols": [
+        "H5ReplaySource",
+        "H5ReplayWriter",
+        "MAPPING_DTYPE",
+        "SPIKE_DTYPE",
+        "SpikeEvent",
+        "_decode_scalar",
+        "_find_layout",
+        "find_recordings",
+        "inspect_recording",
+        "pack_replay_packet",
+        "resolve_replay_source",
+        "unpack_replay_packet"
+      ],
+      "uses": [
+        "braindance.config.get_data_dir"
+      ]
+    },
+    "braindance/core/simulation.py": {
+      "sha256": "362c8afc63b4ce729246e095a2ff0e1c7511aeaf9984d986ec54fc6db2545913",
+      "symbols": [
+        "NeuralSimulationSource",
+        "_number"
+      ],
+      "uses": [
+        "braindance.core.replay.MAPPING_DTYPE",
+        "braindance.core.replay.SpikeEvent"
+      ]
+    },
+    "braindance/core/spikedetector/data.py": {
+      "sha256": "01f22cfa5c5916e8ddc024dd6f97e7efd6ad1dc66cc7af1b74a45c1894c6b888",
+      "symbols": [
+        "BandpassFilter",
+        "MultiRecordingDataset",
+        "Recording",
+        "RecordingCrossVal",
+        "RecordingDataloader",
+        "SubMultiRecordingDataset",
+        "TensorDataloader",
+        "Unit",
+        "Waveform",
+        "WaveformDataset",
+        "is_dl_folder",
+        "main",
+        "setup_dl_folders"
+      ],
+      "uses": [
+        "braindance.core.spikedetector.plot",
+        "braindance.core.spikesorter.kilosort2.run_kilosort2",
+        "braindance.core.spikesorter.rt_sort.save_traces"
+      ]
+    },
+    "braindance/core/spikedetector/model.py": {
+      "sha256": "c8025b7ffcef6516ea0f23cf1673421d16a0849fbabb2c7a1a89744d2e2f1619",
+      "symbols": [],
+      "uses": [
+        "braindance.core.spikedetector.model2.*"
+      ]
+    },
+    "braindance/core/spikedetector/model2.py": {
+      "sha256": "0cdb98f573503f53e1d69ad7b60317295b47f6e5919c14de285fd0152d504e45",
+      "symbols": [
+        "ConvBlock",
+        "ExpandBlock",
+        "ModelSpikeSorter",
+        "ModelTuning",
+        "RMSThresh",
+        "UNet",
+        "main",
+        "sigmoid"
+      ],
+      "uses": [
+        "braindance.core.spikedetector.plot",
+        "braindance.core.spikedetector.utils"
+      ]
+    },
+    "braindance/core/spikedetector/plot.py": {
+      "sha256": "7329b34b23fe0614a718a3fdd4c7a2672488575992017ab5784a225dae6f4c72",
+      "symbols": [
+        "TRACE_X_LABEL",
+        "display_prob_spike",
+        "get_empty_line",
+        "get_yticks_lim",
+        "plot_hist_loc_mad",
+        "plot_hist_percent_abs_error",
+        "plot_hist_percents",
+        "plot_waveform",
+        "set_dpi",
+        "set_ticks",
+        "unscaled_ticks_to_uv"
+      ],
+      "uses": [
+        "braindance.core.spikedetector.utils"
+      ]
+    },
+    "braindance/core/spikedetector/spikedetector.py": {
+      "sha256": "f8acb0a9e18021f3a15a4a4f224e7dc1bc41f91482749a242130c4eae6320e03",
+      "symbols": [
+        "SpikeDetector"
+      ],
+      "uses": [
+        "braindance.core.spikedetector.model.ModelSpikeSorter"
+      ]
+    },
+    "braindance/core/spikedetector/train.py": {
+      "sha256": "0939c552fbc32578dd121924c56c38ad914de8873271e3f0ea9994296eeca494",
+      "symbols": [
+        "main",
+        "train_detection_model"
+      ],
+      "uses": [
+        "braindance.core.spikedetector.data",
+        "braindance.core.spikedetector.model.ModelSpikeSorter",
+        "braindance.core.spikedetector.utils"
+      ]
+    },
+    "braindance/core/spikedetector/utils.py": {
+      "sha256": "687cc83a268417e306d51b1f4b48b0677fa982635aa5075e9b41cc1a9aed74af",
+      "symbols": [
+        "confusion_matrix",
+        "confusion_stats",
+        "copy_file",
+        "get_time",
+        "random_seed",
+        "round",
+        "torch_to_np"
+      ],
+      "uses": []
+    },
+    "braindance/core/spikesorter/burst.py": {
+      "sha256": "91fda5595f847774733965bbb48ed21969fce687bf9a03bbcbc862406feb093e",
+      "symbols": [
+        "BurstDetector",
+        "SmoothBurstDetector"
+      ],
+      "uses": [
+        "braindance.core.spikesorter.rt_sort.save_traces",
+        "braindance.core.spikesorter.sort.Sort"
+      ]
+    },
+    "braindance/core/spikesorter/kilosort2.py": {
+      "sha256": "753254c60c97a476e903c79f61d3dccda9150b865ba0e5bce8607f36cebc193b",
+      "symbols": [
+        "BarPlot",
+        "BrokenProcessPool",
+        "ChunkRecordingExecutor",
+        "Compiler",
+        "Curation",
+        "EXTRA_QUEUED_CALLS",
+        "Figure",
+        "HalfCompiler",
+        "KilosortSortingExtractor",
+        "ProcessPoolExecutor",
+        "RunKilosort",
+        "ShellScript",
+        "SortedUnit",
+        "StdScatterPlot",
+        "Stopwatch",
+        "Tee",
+        "TemplatesPlot",
+        "Utils",
+        "WaveformExtractor",
+        "_CallItem",
+        "_ExceptionWithTraceback",
+        "_MAX_WINDOWS_WORKERS",
+        "_RemoteTraceback",
+        "_ResultItem",
+        "_SafeQueue",
+        "_ThreadWakeup",
+        "_WorkItem",
+        "__author__",
+        "_add_call_item_to_queue",
+        "_chain_from_iterable_of_lists",
+        "_check_system_limits",
+        "_get_chunks",
+        "_global_shutdown",
+        "_process_chunk",
+        "_process_worker",
+        "_python_exit",
+        "_queue_management_worker",
+        "_rebuild_exc",
+        "_sendback_result",
+        "_system_limited",
+        "_system_limits_checked",
+        "_threads_wakeups",
+        "compile_results",
+        "concatenate_recordings",
+        "copy_script",
+        "create_folder",
+        "curate",
+        "curate_first",
+        "curate_second",
+        "delete_folder",
+        "extract_waveforms",
+        "get_paths",
+        "load_recording",
+        "load_single_recording",
+        "print_stage",
+        "process_recording",
+        "run_kilosort2",
+        "spike_sort",
+        "write_recording"
+      ],
+      "uses": [
+        "braindance.core.spikesorter.rt_sort.save_traces"
+      ]
+    },
+    "braindance/core/spikesorter/rt_sort.py": {
+      "sha256": "90ec619b17b3c71bd05439fdc9db76efff3467c98bbc236e7a4eba4b8dd8a3cb",
+      "symbols": [
+        "CocCluster",
+        "Merge",
+        "Patience",
+        "RTSort",
+        "_form_all_clusters",
+        "_get_traces_mea_new",
+        "_get_traces_mea_old",
+        "_intra_merge",
+        "_save_traces_mea",
+        "_save_traces_si",
+        "_setup_coc_clusters_parallel",
+        "branch_coc_cluster",
+        "calc_dist",
+        "calc_pre_median",
+        "detect_sequences",
+        "filter_clusters",
+        "form_all_clusters",
+        "form_coc_clusters",
+        "get_gpu_free_memory",
+        "inter_merge",
+        "intra_merge",
+        "load_recording",
+        "main",
+        "merge_coc_clusters",
+        "merge_verbose",
+        "neuropixels_params",
+        "order_sequences",
+        "pickle_dump",
+        "pickle_load",
+        "process_spikes_numba",
+        "reassign_spikes_to_clusters",
+        "rec_ms_to_output_frame",
+        "relocate_root",
+        "relocate_root_latency",
+        "relocate_root_prob",
+        "rt_sort_maxwell_env_process",
+        "run_detection_model",
+        "save_traces",
+        "save_traces_mea",
+        "save_traces_si",
+        "set_warning_level",
+        "setup_cluster",
+        "setup_coc_clusters",
+        "setup_coc_clusters_parallel",
+        "setup_elec_stats",
+        "sigmoid",
+        "sigmoid_inverse"
+      ],
+      "uses": [
+        "braindance.analysis.select_units.Unit",
+        "braindance.core.maxwell_env.Config",
+        "braindance.core.spikedetector.model.ModelSpikeSorter"
+      ]
+    },
+    "braindance/core/spikesorter/sort.py": {
+      "sha256": "51f855ac9cf1465ccf7f01ed833742cc9a97aa0b819a3e2af894e8c66bb56492",
+      "symbols": [
+        "Sort"
+      ],
+      "uses": [
+        "braindance.core.spikesorter.rt_sort.load_recording",
+        "braindance.core.spikesorter.rt_sort.save_traces"
+      ]
+    },
+    "braindance/core/spikesorter/thresh.py": {
+      "sha256": "dcc76d8dbd5578bd28ebd28132544f855d762ba7891406d790591c7b73787c95",
+      "symbols": [
+        "ThreshSort"
+      ],
+      "uses": [
+        "braindance.core.spikesorter.sort.Sort"
+      ]
+    },
+    "braindance/core/stim_commands.py": {
+      "sha256": "5cc481bdd76f4610dd84bad98897a653b9a1e67d3a910a606aaba19d5e9fe08e",
+      "symbols": [
+        "generate_stimulations",
+        "is_single_command"
+      ],
+      "uses": []
+    },
+    "braindance/core/trainer.py": {
+      "sha256": "cb4f8e031abe0d6556b4594a2710d9b2a2dd93fb649c9edc1ab8b1951961483f",
+      "symbols": [
+        "AdaptiveTetanusTrainer",
+        "ContextualTrainer",
+        "HebbianTrainer",
+        "TetanusTrainer",
+        "generate_permutations",
+        "generate_tetanus_pattern",
+        "get_random_correlated_reward",
+        "get_random_reward",
+        "plot_probs",
+        "update_probs",
+        "update_values"
+      ],
+      "uses": []
+    },
+    "braindance/core/utils.py": {
+      "sha256": "4d86df294205e9e7c5938e17a8775ad6241e7b31666735951ead5315e3eff40b",
+      "symbols": [
+        "SmartPlug"
+      ],
+      "uses": []
+    },
+    "braindance/examples/1_cartpole.py": {
+      "sha256": "7b7b08a02b2e0f8fe87a894ff99617c6dc6468885001ba391671ba707e5d6e9b",
+      "symbols": [
+        "main"
+      ],
+      "uses": [
+        "braindance.examples.paper_cartpole.game.main",
+        "braindance.examples.paper_cartpole.ranking.find_connectivity_patterns"
+      ]
+    },
+    "braindance/examples/2_rapid_pairing.py": {
+      "sha256": "8153e6e57b8991039f463cb478d32a23fe3a8a71435487b3c563a8535b59b5b9",
+      "symbols": [
+        "main",
+        "select_random_pair"
+      ],
+      "uses": [
+        "braindance.core.phases_v3.experiment_v3.Experiment",
+        "braindance.core.phases_v3.phase_base_v3.phase",
+        "braindance.core.phases_v3.phases3.RecordPhaseV3",
+        "braindance.core.phases_v3.phases3_loop.ClosedLoopPhaseV3",
+        "braindance.core.phases_v3.phases_analysis_3.ConnectivityPhaseV3",
+        "braindance.core.phases_v3.phases_analysis_3.RTSortPhaseV3"
+      ]
+    },
+    "braindance/examples/3_busybee.py": {
+      "sha256": "38d3af30c9122d3b58abdd286a240494c1c71eb67b11ec0600d024788eab49d0",
+      "symbols": [
+        "main"
+      ],
+      "uses": [
+        "braindance.config.get_output_dir",
+        "braindance.core.maxwell_env.MaxwellEnv",
+        "braindance.core.params.maxwell_params",
+        "braindance.core.phases.NeuralSweepPhase",
+        "braindance.core.phases.PhaseManager",
+        "braindance.core.phases.RecordPhase"
+      ]
+    },
+    "braindance/examples/analysis_checkpoint_smoke.py": {
+      "sha256": "004f41954054c8c7233ec2cddf55190be30544316960fe27046b3d76f2a9de37",
+      "symbols": [
+        "SourceValues",
+        "SumValues",
+        "main"
+      ],
+      "uses": [
+        "braindance.config.get_output_dir",
+        "braindance.core.phases_v3.experiment_v3.Experiment",
+        "braindance.core.phases_v3.phase_base_v3.AnalysisPhaseV3"
+      ]
+    },
+    "braindance/examples/ant_cpg_example.py": {
+      "sha256": "b77d8fe8fcbc211c298da0f5b8c1e03ef2d0895af9270e780db28570c13b12b9",
+      "symbols": [
+        "_load_source_experiment_data",
+        "run_ant_cpg_experiment"
+      ],
+      "uses": [
+        "braindance.config.get_data_dir",
+        "braindance.core.phases_v3.experiment_v3.Experiment",
+        "braindance.core.phases_v3.phases3.RecordPhaseV3",
+        "braindance.core.phases_v3.phases3_ant_cpg.AntCPGPhaseV3",
+        "braindance.core.phases_v3.phases_analysis_3.RTSortPhaseV3"
+      ]
+    },
+    "braindance/examples/ant_reinforcement_example.py": {
+      "sha256": "a934c40fffcae8f6780268b2b86f4b2e31674f5a1dc21e75d1411da4c0f841e9",
+      "symbols": [
+        "run_ant_reinforcement_experiment"
+      ],
+      "uses": [
+        "braindance.core.phases_v3.experiment_v3.Experiment",
+        "braindance.core.phases_v3.phases3.RecordPhaseV3",
+        "braindance.core.phases_v3.phases3_ant.AntPhaseV3",
+        "braindance.core.phases_v3.phases_analysis_3.RTSortPhaseV3"
+      ]
+    },
+    "braindance/examples/cartpole_ml.py": {
+      "sha256": "bf02047977e12152e8aa5d2e4f4f9051a71b5a0ec7c7aa2f426840f787da7dcf",
+      "symbols": [
+        "run_cartpole_reinforcement_experiment"
+      ],
+      "uses": [
+        "braindance.core.phases_v3.experiment_v3.Experiment",
+        "braindance.core.phases_v3.phases3.RecordPhaseV3",
+        "braindance.core.phases_v3.phases3_loop.CartPolePhasWithViz",
+        "braindance.core.phases_v3.phases_analysis_3.RTSortPhaseV3"
+      ]
+    },
+    "braindance/examples/cartpole_reinforcement_example.py": {
+      "sha256": "373b86602ac90d772353ccf2bf477a303f708b54c7c83c85a2dd0d331dc7be1d",
+      "symbols": [
+        "run_cartpole_reinforcement_experiment"
+      ],
+      "uses": [
+        "braindance.core.phases_v3.experiment_v3.Experiment",
+        "braindance.core.phases_v3.phases3.RecordPhaseV3",
+        "braindance.core.phases_v3.phases3_loop.CartPolePhasWithViz",
+        "braindance.core.phases_v3.phases_analysis_3.RTSortPhaseV3"
+      ]
+    },
+    "braindance/examples/closed_loop.py": {
+      "sha256": "ca1e72ba83c1c6c0333f9f916ee270aa1ab49156cb9eead498ee13b6310e916f",
+      "symbols": [
+        "select_random_pair"
+      ],
+      "uses": [
+        "braindance.core.phases_v3.experiment_v3.Experiment",
+        "braindance.core.phases_v3.phase_base_v3.phase",
+        "braindance.core.phases_v3.phases3.RecordPhaseV3",
+        "braindance.core.phases_v3.phases3_loop.ClosedLoopPhaseV3",
+        "braindance.core.phases_v3.phases_analysis_3.ConnectivityPhaseV3",
+        "braindance.core.phases_v3.phases_analysis_3.RTSortPhaseV3"
+      ]
+    },
+    "braindance/examples/closed_loop_experiment_v3.py": {
+      "sha256": "e0d936ae3e63656844766ecfa10d792f2dec01a44f2f881e516f6a4da7daa9a9",
+      "symbols": [
+        "analyze_plasticity_results",
+        "check_failure_point",
+        "run_closed_loop_plasticity_experiment",
+        "run_simple_test"
+      ],
+      "uses": [
+        "braindance.core.phases_v3.experiment_v3.Experiment",
+        "braindance.core.phases_v3.phase_base_v3.PhaseGroup",
+        "braindance.core.phases_v3.phases3.RecordPhaseV3",
+        "braindance.core.phases_v3.phases3_loop.ClosedLoopPhaseV3",
+        "braindance.core.phases_v3.phases3_selection.SelectionPhaseV3",
+        "braindance.core.phases_v3.phases_analysis_3.ConnectivityPhaseV3",
+        "braindance.core.phases_v3.phases_analysis_3.FootprintPhaseV3",
+        "braindance.core.phases_v3.phases_analysis_3.RTSortPhaseV3"
+      ]
+    },
+    "braindance/examples/foodland_reinforcement_example.py": {
+      "sha256": "56fba35e696c938ff0a998639305d6876bb327a2bc858be137ebd6bd99f85a24",
+      "symbols": [
+        "run_foodland_reinforcement_experiment"
+      ],
+      "uses": [
+        "braindance.core.phases_v3.experiment_v3.Experiment",
+        "braindance.core.phases_v3.phases3.RecordPhaseV3",
+        "braindance.core.phases_v3.phases3_foodland.FoodLandPhaseV3",
+        "braindance.core.phases_v3.phases_analysis_3.RTSortPhaseV3"
+      ]
+    },
+    "braindance/examples/get_tutorial_data.py": {
+      "sha256": "1692103a175225dba7141454f649f1bb991a2122c1356ec60fe68b59b90df7a2",
+      "symbols": [
+        "main"
+      ],
+      "uses": [
+        "braindance.examples.validate_tutorial_data.main",
+        "braindance.tutorial.get_test_data"
+      ]
+    },
+    "braindance/examples/load_context.py": {
+      "sha256": "0ccf6e2388f2e29c7d2fd2651c580bfc8bbd7f1a5d7f437898a95af417c0234e",
+      "symbols": [
+        "args",
+        "exp"
+      ],
+      "uses": [
+        "braindance.core.phases_v3.experiment_v3.Experiment"
+      ]
+    },
+    "braindance/examples/mspacman_reinforcement_example.py": {
+      "sha256": "047bdc55465d95cb34dbceace5dba5d5e6158b6a745ab5bd6be394b2a0466dcd",
+      "symbols": [
+        "run_mspacman_reinforcement_experiment"
+      ],
+      "uses": [
+        "braindance.core.phases_v3.experiment_v3.Experiment",
+        "braindance.core.phases_v3.phases3.RecordPhaseV3",
+        "braindance.core.phases_v3.phases3_pacman.MsPacManPhaseWithViz",
+        "braindance.core.phases_v3.phases_analysis_3.RTSortPhaseV3"
+      ]
+    },
+    "braindance/examples/paper_cartpole/causal.py": {
+      "sha256": "e9e14166d0e9d4ff1acf000d477677984bbf30c997ffdcc017f590ada4eac8f1",
+      "symbols": [
+        "main"
+      ],
+      "uses": [
+        "braindance.analysis.data_loader.AnalysisDAO",
+        "braindance.analysis.plot_helper",
+        "braindance.core.maxwell_env.MaxwellEnv",
+        "braindance.core.params.maxwell_params",
+        "braindance.core.phases.NeuralSweepPhase",
+        "braindance.core.phases.PhaseManager",
+        "braindance.core.phases.RecordPhase",
+        "braindance.core.phases_analysis.CausalAnalysis",
+        "braindance.core.phases_analysis.FootprintPhase",
+        "braindance.core.phases_analysis.HeatmapPhase"
+      ]
+    },
+    "braindance/examples/paper_cartpole/game.py": {
+      "sha256": "b44d2c0b2589d5c7b7330012bed7c19593ab24170efc02dd7b1b213a62483070",
+      "symbols": [
+        "main"
+      ],
+      "uses": [
+        "braindance.analysis.mapping.Mapping",
+        "braindance.config.get_output_dir",
+        "braindance.core.maxwell_env.MaxwellEnv",
+        "braindance.core.params.maxwell_params",
+        "braindance.core.phases2.CartPolePhase",
+        "braindance.core.phases2.PhaseManager",
+        "braindance.core.trainer.TetanusTrainer",
+        "braindance.core.trainer.generate_permutations"
+      ]
+    },
+    "braindance/examples/paper_cartpole/ranking.py": {
+      "sha256": "5ad2fa75a1621f521540c2ce9e5fd336f614b4547f6766ac0d14f74a75843f5f",
+      "symbols": [
+        "find_connectivity_patterns"
+      ],
+      "uses": []
+    },
+    "braindance/examples/paper_cartpole/recording.py": {
+      "sha256": "6906eb12a129a4e426be2d0b89c91ead6a578b58dbbd9e4df595e0bfe7471187",
+      "symbols": [
+        "main"
+      ],
+      "uses": [
+        "braindance.analysis.data_loader.AnalysisDAO",
+        "braindance.analysis.plot_helper.plot_footprints",
+        "braindance.core.maxwell_env.MaxwellEnv",
+        "braindance.core.params.maxwell_params",
+        "braindance.core.phases.NeuralSweepPhase",
+        "braindance.core.phases.PhaseManager",
+        "braindance.core.phases.RecordPhase",
+        "braindance.core.phases_analysis.FootprintPhase",
+        "braindance.core.phases_analysis.HeatmapPhase"
+      ]
+    },
+    "braindance/examples/replay_experiment_v3.py": {
+      "sha256": "26f5446dc893f274722d4104cf6fa4b9f936816f1efb9f29a5c13070572fa9ee",
+      "symbols": [
+        "main"
+      ],
+      "uses": [
+        "braindance.config.get_data_dir",
+        "braindance.config.get_output_dir",
+        "braindance.core.phases_v3.experiment_v3.Experiment",
+        "braindance.core.phases_v3.phases3.FrequencyStimPhaseV3",
+        "braindance.core.phases_v3.phases3.RecordPhaseV3"
+      ]
+    },
+    "braindance/examples/simple_experiment_v3.py": {
+      "sha256": "9528c7fd211c63b2a2b310a4cde86f574193b071b5ab81d53b4458fc7f0d707d",
+      "symbols": [
+        "advanced_example",
+        "main"
+      ],
+      "uses": [
+        "braindance.core.phases_v3.experiment_v3.Experiment",
+        "braindance.core.phases_v3.phase_base_v3.PhaseGroup",
+        "braindance.core.phases_v3.phases3.FrequencyStimPhaseV3",
+        "braindance.core.phases_v3.phases3.NeuralSweepPhaseV3",
+        "braindance.core.phases_v3.phases3.RecordPhaseV3"
+      ]
+    },
+    "braindance/examples/streaming_workshop/analysis_evoked.py": {
+      "sha256": "1de362c0ca548b7fe88156eb4683a14f4b0f9651e58298a2f602bb888aedebaa",
+      "symbols": [
+        "analyze_evoked"
+      ],
+      "uses": [
+        "braindance.core.artifact_removal.cubic_fit5"
+      ]
+    },
+    "braindance/examples/streaming_workshop/analysis_sorting.py": {
+      "sha256": "5fc5270ed1d9eaf88a6d58d28761d483f564f129c30e4cc5280bab7c828f451f",
+      "symbols": [
+        "PARAMETERS",
+        "run_sorting",
+        "sorting_capabilities",
+        "validate_params"
+      ],
+      "uses": [
+        "braindance.core.spikesorter.rt_sort.detect_sequences",
+        "braindance.core.spikesorter.rt_sort.load_recording",
+        "braindance.core.spikesorter.rt_sort.save_traces",
+        "braindance.get_rt_sort_path"
+      ]
+    },
+    "braindance/examples/streaming_workshop/analysis_workspace.css": {
+      "sha256": "273c3f01f4c047760bb21816beb906ddd83a3d1ab2e988047757afe84ca25cdb",
+      "symbols": [],
+      "uses": []
+    },
+    "braindance/examples/streaming_workshop/analysis_workspace.js": {
+      "sha256": "ccca9c625f305608e5d95ae18a1219e57bef6bfbeb88f6932dc54ae785d34102",
+      "symbols": [],
+      "uses": []
+    },
+    "braindance/examples/streaming_workshop/analysis_workspace.py": {
+      "sha256": "5126049cb1e1786b9694de0e0819e2e2dc9e7a7d7f8697247b60371bb98a572a",
+      "symbols": [
+        "AnalysisWorkspace",
+        "_h5_info",
+        "_number",
+        "_raw"
+      ],
+      "uses": [
+        "braindance.config.get_data_dir",
+        "braindance.examples.streaming_workshop.analysis_evoked.analyze_evoked",
+        "braindance.examples.streaming_workshop.analysis_sorting.run_sorting",
+        "braindance.examples.streaming_workshop.analysis_sorting.sorting_capabilities",
+        "braindance.examples.streaming_workshop.discovery.discover_experiments",
+        "braindance.examples.streaming_workshop.discovery.recording_files",
+        "braindance.examples.streaming_workshop.native_catalog.native_catalog",
+        "braindance.examples.streaming_workshop.source_links.analysis_source_urls"
+      ]
+    },
+    "braindance/examples/streaming_workshop/builder.js": {
+      "sha256": "e1a415c0ce1048d9da53cc2662198c571234a3ea07eb3b6ee7c12d7e69e06ba9",
+      "symbols": [],
+      "uses": []
+    },
+    "braindance/examples/streaming_workshop/catalog_workspace.js": {
+      "sha256": "9b2122206331d4cb47dd443e3f543bd1c80417ee09a7c26a1c27a6290adb511c",
+      "symbols": [],
+      "uses": []
+    },
+    "braindance/examples/streaming_workshop/catalog_workspace.py": {
+      "sha256": "0a5e862bca3fdb14ae0eb0f3f03ae123e9d2cb3b87ac3c745da70759e909c94d",
+      "symbols": [
+        "CatalogWorkspace"
+      ],
+      "uses": [
+        "braindance.config.get_catalog_path",
+        "braindance.config.get_data_dir",
+        "braindance.examples.streaming_workshop.discovery.discover_experiments",
+        "braindance.utils.data_manager.Recording",
+        "braindance.utils.data_manager.load_catalog"
+      ]
+    },
+    "braindance/examples/streaming_workshop/code_export.py": {
+      "sha256": "9e4615235ff8b12602505534b3f80d5709bd208038e87630cd256f773583dc61",
+      "symbols": [
+        "code_bundle",
+        "export_bundle"
+      ],
+      "uses": [
+        "braindance.examples.streaming_workshop.custom_analysis.resolve_analysis_config",
+        "braindance.examples.streaming_workshop.custom_analysis.verify_analysis_code",
+        "braindance.examples.streaming_workshop.experiment_spec.normalize_phases",
+        "braindance.examples.streaming_workshop.experiment_spec.verify_spec"
+      ]
+    },
+    "braindance/examples/streaming_workshop/code_workspace.js": {
+      "sha256": "5b1c40d073fc8d978862846a1b571d3aa54b25d2030200788b3b9694445b08e9",
+      "symbols": [],
+      "uses": []
+    },
+    "braindance/examples/streaming_workshop/custom_analysis.py": {
+      "sha256": "b2d1909060dc20a30e8e7c1dbf45e1b1f2bbc58273e44b20d20ae73682640f96",
+      "symbols": [
+        "CustomAnalysisPhase",
+        "analysis_contracts",
+        "analysis_definition",
+        "analysis_phase",
+        "resolve_analysis_config",
+        "verify_analysis_code"
+      ],
+      "uses": [
+        "braindance.core.phases_v3.phase_base_v3.AnalysisPhaseV3"
+      ]
+    },
+    "braindance/examples/streaming_workshop/data_contracts.py": {
+      "sha256": "6a2984c94fd9e390a12e16b48b1fafad37934fda9f27be82b46d353361e9692f",
+      "symbols": [
+        "data_metadata"
+      ],
+      "uses": []
+    },
+    "braindance/examples/streaming_workshop/discovery.py": {
+      "sha256": "15983c33c6af99806f145869edf3210569d1969ab9cf2e6c19ae23be9fb783f9",
+      "symbols": [
+        "discover_experiments",
+        "is_experiment",
+        "recording_files"
+      ],
+      "uses": []
+    },
+    "braindance/examples/streaming_workshop/environments.py": {
+      "sha256": "98c84d464f4a78f885b9d017e81ec2b61ed2c51ec536673571cdf1bcfba45781",
+      "symbols": [
+        "WorkshopGame",
+        "_FOOD_RNG_LOCK"
+      ],
+      "uses": [
+        "braindance.games.cartpole_continuous.CartPoleContinuousEnv",
+        "braindance.games.food_land.FoodLandEnv"
+      ]
+    },
+    "braindance/examples/streaming_workshop/experiment_spec.py": {
+      "sha256": "ec628425067f00b4122892123b663544ba0b1c9445a839d30c86fef2c4d86632",
+      "symbols": [
+        "normalize_phases",
+        "phase_catalog",
+        "uses_native_runner",
+        "verify_spec"
+      ],
+      "uses": [
+        "braindance.core.phases_v3.data_context.DataContext",
+        "braindance.core.phases_v3.phase_base_v3.PhaseValidator",
+        "braindance.examples.streaming_workshop.custom_analysis.CustomAnalysisPhase",
+        "braindance.examples.streaming_workshop.custom_analysis.analysis_definition",
+        "braindance.examples.streaming_workshop.custom_analysis.resolve_analysis_config",
+        "braindance.examples.streaming_workshop.data_contracts.data_metadata",
+        "braindance.examples.streaming_workshop.native_runner.verify_native",
+        "braindance.examples.streaming_workshop.session.LEGACY_OUTPUTS",
+        "braindance.examples.streaming_workshop.session.build_phase",
+        "braindance.examples.streaming_workshop.source_links.source_url"
+      ]
+    },
+    "braindance/examples/streaming_workshop/functions.py": {
+      "sha256": "47e6fd869e0776432ee23992ade80959a8435f3d2114681ef9ab69f510868890",
+      "symbols": [
+        "decode",
+        "encode",
+        "train"
+      ],
+      "uses": []
+    },
+    "braindance/examples/streaming_workshop/global_settings.py": {
+      "sha256": "197efc3b16dbd8aa5d30685c3dab2c2ba07a7a843cbbaef54de3f716759bf800",
+      "symbols": [
+        "settings_payload"
+      ],
+      "uses": [
+        "braindance.config.get_global_settings",
+        "braindance.config.save_global_settings",
+        "braindance.examples.streaming_workshop.analysis_sorting.sorting_capabilities"
+      ]
+    },
+    "braindance/examples/streaming_workshop/main.py": {
+      "sha256": "45ee8d583ed5fa888bb3c005b00e7534c64c5b98b21639a5580d4dd2359734d1",
+      "symbols": [
+        "cli",
+        "main"
+      ],
+      "uses": [
+        "braindance.config.get_output_dir",
+        "braindance.examples.streaming_workshop.analysis_workspace.AnalysisWorkspace",
+        "braindance.examples.streaming_workshop.catalog_workspace.CatalogWorkspace",
+        "braindance.examples.streaming_workshop.code_export.code_bundle",
+        "braindance.examples.streaming_workshop.code_export.export_bundle",
+        "braindance.examples.streaming_workshop.custom_analysis.analysis_contracts",
+        "braindance.examples.streaming_workshop.custom_analysis.verify_analysis_code",
+        "braindance.examples.streaming_workshop.experiment_spec.phase_catalog",
+        "braindance.examples.streaming_workshop.experiment_spec.uses_native_runner",
+        "braindance.examples.streaming_workshop.experiment_spec.verify_spec",
+        "braindance.examples.streaming_workshop.global_settings.settings_payload",
+        "braindance.examples.streaming_workshop.native_catalog.native_catalog",
+        "braindance.examples.streaming_workshop.native_runner.NativeSession",
+        "braindance.examples.streaming_workshop.playback.PlaybackSession",
+        "braindance.examples.streaming_workshop.playback.inspect_playback",
+        "braindance.examples.streaming_workshop.playground.Playground",
+        "braindance.examples.streaming_workshop.profiles.ProfileStore",
+        "braindance.examples.streaming_workshop.profiles.verify_python",
+        "braindance.examples.streaming_workshop.session.WorkshopSession",
+        "braindance.examples.streaming_workshop.sorting_workspace.SortingWorkspace"
+      ]
+    },
+    "braindance/examples/streaming_workshop/native_catalog.py": {
+      "sha256": "5b8add2ed31d71d95f38271e66731fd2daa6a239bed559864b6dd40b53b07008",
+      "symbols": [
+        "_catalog",
+        "instantiate_native",
+        "native_catalog",
+        "validate_native_parameters"
+      ],
+      "uses": [
+        "braindance.examples.streaming_workshop.data_contracts.data_metadata",
+        "braindance.examples.streaming_workshop.source_links.source_url"
+      ]
+    },
+    "braindance/examples/streaming_workshop/native_runner.py": {
+      "sha256": "9497174283a0fb78cefb7217ca79b71da02bb762f964aaefe45bb653218076bf",
+      "symbols": [
+        "NativeSession",
+        "main",
+        "verify_native"
+      ],
+      "uses": [
+        "braindance.core.phases_v3.data_context.DataContext",
+        "braindance.core.phases_v3.experiment_v3.Experiment",
+        "braindance.core.phases_v3.phase_base_v3.PhaseValidator",
+        "braindance.core.simulation.NeuralSimulationSource",
+        "braindance.examples.streaming_workshop.custom_analysis.CustomAnalysisPhase",
+        "braindance.examples.streaming_workshop.custom_analysis.analysis_definition",
+        "braindance.examples.streaming_workshop.custom_analysis.resolve_analysis_config",
+        "braindance.examples.streaming_workshop.custom_analysis.verify_analysis_code",
+        "braindance.examples.streaming_workshop.native_catalog.instantiate_native",
+        "braindance.examples.streaming_workshop.native_catalog.native_catalog",
+        "braindance.examples.streaming_workshop.native_catalog.validate_native_parameters",
+        "braindance.examples.streaming_workshop.native_visualization.ObservedGame"
+      ]
+    },
+    "braindance/examples/streaming_workshop/native_visualization.py": {
+      "sha256": "dea0f424b12c2781a79e682ffd01f4a569a1e87eb7a8ff56ac4dcb5d855d2e57",
+      "symbols": [
+        "ObservedGame",
+        "game_scene"
+      ],
+      "uses": []
+    },
+    "braindance/examples/streaming_workshop/phase_flow.css": {
+      "sha256": "4875cc6b927947705f800b2132698f458eb0f509ff5df4f7d7b1ce4445948e8f",
+      "symbols": [],
+      "uses": []
+    },
+    "braindance/examples/streaming_workshop/phase_flow.js": {
+      "sha256": "361c80c914bbb00344afeadc3d341f38fb4e7087a8e6c7c255886a7fa8348d88",
+      "symbols": [],
+      "uses": []
+    },
+    "braindance/examples/streaming_workshop/playground.js": {
+      "sha256": "44ed9f75cc9e88e30415697a4baf78e7ab323194d00ce1bf275a12005ea08287",
+      "symbols": [],
+      "uses": []
+    },
+    "braindance/examples/streaming_workshop/playground.py": {
+      "sha256": "2c83579a0833708f1af97aea934561108835e3d86a37521b2fe61dee56637ccb",
+      "symbols": [
+        "Playground"
+      ],
+      "uses": [
+        "braindance.examples.streaming_workshop.environments.WorkshopGame"
+      ]
+    },
+    "braindance/examples/streaming_workshop/profiles.py": {
+      "sha256": "d6425811231e43f5fd487ee0bf1c4430a516bb00874d5ee52e8887b006f8ccfd",
+      "symbols": [
+        "ProfileStore",
+        "verify_python"
+      ],
+      "uses": [
+        "braindance.examples.streaming_workshop.custom_analysis.resolve_analysis_config"
+      ]
+    },
+    "braindance/examples/streaming_workshop/session.py": {
+      "sha256": "8654f698f0bfb09474acc0eb7f487c46b789c5b8c25c86add93c59594a697324",
+      "symbols": [
+        "LEGACY_OUTPUTS",
+        "RestartPhase",
+        "WorkshopExperiment",
+        "WorkshopRuntime",
+        "WorkshopSession",
+        "build_phase"
+      ],
+      "uses": [
+        "braindance.core.phases_v3.experiment_v3.Experiment",
+        "braindance.core.phases_v3.phase_base_v3.PhaseGroup",
+        "braindance.core.phases_v3.phases_binned.BinnedRecordingPhaseV3",
+        "braindance.core.phases_v3.phases_binned.MappedEnvironmentPhaseV3",
+        "braindance.core.phases_v3.phases_binned.ResponseProbePhaseV3",
+        "braindance.core.replay.H5ReplaySource",
+        "braindance.core.replay.SpikeEvent",
+        "braindance.core.simulation.NeuralSimulationSource",
+        "braindance.core.spikesorter.rt_sort.RTSort",
+        "braindance.examples.streaming_workshop.custom_analysis.CustomAnalysisPhase",
+        "braindance.examples.streaming_workshop.custom_analysis.resolve_analysis_config",
+        "braindance.examples.streaming_workshop.environments.WorkshopGame",
+        "braindance.examples.streaming_workshop.experiment_spec.verify_spec",
+        "braindance.get_rt_sort_path"
+      ]
+    },
+    "braindance/examples/streaming_workshop/settings.js": {
+      "sha256": "4a264e8dfa9ef5f63304452536fd945e5781033932dd4ecc6e16ee1418c93032",
+      "symbols": [],
+      "uses": []
+    },
+    "braindance/examples/streaming_workshop/simulator.js": {
+      "sha256": "6944d0204bbc1a5bb0c273656b8b2f1ec546580ea6bfbe951b31ee7ed30c2083",
+      "symbols": [],
+      "uses": []
+    },
+    "braindance/examples/streaming_workshop/source_links.py": {
+      "sha256": "93c91027ccdebe146aff74adf8faba6b17ae4db5e3b0f4d29e30a62bf3aabea8",
+      "symbols": [
+        "_definitions",
+        "_git",
+        "_repository",
+        "analysis_source_urls",
+        "source_url"
+      ],
+      "uses": []
+    },
+    "braindance/examples/streaming_workshop/ui.js": {
+      "sha256": "cdeafd4114687b7e5118a9f4cc87567f1ab5c96e177f3dd0252d838c8fe97355",
+      "symbols": [],
+      "uses": []
+    },
+    "braindance/examples/streaming_workshop/watcher.html": {
+      "sha256": "7418c42aebfc96dbf3bbb71ac3959b606fdacb8408d13ecfca7220c7f9f165a6",
+      "symbols": [],
+      "uses": []
+    },
+    "braindance/examples/streaming_workshop/watcher.js": {
+      "sha256": "09b4ba828230952dfb9795a91ca8487f01cfebdcc7a648df2a911c1f6bd9af92",
+      "symbols": [],
+      "uses": []
+    },
+    "braindance/examples/streaming_workshop/workshop_theme.css": {
+      "sha256": "ebceede05d52a986a7c3ae997f55a41e902224c804a37b810a85b31aaf185a51",
+      "symbols": [],
+      "uses": []
+    },
+    "braindance/examples/validate_tutorial_data.py": {
+      "sha256": "4e95b958202746c88b6f14376d1ed4f1c76ad60e6e255ea9cc764530e5fa2345",
+      "symbols": [
+        "main"
+      ],
+      "uses": [
+        "braindance.tutorial.get_test_data",
+        "braindance.utils.data_manager.bin_spike_data_vectorized",
+        "braindance.utils.data_manager.load_catalog"
+      ]
+    },
+    "braindance/examples/walker2d_cpg_example.py": {
+      "sha256": "98cae7f7d888778a922b2782b77f75382772de49c5652a4969b8320a9983c876",
+      "symbols": [
+        "_load_source_experiment_data",
+        "run_walker2d_cpg_experiment"
+      ],
+      "uses": [
+        "braindance.config.get_data_dir",
+        "braindance.core.phases_v3.experiment_v3.Experiment",
+        "braindance.core.phases_v3.phases3.RecordPhaseV3",
+        "braindance.core.phases_v3.phases3_walker2d_cpg.Walker2dCPGPhaseV3",
+        "braindance.core.phases_v3.phases_analysis_3.RTSortPhaseV3"
+      ]
+    },
+    "braindance/examples/walker2d_reinforcement_example.py": {
+      "sha256": "bd5b9c632332b190171be52edd9705121c79e9f331a3930361cd4e1336df08b4",
+      "symbols": [
+        "_load_source_experiment_data",
+        "run_walker2d_reinforcement_experiment"
+      ],
+      "uses": [
+        "braindance.config.get_data_dir",
+        "braindance.core.phases_v3.experiment_v3.Experiment",
+        "braindance.core.phases_v3.phases3.RecordPhaseV3",
+        "braindance.core.phases_v3.phases3_walker2d.Walker2dPhaseV3",
+        "braindance.core.phases_v3.phases_analysis_3.RTSortPhaseV3"
+      ]
+    },
+    "braindance/experiments/amplitude_sweep.py": {
+      "sha256": "f281a5594879ea460b25abe7478e9e04acac02ecbb1997a6dfe99453902cc2f8",
+      "symbols": [
+        "amp_sweep",
+        "env",
+        "neuron_list",
+        "params",
+        "phase_manager"
+      ],
+      "uses": [
+        "braindance.core.maxwell_env.MaxwellEnv",
+        "braindance.core.params.maxwell_params",
+        "braindance.core.phases.NeuralSweepPhase",
+        "braindance.core.phases.PhaseManager"
+      ]
+    },
+    "braindance/experiments/cartpole_continuous.py": {
+      "sha256": "d3e932cd0145380c6538d44f78115cf5aef2413f6c6fea610a6d4e52ba04c94b",
+      "symbols": [
+        "Experimenter",
+        "freqs",
+        "motor_neurons",
+        "n_signals",
+        "neuron_list",
+        "params",
+        "plug",
+        "sensory_neurons",
+        "training_neurons",
+        "training_signals",
+        "tt"
+      ],
+      "uses": [
+        "braindance.core.maxwell_env.MaxwellEnv",
+        "braindance.core.params.maxwell_params",
+        "braindance.core.phases.CartPolePhase",
+        "braindance.core.phases.NeuralSweepPhase",
+        "braindance.core.phases.PhaseManager",
+        "braindance.core.trainer.TetanusTrainer",
+        "braindance.core.trainer.generate_tetanus_pattern",
+        "braindance.core.utils.SmartPlug"
+      ]
+    },
+    "braindance/experiments/cartpole_fast.py": {
+      "sha256": "dee07fdb325450aec871dbe67dc636256419f5674690b2f772a6bb7c95f8ffac",
+      "symbols": [
+        "Experimenter",
+        "motor_neurons",
+        "neuron_list",
+        "params",
+        "plug",
+        "sensory_neurons",
+        "training_neurons"
+      ],
+      "uses": [
+        "braindance.core.maxwell_env.MaxwellEnv",
+        "braindance.core.params.maxwell_params",
+        "braindance.core.phases.CartPolePhase",
+        "braindance.core.phases.NeuralSweepPhase",
+        "braindance.core.phases.PhaseManager",
+        "braindance.core.utils.SmartPlug"
+      ]
+    },
+    "braindance/experiments/cartpole_phase.py": {
+      "sha256": "80149b1d87776ee42f08cb64a06123f864a429dd97e46c56ed1f72c8965cb3e2",
+      "symbols": [
+        "cartpole",
+        "env",
+        "motor_neurons",
+        "neuron_list",
+        "params",
+        "phase_manager",
+        "sensory_neurons",
+        "training_neurons"
+      ],
+      "uses": [
+        "braindance.core.maxwell_env.MaxwellEnv",
+        "braindance.core.params.maxwell_params",
+        "braindance.core.phases.CartPolePhase",
+        "braindance.core.phases.NeuralSweepPhase",
+        "braindance.core.phases.PhaseManager"
+      ]
+    },
+    "braindance/experiments/cartpole_schedule.py": {
+      "sha256": "feb982a6210c55ca1e82af159df3774c502c1ac574fdff2da9222526cfb2bb26",
+      "symbols": [
+        "Experimenter",
+        "motor_neurons",
+        "neuron_list",
+        "params",
+        "plug",
+        "sensory_neurons",
+        "training_neurons"
+      ],
+      "uses": [
+        "braindance.core.maxwell_env.MaxwellEnv",
+        "braindance.core.params.maxwell_params",
+        "braindance.core.phases.CartPolePhase",
+        "braindance.core.phases.NeuralSweepPhase",
+        "braindance.core.phases.PhaseManager",
+        "braindance.core.utils.SmartPlug"
+      ]
+    },
+    "braindance/experiments/causal_connectivity.py": {
+      "sha256": "03afb74d11920d5c37ee6961300305a697e0ae507d16d257ab07019f78b64d27",
+      "symbols": [
+        "amp_sweep",
+        "env",
+        "neuron_list",
+        "params",
+        "phase_manager"
+      ],
+      "uses": [
+        "braindance.core.maxwell_env.MaxwellEnv",
+        "braindance.core.params.maxwell_params",
+        "braindance.core.phases.NeuralSweepPhase",
+        "braindance.core.phases.PhaseManager"
+      ]
+    },
+    "braindance/experiments/causal_freq.py": {
+      "sha256": "d548088ee5f275ed81d5a0ef9acca76375fee94fc8ce6a91efdbbcc8fdc49659",
+      "symbols": [
+        "causal_Hz",
+        "causal_count",
+        "delay_ms",
+        "done",
+        "env",
+        "fs",
+        "full_exp",
+        "neurons",
+        "params",
+        "phase",
+        "phase_dt",
+        "phase_start_time",
+        "silent_cycle",
+        "stim_cycle",
+        "tetanus_Hz",
+        "tetanus_action"
+      ],
+      "uses": [
+        "braindance.core.maxwell_env.MaxwellEnv",
+        "braindance.core.params.maxwell_params"
+      ]
+    },
+    "braindance/experiments/causal_freq_sort_intrinsic.py": {
+      "sha256": "9c58a01447192cbee2b4526d55cfdfc9aefe960c123cfadb02e784ab325395ce",
+      "symbols": [
+        "_get_unit_dict",
+        "sort_intrinsic"
+      ],
+      "uses": [
+        "braindance.analysis.data_loader"
+      ]
+    },
+    "braindance/experiments/causal_tetanus_phases.py": {
+      "sha256": "7c6902e08d48a43d5e99c0b0e84c7d8ea0ac2adce7b633e06b1e427d78afa638",
+      "symbols": [
+        "causal_freq",
+        "causal_phase",
+        "env",
+        "exp",
+        "n_replicates",
+        "neuron_list",
+        "no_tetanus_chunk",
+        "params",
+        "phase_manager",
+        "record_phase1",
+        "record_phase2",
+        "record_phase_small",
+        "record_phase_small4min",
+        "tetanus_chunk",
+        "tetanus_command",
+        "tetanus_freq",
+        "tetanus_phase"
+      ],
+      "uses": [
+        "braindance.analysis.data_loader.AnalysisDAO",
+        "braindance.core.maxwell_env.MaxwellEnv",
+        "braindance.core.params.maxwell_params",
+        "braindance.core.phases.FrequencyStimPhase",
+        "braindance.core.phases.NeuralSweepPhase",
+        "braindance.core.phases.PhaseManager",
+        "braindance.core.phases.RecordPhase",
+        "braindance.core.phases_analysis.FootprintPhase",
+        "braindance.core.phases_analysis.HeatmapPhase",
+        "braindance.core.trainer.generate_tetanus_pattern"
+      ]
+    },
+    "braindance/experiments/multi_freq_stim.py": {
+      "sha256": "379bfc52eda9a63e408e314b5887fcbe2325ad1119647e1d5489e90f87c78523",
+      "symbols": [
+        "electrode_inds",
+        "env",
+        "freq_stim_phase",
+        "freq_stim_single_phase",
+        "neuron_list",
+        "params",
+        "phase_manager",
+        "stim_commands"
+      ],
+      "uses": [
+        "braindance.core.maxwell_env.MaxwellEnv",
+        "braindance.core.params.maxwell_params",
+        "braindance.core.phases.FrequencyStimPhase",
+        "braindance.core.phases.PhaseManager",
+        "braindance.core.stim_commands.generate_stimulations"
+      ]
+    },
+    "braindance/experiments/neural_config_analysis.py": {
+      "sha256": "e6d4d17e2146d89ba0c8e09c39771f2f93030e39d71f6b524a868e5a922ad553",
+      "symbols": [
+        "analysis",
+        "env",
+        "footprint_chs",
+        "footprint_phase",
+        "footprint_waves",
+        "heatmap_phase",
+        "mapping",
+        "params",
+        "phase_manager",
+        "record_phase",
+        "selected_channels"
+      ],
+      "uses": [
+        "braindance.analysis.data_loader.AnalysisDAO",
+        "braindance.analysis.plot_helper.plot_footprints",
+        "braindance.core.maxwell_env.MaxwellEnv",
+        "braindance.core.params.maxwell_params",
+        "braindance.core.phases.NeuralSweepPhase",
+        "braindance.core.phases.PhaseManager",
+        "braindance.core.phases.RecordPhase",
+        "braindance.core.phases_analysis.FootprintPhase",
+        "braindance.core.phases_analysis.HeatmapPhase"
+      ]
+    },
+    "braindance/experiments/pong.py": {
+      "sha256": "066c6882ca6e69bbd669b161a551e5cd40d4028603bdec114db6273e469d97df",
+      "symbols": [
+        "main"
+      ],
+      "uses": [
+        "braindance.config.get_output_dir",
+        "braindance.core.maxwell_env.MaxwellEnv",
+        "braindance.games.pong_env.PongEnv"
+      ]
+    },
+    "braindance/experiments/real_time_sorting.py": {
+      "sha256": "5bceaa4edd07662b82ccd2ae8207faacb9fc8cdf5d23d905e8ef4ef55e0e0fba",
+      "symbols": [
+        "main"
+      ],
+      "uses": [
+        "braindance.config.get_data_dir",
+        "braindance.config.get_output_dir",
+        "braindance.core.maxwell_env.MaxwellEnv",
+        "braindance.core.params.maxwell_params",
+        "braindance.core.spikedetector.model2.ModelSpikeSorter",
+        "braindance.core.spikesorter.rt_sort.detect_sequences",
+        "braindance.utils.rt_linear_art_removal.LinearArtifactRemoval"
+      ]
+    },
+    "braindance/experiments/sample_experiment.py": {
+      "sha256": "3c8e3f25db39d93b640e31896ee7d7790efe279bf53767757f7e8a9afd47faa2",
+      "symbols": [
+        "params"
+      ],
+      "uses": [
+        "braindance.core.maxwell_env.MaxwellEnv",
+        "braindance.core.params.maxwell_params"
+      ]
+    },
+    "braindance/experiments/sample_manual_sequence.py": {
+      "sha256": "7ba5eab563bbe35523f34263decdeba412a5ff20b1c9907c517d18895a8fce80",
+      "symbols": [
+        "my_waveform",
+        "params"
+      ],
+      "uses": [
+        "braindance.core.dummy_maxlab",
+        "braindance.core.maxwell_env.MaxwellEnv",
+        "braindance.core.params.maxwell_params"
+      ]
+    },
+    "braindance/experiments/stim_pattern.py": {
+      "sha256": "7de93a8c99d3789b9947525b8846401bec616d98f696a2fb067f0ed6fc882ab3",
+      "symbols": [
+        "params",
+        "stim_pattern"
+      ],
+      "uses": [
+        "braindance.core.maxwell_env.MaxwellEnv",
+        "braindance.core.params.maxwell_params"
+      ]
+    },
+    "braindance/experiments/stim_responses.py": {
+      "sha256": "60852a1c2a71f03704b555064a4fa1b296822fd304ee5b51f61a37946a4ec71c",
+      "symbols": [
+        "ind",
+        "n_channels",
+        "params"
+      ],
+      "uses": [
+        "braindance.core.artifact_removal.ArtifactRemoval",
+        "braindance.core.maxwell_env.MaxwellEnv",
+        "braindance.core.params.maxwell_params"
+      ]
+    },
+    "braindance/experiments/zmq_messaging.py": {
+      "sha256": "177752d82662e5e1650fa1ce8442dbf811418988b6ee6b3ac269715e7c478270",
+      "symbols": [
+        "BaseEnv",
+        "CommandSender",
+        "STOP_COMMAND",
+        "command_receiver",
+        "gpu_ip",
+        "local_ip",
+        "main",
+        "maxone_ip",
+        "photon_ip"
+      ],
+      "uses": []
+    },
+    "braindance/games/ant.py": {
+      "sha256": "24c9b86154946eb4eea6ce6fd165f9e2b0c3e3fb98c6e4a8bd8547ff1ca55753",
+      "symbols": [
+        "AntFeatureEnv",
+        "_sigmoid"
+      ],
+      "uses": []
+    },
+    "braindance/games/cartpole_continuous.py": {
+      "sha256": "f1504ffd44ed57876b4edee3e7ca7bf7be83853bef6dc49a7d21983842d04be3",
+      "symbols": [
+        "CartPoleContinuousEnv",
+        "CartPoleVectorEnv"
+      ],
+      "uses": []
+    },
+    "braindance/games/food_land.py": {
+      "sha256": "fb25224dd60ce09f39bb799d7c07af055ccb7c4b8afbc42dbaeb324b7dda8719",
+      "symbols": [
+        "FoodLandEnv",
+        "compute_smart_action",
+        "parser"
+      ],
+      "uses": []
+    },
+    "braindance/games/mspacman.py": {
+      "sha256": "6246a26e254caad7f50aa5cf999d6615e4b556c7caef4775266c9ca505f0e5fa",
+      "symbols": [
+        "MsPacmanFeatureEnv",
+        "_register_ale_envs",
+        "_sigmoid",
+        "run_keyboard_mspacman"
+      ],
+      "uses": []
+    },
+    "braindance/games/pong_env.py": {
+      "sha256": "2e8598faf3f9289d5f8b78dc4c2edc5360e906cdc83835ec9e4e520745e6aaf8",
+      "symbols": [
+        "PaddleBallEnv",
+        "PongEnv"
+      ],
+      "uses": []
+    },
+    "braindance/games/racing_game.py": {
+      "sha256": "f6ca61b9e422ae55bf16d4f413e4bca259a8b2f08c1c13c46088e5130825dc9c",
+      "symbols": [
+        "BLACK",
+        "BLUE",
+        "BLUE_SKY",
+        "BROWN",
+        "BackgroundGrid",
+        "Camera",
+        "Car",
+        "Collectible",
+        "DARK_GRAY",
+        "FPS",
+        "GRASS_GREEN",
+        "GRAY",
+        "GREEN",
+        "Game",
+        "GameState",
+        "LIGHT_GRAY",
+        "Minimap",
+        "ORANGE",
+        "Obstacle",
+        "Point",
+        "RED",
+        "SCREEN_HEIGHT",
+        "SCREEN_WIDTH",
+        "TRACK_GRAY",
+        "Track",
+        "TrackSegment",
+        "WHITE",
+        "YELLOW",
+        "activate_boost",
+        "draw",
+        "get_distance_to_center",
+        "main"
+      ],
+      "uses": []
+    },
+    "braindance/games/walker2d.py": {
+      "sha256": "b15de06a737410aa62c2240d30e69fa355b2e0b8b4a6baba86bb8fc4443df55b",
+      "symbols": [
+        "Walker2dFeatureEnv",
+        "_sigmoid"
+      ],
+      "uses": []
+    },
+    "braindance/gui/command_runner.py": {
+      "sha256": "bb7aa2e292f0579b77df0c052b350e9c96150eca4ae11044d19b9f2e3fd967ef",
+      "symbols": [
+        "CommandRunner"
+      ],
+      "uses": []
+    },
+    "braindance/gui/experiment_launcher.py": {
+      "sha256": "5e6917e8fa0d78bfff8f69aa2196f1fb486b8ff311dac8497638c0b9046d754a",
+      "symbols": [
+        "AddExperimentDialog",
+        "MainWindow",
+        "analysis_dict",
+        "braindance_dir",
+        "exp_dict",
+        "fill_item",
+        "fill_widget",
+        "home_dir",
+        "main",
+        "preferences_file",
+        "preferences_json",
+        "resources_dir",
+        "script_dir"
+      ],
+      "uses": [
+        "braindance.analysis.data_loader.AnalysisDAO",
+        "braindance.analysis.plot_helper",
+        "braindance.core.maxwell.maxwell_utils.get_maxwell_status",
+        "braindance.core.utils.SmartPlug",
+        "braindance.gui.command_runner.CommandRunner",
+        "braindance.gui.settings.PreferencesDialog"
+      ]
+    },
+    "braindance/gui/settings.py": {
+      "sha256": "c16dc6be8d6016622e56df9ebb789748d5f0e8a5b5b73bb00e79ebf96591acc9",
+      "symbols": [
+        "FieldOptionsDialog",
+        "MetadataTab",
+        "PreferencesDialog",
+        "braindance_dir",
+        "default_metadata_fields",
+        "home_dir",
+        "preferences_file"
+      ],
+      "uses": []
+    },
+    "braindance/io.py": {
+      "sha256": "162cd0a02080ed722733009eacda76289b52d227b3405b4558c57a6b5f014c55",
+      "symbols": [
+        "open_file"
+      ],
+      "uses": []
+    },
+    "braindance/spike_data.py": {
+      "sha256": "6d0fe2c99b15d1fe1222901ba4bde2e4507fb789943234784bd659a5858e968b",
+      "symbols": [
+        "_LegacySpikeData",
+        "_SpikeDataUnpickler",
+        "as_spike_data",
+        "load_spike_pickle"
+      ],
+      "uses": []
+    },
+    "braindance/tutorial.py": {
+      "sha256": "43930abb3259f79c5c4b51cdf0e4b7176a7a4af986fe464c63b1fa78516723f7",
+      "symbols": [
+        "TutorialDataError",
+        "_DOWNLOAD_TIMEOUT_SECONDS",
+        "_LOCK_TIMEOUT_SECONDS",
+        "_MARKER",
+        "_MAX_FILE_BYTES",
+        "_download_file",
+        "_file_matches",
+        "_load_registry",
+        "_regular_file",
+        "_resolve_dataset",
+        "_safe_relative_path",
+        "_safe_segment",
+        "_verify_dataset",
+        "get_test_data"
+      ],
+      "uses": [
+        "braindance.config.get_data_dir"
+      ]
+    },
+    "braindance/utils/LinearArtifactRemoval3.py": {
+      "sha256": "a39864d02ea4e116a7260488d537633172391f1ad2ae8cbf4a8ceb95594b71bc",
+      "symbols": [
+        "LinearArtifactRemoval3",
+        "apply_iir_filter",
+        "collect_saturation_frames",
+        "fast_sync_saturation",
+        "process_channels_simplified_with_tracking",
+        "ultra_fast_sync_saturation"
+      ],
+      "uses": []
+    },
+    "braindance/utils/artifact_filters.py": {
+      "sha256": "94089c297ba5fca68b0f3012dced0c2c66b2db4acb89e19f868870f9089aa03b",
+      "symbols": [
+        "ArtifactRemover",
+        "FilterResult",
+        "LinearFitArtifactRemover",
+        "SalpaArtifactRemover",
+        "_process_channel",
+        "_process_parallel",
+        "_process_serial"
+      ],
+      "uses": []
+    },
+    "braindance/utils/assets/style.css": {
+      "sha256": "a389b310af5fd84301376f97139a9e1ddb7721288fb78034751bbe2cd038d7a0",
+      "symbols": [],
+      "uses": []
+    },
+    "braindance/utils/data_manager/__init__.py": {
+      "sha256": "ba58dcec3737228d2712219225add1549372d1f7bf4f415ff6c9d54fc07b396f",
+      "symbols": [
+        "__all__",
+        "load_catalog"
+      ],
+      "uses": [
+        "braindance.config.get_catalog_path",
+        "braindance.config.get_data_dir",
+        "braindance.config.set_catalog_path",
+        "braindance.utils.data_manager.utils.BatchResults",
+        "braindance.utils.data_manager.utils.BurstDetector",
+        "braindance.utils.data_manager.utils.BurstLatencyAnalyzer",
+        "braindance.utils.data_manager.utils.DataContext",
+        "braindance.utils.data_manager.utils.JOURNAL_SPECS",
+        "braindance.utils.data_manager.utils.JournalPageSpec",
+        "braindance.utils.data_manager.utils.PlotAccessor",
+        "braindance.utils.data_manager.utils.Recording",
+        "braindance.utils.data_manager.utils.RecordingCatalog",
+        "braindance.utils.data_manager.utils.S3Loader",
+        "braindance.utils.data_manager.utils.Styler",
+        "braindance.utils.data_manager.utils.UltraOptimizedLatencyHelper",
+        "braindance.utils.data_manager.utils.WAVEFORM_PARAMS",
+        "braindance.utils.data_manager.utils.Waveforms",
+        "braindance.utils.data_manager.utils.bin_spike_data_chunked",
+        "braindance.utils.data_manager.utils.bin_spike_data_vectorized",
+        "braindance.utils.data_manager.utils.calculate_latencies",
+        "braindance.utils.data_manager.utils.create_sliding_windows",
+        "braindance.utils.data_manager.utils.get_journal_spec",
+        "braindance.utils.data_manager.utils.group_stimulations_by_electrode",
+        "braindance.utils.data_manager.utils.load_recording",
+        "braindance.utils.data_manager.utils.plot_evoked_psth",
+        "braindance.utils.data_manager.utils.plot_evoked_raster",
+        "braindance.utils.data_manager.utils.plot_firing_rate_histogram",
+        "braindance.utils.data_manager.utils.plot_raster_with_pop",
+        "braindance.utils.data_manager.utils.plot_sttc_matrix",
+        "braindance.utils.data_manager.utils.spatial_animation",
+        "braindance.utils.data_manager.utils.spatial_latency",
+        "braindance.utils.data_manager.utils.spatial_response_map",
+        "braindance.utils.data_manager.utils.validate_spike_data",
+        "braindance.utils.data_manager.utils.waveform_params",
+        "braindance.utils.data_manager.utils.waveform_s3_path"
+      ]
+    },
+    "braindance/utils/data_manager/__main__.py": {
+      "sha256": "5def30e499bd5b2c2c4a98b7389cf88f121c647f3b5b0684515262fa962b7276",
+      "symbols": [
+        "main",
+        "setup_command"
+      ],
+      "uses": [
+        "braindance.config.get_catalog_path",
+        "braindance.config.get_data_dir",
+        "braindance.config.get_output_dir",
+        "braindance.config.set_catalog_path",
+        "braindance.config.set_data_dir",
+        "braindance.config.set_output_dir"
+      ]
+    },
+    "braindance/utils/data_manager/advanced_tutorials/01_working_with_catalog.py": {
+      "sha256": "11f6f79c781cd1c3b890dae05accb742ba5f29fb69dee38c0dc081ab0607e896",
+      "symbols": [
+        "axes",
+        "by_frequency",
+        "catalog",
+        "chip_catalog",
+        "chip_subset",
+        "evoked_fractions",
+        "fig",
+        "freq_1hz_recs",
+        "freq_2hz_recs",
+        "freq_4hz_recs",
+        "freq_8hz",
+        "frequencies",
+        "n_evoked",
+        "n_neurons",
+        "results_summary",
+        "stim_non_baseline",
+        "styler"
+      ],
+      "uses": [
+        "braindance.utils.data_manager.Styler",
+        "braindance.utils.data_manager.load_catalog"
+      ]
+    },
+    "braindance/utils/data_manager/advanced_tutorials/03_population_vectors.py": {
+      "sha256": "8dbe9ba8bb190a9ccc760b052492d86dd43e14fa7f2b4cecdcf3c4acf82c03f4",
+      "symbols": [
+        "ax1",
+        "ax2",
+        "ax3",
+        "bin_size_ms",
+        "binned_data",
+        "binned_log",
+        "cache_params_binned",
+        "cache_params_pca",
+        "cache_params_umap",
+        "cached_binned",
+        "cached_pca",
+        "cached_umap",
+        "cbar",
+        "chip",
+        "compute_binned_spikes",
+        "compute_pca",
+        "compute_umap",
+        "cumulative_var",
+        "duration_s",
+        "end_idx",
+        "end_s",
+        "experiment",
+        "explained_variance_ratio",
+        "fig1",
+        "fig2",
+        "fig3",
+        "firing_rates",
+        "firing_rates_chunk",
+        "im",
+        "mean_per_bin",
+        "metric",
+        "min_dist",
+        "n_components",
+        "n_for_80",
+        "n_neighbors",
+        "pca_2d",
+        "pca_coords",
+        "pca_for_umap",
+        "proj",
+        "rec",
+        "save_dir",
+        "save_path_heatmap",
+        "save_path_pca",
+        "save_path_umap",
+        "scatter",
+        "spike_trains",
+        "spikes",
+        "start_idx",
+        "start_s",
+        "styler",
+        "time_axis",
+        "time_chunk",
+        "total_spikes",
+        "umap_coords",
+        "validation_stats"
+      ],
+      "uses": [
+        "braindance.utils.data_manager.Styler",
+        "braindance.utils.data_manager.bin_spike_data_vectorized",
+        "braindance.utils.data_manager.load_recording",
+        "braindance.utils.data_manager.validate_spike_data"
+      ]
+    },
+    "braindance/utils/data_manager/advanced_tutorials/04_s3_loading_tutorial.py": {
+      "sha256": "bbdaf3706e5bdc7e82a03477a5473d0ae2b0082f37822c76db7b3d2b22557268",
+      "symbols": [],
+      "uses": [
+        "braindance.utils.data_manager.RecordingCatalog",
+        "braindance.utils.data_manager.load_recording",
+        "braindance.utils.data_manager.utils.plotting.plot_styler.Styler"
+      ]
+    },
+    "braindance/utils/data_manager/advanced_tutorials/05_rl_cartpole_logs.py": {
+      "sha256": "14ba711cf972b7336cd812f31a734fc1575ee48da60464bca899bc9c51788992",
+      "symbols": [],
+      "uses": []
+    },
+    "braindance/utils/data_manager/advanced_tutorials/06_catalog_generation.py": {
+      "sha256": "630dd410989defb3914ab06cb6171ed9284eae7d85ed7f0e9a4ff5710001e1f1",
+      "symbols": [
+        "catalog",
+        "has_units",
+        "high_units"
+      ],
+      "uses": [
+        "braindance.utils.data_manager.utils.catalogging.DEFAULT_S3_BASES",
+        "braindance.utils.data_manager.utils.catalogging.add_metadata",
+        "braindance.utils.data_manager.utils.catalogging.add_units",
+        "braindance.utils.data_manager.utils.catalogging.generate_catalog"
+      ]
+    },
+    "braindance/utils/data_manager/tutorials/01_quick_start.py": {
+      "sha256": "fc701be3dce9927069ea6e5e91873d59ea890d31be6bbb7386b52db2be90fbc2",
+      "symbols": [
+        "active",
+        "chip",
+        "experiment",
+        "firing_rates",
+        "neuron_0_spikes",
+        "proj",
+        "rec",
+        "spikes",
+        "stim_log",
+        "sttc_matrix"
+      ],
+      "uses": [
+        "braindance.utils.data_manager.calculate_latencies",
+        "braindance.utils.data_manager.load_recording"
+      ]
+    },
+    "braindance/utils/data_manager/tutorials/02_burst_detection.py": {
+      "sha256": "0fe17efd60dfaffec43de014120a7751adc9623de7e1e52692ebbb223cc5ca21",
+      "symbols": [
+        "ax",
+        "ax1",
+        "ax2",
+        "backbone",
+        "baseline_bins",
+        "baseline_probability",
+        "bic",
+        "bin_centers",
+        "bin_size_ms",
+        "burst_analyzer",
+        "burst_counts",
+        "burst_probability",
+        "burst_results",
+        "burst_times",
+        "burst_times_array",
+        "chip",
+        "detector",
+        "experiment",
+        "fig",
+        "n_bins",
+        "n_total_stims",
+        "proj",
+        "psth_bin_size_ms",
+        "psth_window_ms",
+        "rec",
+        "results",
+        "save_dir",
+        "save_path",
+        "spikes",
+        "stim_log",
+        "stim_times_ms",
+        "styler",
+        "summary",
+        "summary_stats",
+        "time_bins",
+        "time_s",
+        "validated_count",
+        "validated_electrodes",
+        "window_ms",
+        "zoom_duration_s",
+        "zoom_end_s",
+        "zoom_mask",
+        "zoom_start_s"
+      ],
+      "uses": [
+        "braindance.utils.data_manager.BurstDetector",
+        "braindance.utils.data_manager.BurstLatencyAnalyzer",
+        "braindance.utils.data_manager.Styler",
+        "braindance.utils.data_manager.load_recording"
+      ]
+    },
+    "braindance/utils/data_manager/utils/analysis/burst_detector.py": {
+      "sha256": "9cdab43bd80d445afa5d0cfc67e5735afe6eb1ef01a1becf1e208460a3d875dd",
+      "symbols": [
+        "BurstDetector",
+        "BurstResults"
+      ],
+      "uses": []
+    },
+    "braindance/utils/data_manager/utils/analysis/burst_latency_analyzer.py": {
+      "sha256": "91e8f43cccf43ad34b692cebbfee5aa1089f743a18ecd5cf288697088cee3a9e",
+      "symbols": [
+        "BurstLatencyAnalyzer",
+        "logger"
+      ],
+      "uses": [
+        "braindance.utils.data_manager.utils.analysis.burst_detector.BurstDetector",
+        "braindance.utils.data_manager.utils.analysis.ultra_optimized_latency_helper.UltraOptimizedLatencyHelper"
+      ]
+    },
+    "braindance/utils/data_manager/utils/analysis/latency_helper.py": {
+      "sha256": "3b5e29964cffa5adca7f21959f9212ade295176765967d1a9fbf945b6ae9b702",
+      "symbols": [
+        "calculate_latencies",
+        "group_stimulations_by_electrode"
+      ],
+      "uses": [
+        "braindance.utils.data_manager.utils.analysis.ultra_optimized_latency_helper.UltraOptimizedLatencyHelper"
+      ]
+    },
+    "braindance/utils/data_manager/utils/analysis/ultra_optimized_latency_helper.py": {
+      "sha256": "2bf304c4fc453bee878eb9610a602889f11084491134a037ddbee8bbe64a5e20",
+      "symbols": [
+        "UltraOptimizedLatencyHelper",
+        "logger"
+      ],
+      "uses": []
+    },
+    "braindance/utils/data_manager/utils/analysis/vectorized_binning.py": {
+      "sha256": "b9cc52165e14cc97a61e293a348abf66fef9e830bc591183f2dce69a62c273d6",
+      "symbols": [
+        "bin_spike_data_chunked",
+        "bin_spike_data_vectorized",
+        "compute_binned_fr_isi_vectorized",
+        "compute_binned_isi_vectorized",
+        "create_sliding_windows",
+        "validate_spike_data"
+      ],
+      "uses": []
+    },
+    "braindance/utils/data_manager/utils/catalogging/__init__.py": {
+      "sha256": "ed206525627cbf1a21cb6bc8cb80fa51e0dce812afc2d060b050688069652ea9",
+      "symbols": [
+        "__all__",
+        "add_metadata",
+        "add_units",
+        "generate_catalog",
+        "validate_recording_files"
+      ],
+      "uses": [
+        "braindance.utils.data_manager.utils.catalogging.config.DEFAULT_S3_BASES",
+        "braindance.utils.data_manager.utils.catalogging.config.get_default_catalog_path",
+        "braindance.utils.data_manager.utils.catalogging.experiment.BraindanceExperiment",
+        "braindance.utils.data_manager.utils.catalogging.generator.CatalogGenerator",
+        "braindance.utils.data_manager.utils.catalogging.generator.DataPathManager",
+        "braindance.utils.data_manager.utils.catalogging.metadata.add_drug_column",
+        "braindance.utils.data_manager.utils.catalogging.metadata.calculate_organoid_age",
+        "braindance.utils.data_manager.utils.catalogging.metadata.load_org_metadata",
+        "braindance.utils.data_manager.utils.catalogging.metadata.merge_metadata",
+        "braindance.utils.data_manager.utils.catalogging.postprocessing.apply_catalog_fixes",
+        "braindance.utils.data_manager.utils.catalogging.postprocessing.apply_corrupted_file_removal",
+        "braindance.utils.data_manager.utils.catalogging.s3_helpers.check_s3_file_exists",
+        "braindance.utils.data_manager.utils.catalogging.s3_helpers.construct_log_path",
+        "braindance.utils.data_manager.utils.catalogging.s3_helpers.construct_spike_data_path",
+        "braindance.utils.data_manager.utils.catalogging.s3_helpers.get_num_units_for_experiment_folder",
+        "braindance.utils.data_manager.utils.catalogging.s3_helpers.get_s3_client",
+        "braindance.utils.data_manager.utils.catalogging.s3_helpers.load_log_from_s3",
+        "braindance.utils.data_manager.utils.catalogging.s3_helpers.parse_s3_path",
+        "braindance.utils.data_manager.utils.catalogging.validators.calculate_stim_frequency",
+        "braindance.utils.data_manager.utils.catalogging.validators.categorize_frequency",
+        "braindance.utils.data_manager.utils.catalogging.validators.extract_exp_from_experiment_path",
+        "braindance.utils.data_manager.utils.catalogging.validators.extract_proj_from_s3_path",
+        "braindance.utils.data_manager.utils.catalogging.validators.is_baseline",
+        "braindance.utils.data_manager.utils.catalogging.validators.is_baseline_with_reason"
+      ]
+    },
+    "braindance/utils/data_manager/utils/catalogging/config.py": {
+      "sha256": "b9ce0481696a627780ce7300d1021fae6e3fad0f90847524569bf7685ec34658",
+      "symbols": [
+        "EXPERIMENT_BLACKLIST_PATTERNS",
+        "LOG_SUFFIXES",
+        "S3_ENDPOINTS",
+        "STIM_TO_FREQ_MAP",
+        "TARGET_FREQUENCIES",
+        "get_default_catalog_path",
+        "get_default_metadata_path",
+        "get_s3_endpoint"
+      ],
+      "uses": []
+    },
+    "braindance/utils/data_manager/utils/catalogging/experiment.py": {
+      "sha256": "4345f2e2ee35442a87abe80f9a6a26716b39ef6a86b2474bcf131b6b88c6e754",
+      "symbols": [
+        "BraindanceExperiment"
+      ],
+      "uses": [
+        "braindance.io.open_file",
+        "braindance.utils.data_manager.utils.catalogging.s3_helpers.construct_log_path",
+        "braindance.utils.data_manager.utils.catalogging.s3_helpers.load_log_from_s3",
+        "braindance.utils.data_manager.utils.catalogging.validators.calculate_freq_from_stim_count",
+        "braindance.utils.data_manager.utils.catalogging.validators.calculate_stim_frequency",
+        "braindance.utils.data_manager.utils.catalogging.validators.categorize_frequency"
+      ]
+    },
+    "braindance/utils/data_manager/utils/catalogging/generator.py": {
+      "sha256": "e98e48e015ffdf8855ac49a144a27f584f43c1f6c8d55db1716f392fb7fc625a",
+      "symbols": [
+        "CatalogGenerator",
+        "DataPathManager"
+      ],
+      "uses": [
+        "braindance.utils.data_manager.utils.catalogging.config.DEFAULT_S3_BASES",
+        "braindance.utils.data_manager.utils.catalogging.config.EXPERIMENT_BLACKLIST_PATTERNS",
+        "braindance.utils.data_manager.utils.catalogging.config.LOG_SUFFIXES",
+        "braindance.utils.data_manager.utils.catalogging.experiment.BraindanceExperiment",
+        "braindance.utils.data_manager.utils.catalogging.s3_helpers.get_num_units_for_chip",
+        "braindance.utils.data_manager.utils.catalogging.s3_helpers.get_s3_client",
+        "braindance.utils.data_manager.utils.catalogging.validators.count_digits",
+        "braindance.utils.data_manager.utils.catalogging.validators.extract_exp_from_experiment_path",
+        "braindance.utils.data_manager.utils.catalogging.validators.extract_number",
+        "braindance.utils.data_manager.utils.catalogging.validators.extract_proj_from_s3_path"
+      ]
+    },
+    "braindance/utils/data_manager/utils/catalogging/metadata.py": {
+      "sha256": "d217fd1fea4a4aaddaac2d2e86cd494b88bd44ec778b9858307f951535e5fc98",
+      "symbols": [
+        "add_drug_column",
+        "calculate_organoid_age",
+        "extract_date_from_path",
+        "extract_drug_from_experiment",
+        "load_org_metadata",
+        "merge_metadata",
+        "parse_date"
+      ],
+      "uses": []
+    },
+    "braindance/utils/data_manager/utils/catalogging/postprocessing.py": {
+      "sha256": "0d42b846ed6e61d300decc7261694b810c6c39d3e0e09bb3d63b01c702927d11",
+      "symbols": [
+        "CORRUPTED_FILES_21985IC",
+        "CORRUPTED_FILES_25178IC",
+        "EXPERIMENTS_TO_REMOVE",
+        "add_derived_columns",
+        "apply_catalog_fixes",
+        "apply_corrupted_file_removal",
+        "apply_frequency_fixes",
+        "apply_path_fixes",
+        "apply_pattern_removals",
+        "apply_specific_removals",
+        "clean_baseline_experiments",
+        "resolve_baseline_inheritance"
+      ],
+      "uses": [
+        "braindance.utils.data_manager.utils.catalogging.validators.compare_exp_names",
+        "braindance.utils.data_manager.utils.catalogging.validators.extract_exp_from_experiment_path",
+        "braindance.utils.data_manager.utils.catalogging.validators.extract_proj_from_s3_path",
+        "braindance.utils.data_manager.utils.catalogging.validators.is_baseline"
+      ]
+    },
+    "braindance/utils/data_manager/utils/catalogging/s3_helpers.py": {
+      "sha256": "11c7210101a6d934ce0d2ad766192a0138a5937e483669291daf93b58b871d32",
+      "symbols": [
+        "check_s3_file_exists",
+        "construct_log_path",
+        "construct_rt_sort_path",
+        "construct_spike_data_path",
+        "get_num_units_for_chip",
+        "get_num_units_for_experiment_folder",
+        "get_s3_client",
+        "load_log_from_s3",
+        "load_spike_data_from_s3",
+        "parse_s3_path"
+      ],
+      "uses": [
+        "braindance.get_data_dir",
+        "braindance.spike_data.load_spike_pickle",
+        "braindance.utils.data_manager.utils.catalogging.config.S3_ENDPOINTS",
+        "braindance.utils.data_manager.utils.data_loading.s3_loader.S3Loader"
+      ]
+    },
+    "braindance/utils/data_manager/utils/catalogging/validators.py": {
+      "sha256": "32fb8097c8cd5b6e91ddfb6979a2339ecb33d91a1fe2c6bf82855011d3ce9277",
+      "symbols": [
+        "calculate_freq_from_stim_count",
+        "calculate_stim_frequency",
+        "categorize_frequency",
+        "compare_exp_names",
+        "count_digits",
+        "extract_exp_from_experiment_path",
+        "extract_number",
+        "extract_proj_from_s3_path",
+        "is_baseline",
+        "is_baseline_with_reason",
+        "parse_exp_number"
+      ],
+      "uses": []
+    },
+    "braindance/utils/data_manager/utils/data_loading/catalog.py": {
+      "sha256": "31a9bd4df48b5aee7a5d8fd9229265e2e187e86cb6ceb4ee14452caf630bba05",
+      "symbols": [
+        "BatchResults",
+        "RecordingCatalog",
+        "_experiment_sort_key",
+        "load_catalog"
+      ],
+      "uses": [
+        "braindance.config.get_catalog_path",
+        "braindance.utils.data_manager.utils.data_loading.data_context.DataContext",
+        "braindance.utils.data_manager.utils.data_loading.recording.Recording"
+      ]
+    },
+    "braindance/utils/data_manager/utils/data_loading/data_context.py": {
+      "sha256": "f94910ee69920266b2d58c84e3dba4eee151191619821b482a546c9c39b70e23",
+      "symbols": [
+        "DataContext"
+      ],
+      "uses": [
+        "braindance.spike_data.load_spike_pickle"
+      ]
+    },
+    "braindance/utils/data_manager/utils/data_loading/recording.py": {
+      "sha256": "3fad257bf2904ac4a704f715deaeaa47620408c7e32c40945615392f82f8c2cf",
+      "symbols": [
+        "Recording",
+        "load_recording"
+      ],
+      "uses": [
+        "braindance.analysis.data_loader",
+        "braindance.analysis.mapping.Mapping",
+        "braindance.config.get_auto_extract_spike_info",
+        "braindance.config.get_output_dir",
+        "braindance.get_data_dir",
+        "braindance.spike_data.SpikeData",
+        "braindance.spike_data.as_spike_data",
+        "braindance.spike_data.load_spike_pickle",
+        "braindance.utils.data_manager.utils.analysis.burst_detector.BurstDetector",
+        "braindance.utils.data_manager.utils.analysis.latency_helper.calculate_latencies",
+        "braindance.utils.data_manager.utils.analysis.latency_helper.group_stimulations_by_electrode",
+        "braindance.utils.data_manager.utils.analysis.vectorized_binning.bin_spike_data_vectorized",
+        "braindance.utils.data_manager.utils.analysis.vectorized_binning.compute_binned_fr_isi_vectorized",
+        "braindance.utils.data_manager.utils.analysis.vectorized_binning.compute_binned_isi_vectorized",
+        "braindance.utils.data_manager.utils.catalogging.generator.DataPathManager",
+        "braindance.utils.data_manager.utils.data_loading.catalog.load_catalog",
+        "braindance.utils.data_manager.utils.data_loading.data_context.DataContext",
+        "braindance.utils.data_manager.utils.data_loading.results_cache.ResultsCache",
+        "braindance.utils.data_manager.utils.data_loading.results_cache.get_auto_upload_enabled",
+        "braindance.utils.data_manager.utils.data_loading.s3_loader.S3Loader",
+        "braindance.utils.data_manager.utils.data_loading.waveforms.WAVEFORM_NAME",
+        "braindance.utils.data_manager.utils.data_loading.waveforms.Waveforms",
+        "braindance.utils.data_manager.utils.data_loading.waveforms.waveform_params",
+        "braindance.utils.data_manager.utils.plotting.PlotAccessor"
+      ]
+    },
+    "braindance/utils/data_manager/utils/data_loading/results_cache.py": {
+      "sha256": "0e6e14ec77be05b241d3f10c1c0c747ea633edcdb46cf2945eecebeb4951169d",
+      "symbols": [
+        "NRP_S3_ENDPOINT",
+        "ResultsCache",
+        "ResultsManifest",
+        "_LOCAL_ZSTD_PREFIXES",
+        "_S3_CLIENTS",
+        "_S3_CLIENTS_LOCK",
+        "_WIRE_ZSTD_PREFIXES",
+        "_ZSTD_LEVEL",
+        "_ZST_EXT",
+        "_local_zstd_eligible",
+        "_param_key",
+        "_require_zstd",
+        "_shared_s3_client",
+        "_wire_zstd_eligible",
+        "_wire_zstd_readable",
+        "_zstd_compress",
+        "_zstd_decompress",
+        "_zstd_disabled",
+        "_zstd_migrate_enabled",
+        "get_auto_upload_enabled"
+      ],
+      "uses": []
+    },
+    "braindance/utils/data_manager/utils/data_loading/s3_loader.py": {
+      "sha256": "33068ee086da010475a2df55aa3668d3156fbf31c13a174198776bd6f2f0f4ec",
+      "symbols": [
+        "NRP_S3_ENDPOINT",
+        "S3Loader"
+      ],
+      "uses": [
+        "braindance.spike_data.load_spike_pickle"
+      ]
+    },
+    "braindance/utils/data_manager/utils/data_loading/waveforms.py": {
+      "sha256": "a211b885488b771a6b8d179eda71e45cc2b6336d9c4fa4560045aa6dee26f1c6",
+      "symbols": [
+        "WAVEFORM_NAME",
+        "WAVEFORM_PARAMS",
+        "Waveforms",
+        "waveform_params",
+        "waveform_s3_path"
+      ],
+      "uses": []
+    },
+    "braindance/utils/data_manager/utils/plotting/accessor.py": {
+      "sha256": "3028e4d5ef94a3bbe6984bedb33a4290b888efeeeb7db95f66eec16abac436bf",
+      "symbols": [
+        "PlotAccessor"
+      ],
+      "uses": [
+        "braindance.utils.data_manager.utils.data_loading.recording.Recording",
+        "braindance.utils.data_manager.utils.plotting.evoked_response.plot_evoked_psth",
+        "braindance.utils.data_manager.utils.plotting.evoked_response.plot_evoked_raster",
+        "braindance.utils.data_manager.utils.plotting.plot_styler.Styler",
+        "braindance.utils.data_manager.utils.plotting.population.plot_firing_rate_histogram",
+        "braindance.utils.data_manager.utils.plotting.population.plot_sttc_matrix",
+        "braindance.utils.data_manager.utils.plotting.raster.plot_raster_with_pop",
+        "braindance.utils.data_manager.utils.plotting.spatial_latency.spatial_animation",
+        "braindance.utils.data_manager.utils.plotting.spatial_latency.spatial_latency",
+        "braindance.utils.data_manager.utils.plotting.spatial_latency.spatial_response_map"
+      ]
+    },
+    "braindance/utils/data_manager/utils/plotting/evoked_response.py": {
+      "sha256": "dcdcda589fe0c66fc1c6fc10b2b1ff2e54a649062ec8f38871ede0b8c91b2867",
+      "symbols": [
+        "plot_evoked_psth",
+        "plot_evoked_raster"
+      ],
+      "uses": [
+        "braindance.utils.data_manager.utils.data_loading.recording.Recording",
+        "braindance.utils.data_manager.utils.plotting.plot_styler.Styler"
+      ]
+    },
+    "braindance/utils/data_manager/utils/plotting/journal_specs.py": {
+      "sha256": "6a54cfd6870cebe0e19da6e706d29c03798c2e524ca919f125051f94925dd485",
+      "symbols": [
+        "CELL_REPORTS_METHODS",
+        "DEFAULT_TEXT_SPEC",
+        "DRAFT",
+        "JOURNAL_SPECS",
+        "JournalPageSpec",
+        "NATURE",
+        "NATURE_NEURO",
+        "ROLE_FIELDS",
+        "TextSpec",
+        "_mm_to_pt",
+        "get_journal_spec"
+      ],
+      "uses": []
+    },
+    "braindance/utils/data_manager/utils/plotting/plot_styler.py": {
+      "sha256": "ad7581be92c76e22acb607c22a161a9ed1a4004caa9fdec62298cd7c0b687ce2",
+      "symbols": [
+        "PANEL_LETTER_GID",
+        "Styler",
+        "main"
+      ],
+      "uses": [
+        "braindance.utils.data_manager.utils.plotting.journal_specs.DEFAULT_TEXT_SPEC",
+        "braindance.utils.data_manager.utils.plotting.journal_specs.JOURNAL_SPECS",
+        "braindance.utils.data_manager.utils.plotting.journal_specs.JournalPageSpec",
+        "braindance.utils.data_manager.utils.plotting.journal_specs.ROLE_FIELDS",
+        "braindance.utils.data_manager.utils.plotting.journal_specs.get_journal_spec"
+      ]
+    },
+    "braindance/utils/data_manager/utils/plotting/population.py": {
+      "sha256": "3b71b5dcc90df57eefcbae4051606c2c5a9787b985c5135ef2fd68f134976b2e",
+      "symbols": [
+        "plot_firing_rate_histogram",
+        "plot_sttc_matrix"
+      ],
+      "uses": [
+        "braindance.utils.data_manager.utils.data_loading.recording.Recording",
+        "braindance.utils.data_manager.utils.plotting.plot_styler.Styler"
+      ]
+    },
+    "braindance/utils/data_manager/utils/plotting/raster.py": {
+      "sha256": "145afdf8d297fab9a463f609ab360e8777f5e1c64cee8cb812fd202142dd142e",
+      "symbols": [
+        "plot_raster_with_pop"
+      ],
+      "uses": [
+        "braindance.utils.data_manager.utils.data_loading.recording.Recording",
+        "braindance.utils.data_manager.utils.plotting.plot_styler.Styler"
+      ]
+    },
+    "braindance/utils/data_manager/utils/plotting/spatial_latency.py": {
+      "sha256": "8ea2ed0a4f893c031ac0d4e6ce853b93f59866b6f6cf181dc28fbac3872c2415",
+      "symbols": [
+        "spatial_animation",
+        "spatial_latency",
+        "spatial_response_map"
+      ],
+      "uses": [
+        "braindance.utils.data_manager.utils.analysis.ultra_optimized_latency_helper.UltraOptimizedLatencyHelper",
+        "braindance.utils.data_manager.utils.data_loading.recording.Recording",
+        "braindance.utils.data_manager.utils.plotting.plot_styler.Styler"
+      ]
+    },
+    "braindance/utils/maxwell_config.py": {
+      "sha256": "cd05f505dac6083e0e03e904b4c076c36efa2e69d45ac773d2d9822ff85db19c",
+      "symbols": [
+        "Config"
+      ],
+      "uses": []
+    },
+    "braindance/utils/rt_artifact_removal.py": {
+      "sha256": "13821e6547a96d8d6a2ca4fa85907b619c852366986f1b7951abc6f29a5154d7",
+      "symbols": [
+        "LOOKUP_TABLE",
+        "MinibatchNumbaArtifactRemoval",
+        "Timer",
+        "compute_S",
+        "compute_T",
+        "compute_W",
+        "compute_W_rec",
+        "compute_a",
+        "fast_factorial",
+        "fast_mmean",
+        "process_minibatch_numba",
+        "shift_buffer"
+      ],
+      "uses": []
+    },
+    "braindance/utils/rt_artifact_removal_GPU.py": {
+      "sha256": "e6362c3556a249d6472b202903f4114e391e390f432d63daea7f81efb5ccba9b",
+      "symbols": [
+        "TorchArtifactRemovalOptimized"
+      ],
+      "uses": []
+    },
+    "braindance/utils/rt_artifact_removal_JIT.py": {
+      "sha256": "2bc9b9a90fda84c6fa38988e6d4a392802ffff75917148165a0af6cfde757028",
+      "symbols": [
+        "LOOKUP_TABLE",
+        "NumbaOptimizedMultiChannelArtifactRemovalMinibatch",
+        "Timer",
+        "compute_S",
+        "compute_T",
+        "compute_W",
+        "compute_W_rec",
+        "compute_a",
+        "fast_factorial",
+        "fast_mmean",
+        "process_channel_minibatch_numba",
+        "process_saturation_cubic",
+        "shift_buffer"
+      ],
+      "uses": []
+    },
+    "braindance/utils/rt_linear_art_removal.py": {
+      "sha256": "a9af043bcf225b4b9d1c4f33cf0f8ee3cc38482e631ea9792d356eb7bbcb2aff",
+      "symbols": [
+        "LOOKUP_TABLE",
+        "LinearArtifactRemoval",
+        "LinearArtifactRemoval2",
+        "Timer",
+        "compute_S",
+        "compute_T",
+        "compute_W",
+        "compute_W_rec",
+        "compute_W_rec_optimized",
+        "compute_W_vectorized",
+        "compute_a",
+        "compute_linear_fit_inline",
+        "fast_factorial",
+        "fast_mmean",
+        "process_channel_minibatch_numba",
+        "process_channels_optimized",
+        "process_saturation_linear",
+        "shift_buffer"
+      ],
+      "uses": []
+    }
+  },
+  "stale_files": [
+    "braindance/core/phases_v3/phases3.py",
+    "braindance/core/phases_v3/phases3_ant.py",
+    "braindance/core/phases_v3/phases3_ant_cpg.py",
+    "braindance/core/phases_v3/phases3_foodland.py",
+    "braindance/core/phases_v3/phases3_loop.py",
+    "braindance/core/phases_v3/phases3_pacman.py",
+    "braindance/core/phases_v3/phases3_selection.py",
+    "braindance/core/phases_v3/phases3_walker2d.py",
+    "braindance/core/phases_v3/phases3_walker2d_cpg.py",
+    "braindance/core/phases_v3/phases_analysis_3.py",
+    "braindance/core/spikedetector/model2.py",
+    "braindance/core/spikesorter/rt_sort.py",
+    "braindance/examples/labyrinth.py",
+    "braindance/examples/streaming_workshop/analysis_workspace.css",
+    "braindance/examples/streaming_workshop/batch_sorters.py",
+    "braindance/examples/streaming_workshop/catalog_workspace.js",
+    "braindance/examples/streaming_workshop/phase_flow.css",
+    "braindance/examples/streaming_workshop/playback.py",
+    "braindance/examples/streaming_workshop/sorter_installation.py",
+    "braindance/examples/streaming_workshop/sorting_workspace.js",
+    "braindance/examples/streaming_workshop/sorting_workspace.py",
+    "braindance/examples/streaming_workshop/ui.js",
+    "braindance/examples/streaming_workshop/watcher.html",
+    "braindance/examples/streaming_workshop/watcher.js",
+    "braindance/examples/streaming_workshop/workshop_theme.css",
+    "braindance/experiments/labyrinth.py",
+    "braindance/games/labyrinth.py"
+  ],
+  "include_tests": false,
+  "trivial_files": {
+    "braindance/analysis/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "braindance/cli/__init__.py": "47154f33f0f5f001f721a6ae9081425d3620167b4191c529fedf2095a39c70e3",
+    "braindance/core/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "braindance/core/envs/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "braindance/core/maxwell/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "braindance/core/phases_v3/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "braindance/core/spikedetector/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "braindance/core/spikesorter/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "braindance/examples/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "braindance/examples/paper_cartpole/__init__.py": "27db7fab5f0f8034bfba5c4060e2971cb7b8c6a652c0bbf806bcba436979019b",
+    "braindance/examples/streaming_workshop/__init__.py": "bb27c2c013a93d25690329f50ef6fb63d9ff26dd5d39eff4b85239ce94be2aa3",
+    "braindance/games/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "braindance/gui/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "braindance/utils/data_manager/advanced_tutorials/__init__.py": "a97e2e6551083ef7c4de476f129cd56d856ddfd65b52eb282288bcbb6f4d56bb",
+    "braindance/utils/data_manager/tutorials/__init__.py": "554bd25d5f6da87a7e9bdbc5fdacf922966dd37c46f6ea2353ccda789a221eb5",
+    "braindance/utils/data_manager/utils/__init__.py": "6ce7ff0edec75c482a18c1927a059a18ab23569efa0259f29b6f862b62ae53e6",
+    "braindance/utils/data_manager/utils/analysis/__init__.py": "10e7d9b1a98d002e606fbfcd7e9592b8ea60ad29028187971965371fc5331bd2",
+    "braindance/utils/data_manager/utils/data_loading/__init__.py": "fdcf65007fa390235da5b3f11858ee0c8529564d45abc77ad09e8e1a49400752",
+    "braindance/utils/data_manager/utils/plotting/__init__.py": "b89d0b423d0ee23ca29a02af0e5eec302e2401d176c70953a3142b945f396a23"
+  }
+}

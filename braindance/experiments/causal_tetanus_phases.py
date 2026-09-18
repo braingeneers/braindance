@@ -1,6 +1,8 @@
 from braindance.core.maxwell_env import MaxwellEnv
 from braindance.core.params import maxwell_params
 from braindance.core.phases import PhaseManager, NeuralSweepPhase, RecordPhase, FrequencyStimPhase
+from braindance.core.phases_analysis import HeatmapPhase, FootprintPhase
+from braindance.analysis.data_loader import AnalysisDAO
 from braindance.core.trainer import generate_tetanus_pattern
 
 import numpy as np
@@ -79,3 +81,6 @@ phase_manager.add_phase_group(exp)
 
 print(phase_manager.summary())
 phase_manager.run()
+
+
+# analysis_dao = phase_manager.analysis_dao

@@ -2,6 +2,9 @@ import numpy as np
 
 from braindance.core.maxwell_env import MaxwellEnv
 from braindance.core.params import maxwell_params
+import time
+import sys
+
 
 params = maxwell_params
 params['name'] = 'causal_freq' # Name of the experiment
@@ -10,22 +13,8 @@ params['max_time_sec'] = 60*60*2 # 2 hours
 params['save_dir'] = 'data' # Path to the data directory, will be created if it doesn't exist
 params['config'] = 'config.cfg' # Path to the config file
 
-
-# ================== Custom experiment ==================
-# This is NOT THE RECOMMENDED way to run experiments, but it is possible
-# to directly interact with the environment and use exact timing.
-# It is generally better to use the PhaseManager and Phase classes to
-# define experiments. ( braindance.core.phases )
-
-
-# Here we will run a simple experiment with 3 phases:
-# 1. 1 minute of tetanic stimulation
-# 2. 1 minute of silence
-# 3. 2 minutes of stimulation
-# 4. 1 minute of silence
-
-# We will define the experiment in terms of phases
-
+# params['multiprocess'] = False
+# params['render'] = False
 
 # Lets define the stim_cycle in seconds
 tetanus_Hz = 50
@@ -37,6 +26,12 @@ stim_cycle = [
     ('causal', 120),
     ('silent', 60)
 ]
+# silent_cycle = [
+#     ('silent', 60),
+#     ('silent', 10),
+#     ('causal', 120),
+#     ('silent', 60)
+# ]
 
 silent_cycle = [
     ('silent', 2),
@@ -45,9 +40,7 @@ silent_cycle = [
 full_exp = 3*silent_cycle + 5*stim_cycle + 1*silent_cycle + 6*stim_cycle + 1*silent_cycle + 5*stim_cycle + 3*silent_cycle
 
 delay_ms = 5
-
 # We will do this at tetanus_Hz
-# 'stim' is the action, [0] is the neuron, 150 is the amplitude, 100 is the phase duration of the square pulse
 tetanus_action = [('stim',[0],150,100), ('delay', delay_ms), 
                   ('stim',[1],150,100), ('delay', delay_ms),
                   ('stim',[2],150,100), ('delay', delay_ms),
@@ -118,4 +111,4 @@ while not done:
             env.step()
           
 
-env.close()
+env._cleanup()

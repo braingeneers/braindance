@@ -1,0 +1,17 @@
+prune proj
+prune games
+prune utils
+prune test
+prune tests
+prune braindance/.claude
+prune braindance/utils/data_manager/internal_tests
+prune braindance/utils/data_manager/internal_usage
+include braindance/tutorial_data.json
+include README.md requirements.txt requirements-dev.txt
+include tests/installed_smoke.py
+include docs/installation-validation.md
+recursive-include braindance/examples/streaming_workshop *.html *.js *.css
+recursive-include braindance/core/spikedetector/detection_models init_dict.json state_dict.pt
+include braindance/core/maxwell/stim_buffers.npy
+recursive-include braindance/gui/resources *.png
+global-exclude __pycache__ *.py[cod] .DS_Store

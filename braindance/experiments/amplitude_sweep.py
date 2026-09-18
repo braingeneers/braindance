@@ -19,6 +19,9 @@ amp_sweep = NeuralSweepPhase(env, neuron_list=neuron_list, replicates=50,
                         amp_bounds=(80, 180, 10), stim_freq=2,
                         order='random', verbose=True)
 
+# amp_sweep = AmplitudeSweep(env, neuron_list=[0,1,2], replicates=1,
+#                         amp_bounds=(50, 200, 1), stim_freq=4,
+#                         type='random', verbose=True)
 
 phase_manager = PhaseManager(env)
 phase_manager.add_phase(amp_sweep)

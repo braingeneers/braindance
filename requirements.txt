@@ -1,15 +1,13 @@
-numpy
-matplotlib
-gym
-gymnasium[classic-control]
-tables
-h5py
-smart_open
-numba
-tqdm
-pyqt5
-zmq
-scipy
-seaborn
-pandas
-psutil
+# Core transport/simulation requirements. setup.py also installs analysis and
+# FoodLand/Ant by default; use pip install . for the complete dependency set.
+numpy>=1.26,<2
+h5py>=3.10
+pandas>=2.1,<3
+gymnasium>=1.1,<2
+pyzmq>=25
+psutil>=5.9
+
+# Workshop data access and spike analysis.
+boto3>=1.28
+spikedata
+spikelab>=0.1.2,<0.2

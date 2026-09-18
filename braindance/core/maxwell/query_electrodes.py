@@ -1,11 +1,7 @@
-try:
-    import maxlab
-except:
-    # print("Could not import maxlab")
-    # print("Please make sure you are running this on a maxwell computer")
-    import braindance.core.dummy_maxlab as maxlab
+import maxlab
 import argparse
 import json
+
 
     
 
@@ -31,6 +27,8 @@ def query_config(config, electrodes=None, remove_duplicates=False):
     ids = {str(i):0 for i in range(32)}
     if remove_duplicates:
         electrodes_out = []
+    else:
+        electrodes_out = None
     for e in electrodes:
         try:
             status = array.connect_electrode_to_stimulation(e)
@@ -54,6 +52,9 @@ def query_config(config, electrodes=None, remove_duplicates=False):
                 print(" X", end="")
         
         print()
+    # convert to list of ints
+    if electrodes_out is not None:
+        electrodes_out = [int(e) for e in electrodes_out]
 
     if remove_duplicates:
         print("Electrodes without duplicates", electrodes_out)
@@ -105,6 +106,7 @@ def main():
             _ = query_config(config, electrodes)
             # Now we save back to the json file
             if args.json is not None:
+                json_params['valid_stim_electrodes'] = electrodes
                 json_params['stim_electrodes'] = electrodes
                 with open(json_file, 'w') as f:
                     json.dump(json_params, f)

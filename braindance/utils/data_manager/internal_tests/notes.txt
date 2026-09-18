@@ -1,0 +1,9 @@
+# actual data for legacy format
+python -m braindance.utils.data_manager setup \
+  --data-dir /Volumes/hunter_ssd/busy_bee/data \
+  --catalog /Users/hunterschweiger/braingeneers/BrainDance-dev/braindance/utils/data_manager/example_catalog.csv
+
+# testing for the new data format
+python -m braindance.utils.data_manager setup \
+  --data-dir /Volumes/hunter_ssd/busy_bee/test_dir \
+  --catalog /Users/hunterschweiger/braingeneers/BrainDance-dev/braindance/utils/data_manager/example_catalog.csv

@@ -1,7 +1,7 @@
 from braindance.core.maxwell_env import MaxwellEnv
 from braindance.core.params import maxwell_params
 from braindance.core.phases import FrequencyStimPhase, PhaseManager
-from braindance.core.trainer import generate_stimulations
+from braindance.core.stim_commands import generate_stimulations
 import numpy as np
 
 params = maxwell_params
@@ -17,13 +17,6 @@ params['dummy'] = 'sine'
 env = MaxwellEnv(**params)
 neuron_list = np.arange(len(params['stim_electrodes']))
 
-# We aim to use the following design:
-# First, stimulate the pattern:
-#   0,1,2, then 4, then 2,3,4, then 5, then 4, then 3, then 2, then 1, then 0
-#   At 2 Hz
-# Second, stimulate the pattern:
-#   0, then 1, then 2
-#   At 5 Hz
 
 # Lets stim 
 electrode_inds = [[0,1,2],4,[2,3,4],5,4,3,2,1,0]
@@ -36,6 +29,10 @@ freq_stim_phase = FrequencyStimPhase(env, stim_command=stim_commands,stim_freq=2
 
 freq_stim_single_phase = FrequencyStimPhase(env, stim_command=stim_commands[0],stim_freq=5,
                                verbose=True)
+
+# amp_sweep = AmplitudeSweep(env, neuron_list=[0,1,2], replicates=1,
+#                         amp_bounds=(50, 200, 1), stim_freq=4,
+#                         type='random', verbose=True)
 
 phase_manager = PhaseManager(env)
 phase_manager.add_phase(freq_stim_phase)

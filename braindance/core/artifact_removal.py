@@ -1,75 +1,129 @@
 import numpy as np
-from numba import njit, prange
-from functools import wraps
+from numba import jit, njit
 
-def docstring_wrapper(func):
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        return func(*args, **kwargs)
-    return wrapper
-
-@docstring_wrapper
 @njit
-def cubic_fit5(v, N=60, nc_start=60, mean_arr=None, mean_std=None, artifact_width=50, remove_frames_before=8):
-    """
-    Perform cubic fitting on the input data.
+def cubic_fit5(v, N=60, nc_start=0):
+    n_points = len(v)
+    v_cleaned = np.zeros(n_points)
+    nc = nc_start
+    
+    def compute_T(nc):
+        T = np.zeros((7))
+        for k in range(7):
+            for n in range(nc - N, nc + N + 1):
+                T[k] += (n - nc) ** k
+        return T
+    
 
-    Args:
-        v (numpy.ndarray): Input data array.
-        N (int): Window size for fitting. Default is 60.
-        nc_start (int): Starting point for fitting. Default is 60.
-        mean_arr (numpy.ndarray, optional): Array of mean values. Default is None.
-        mean_std (float, optional): Standard deviation of mean values. Default is None.
-        artifact_width (int): Width of artifact to remove. Default is 50.
-        remove_frames_before (int): Number of frames to remove before artifact. Default is 8.
+    def compute_S(T):
+        S = np.zeros((4, 4))
+        for k in range(4):
+            for l in range(4):
+                S[k, l] = T[k + l]
+        return np.linalg.inv(S)
+    
 
-    Returns:
-        tuple: A tuple containing:
-            - v_cleaned (numpy.ndarray): Cleaned data array.
-            - art (numpy.ndarray): Artifact array.
-    """
-    # ... (rest of the function code remains the same)
+    def compute_W(v, nc, N):
+        W = np.zeros(4)
+        range_start = max(0, nc - N)
+        range_end = min(n_points, nc + N + 1)
+        for k in range(4):
+            total = 0.0
+            for n in range(range_start, range_end):
+                total += (n - nc) ** k * v[n]
+            W[k] = total
+        return W
+    
 
-@docstring_wrapper
+    # def compute_W_rec(Wp):
+    #     W = np.zeros(4)
+    #     for k in range(4):
+    #         cur_sum = 0
+    #         for l in range(k+1):
+    #             num = (-1)**(k-l)*np.math.factorial(k)
+    #             den = np.math.factorial(l)*np.math.factorial(k-l)
+    #             cur_sum += num/den*Wp[l] + (N**k) * v[nc+N+1] - ((-N - 1)**k) * v[nc - N]
+    #         W[k] = cur_sum
+    #     return W
+    
+    
+    def compute_W_rec(Wp, N, nc, v):
+        W = np.zeros(4)
+        for k in range(4):
+            cur_sum = 0
+            for l in range(k+1):
+                num = (-1)**(k-l)*fast_factorial(k)
+                den = fast_factorial(l)*fast_factorial(k-l)
+                cur_sum += num/den*Wp[l] 
+            cur_sum += (N**k) * v[nc+N + 1] - ((-N - 1)**k) * v[nc - N]
+            W[k] = cur_sum
+        return W
+
+    
+    def compute_a(S, W):
+        a = np.zeros(4)
+        for k in range(4):
+            total = 0.0
+            for l in range(4):
+                total += S[k, l] * W[l]
+            a[k] = total
+        return a
+
+    def deviation(v, A, nc, N, d):
+        total = 0.0
+        A_start = max(0, nc - N)
+        A_end = min(n_points, nc + N)
+        for n in range(A_start, A_start + d - 1):
+            total += v[n] - A[n - A_start]
+        return total
+    
+    art = np.zeros(n_points)
+    W = compute_W(v, nc, N)
+
+    T = compute_T(nc)
+    S = compute_S(T)
+    a = compute_a(S, W)
+
+    A = np.zeros(nc_start + 1)
+
+    for n in range(-1, nc_start):
+        A[n] = a[0] + a[1] * (n - nc) + a[2] * (n - nc) ** 2 + a[3] * (n - nc) ** 3
+    v_cleaned[:nc_start] = v[:nc_start] - A[:nc_start]
+    art[:nc_start] = A[:nc_start]
+
+    while nc < (n_points - N - 1):
+        # W = compute_W(v, nc, N)
+        W = compute_W_rec(W, N, nc, v)
+        # print('computing a')
+        a = compute_a(S, W)
+
+        # A = np.zeros(2*N + 1)
+        # for n in range(nc - N, nc + N):
+        #     A[n - nc + N] = a[0] + a[1] * (n - nc) + a[2] * (n - nc) ** 2 + a[3] * (n - nc) ** 3
+        # print('setting v_cleaned')
+        v_cleaned[nc] = v[nc] - a[0]
+        art[nc] = a[0]
+        nc += 1
+
+    return v_cleaned, art
+
+
+#njit parallel to run cubic_fit5 in parallel
+from numba import prange
+
 @njit(parallel=True)
-def mean_numba(a):
-    """
-    Compute mean of 2D array along axis 0 using Numba.
+def cubic_fit5_parallel(data, N=60, nc_start=60):
+    n_channels = data.shape[0]
+    v_cleaned = np.zeros(data.shape)
+    art = np.zeros(data.shape)
+    for i in prange(n_channels):
+        v_cleaned[i], art[i] = cubic_fit5(data[i], N, nc_start)
 
-    Args:
-        a (numpy.ndarray): Input 2D array.
 
-    Returns:
-        numpy.ndarray: Array of mean values.
-    """
-    res = []
-    for i in prange(a.shape[1]):
-        res.append(a[:, i].mean())
+    return v_cleaned, art
 
-    return np.array(res)
 
-@docstring_wrapper
-@njit(parallel=True)
-def cubic_fit2d(data, N=60, nc_start=60, return_artifacts=False, artifact_width=50,
-                remove_frames_before=8,n_stds=2):
-    """
-    Perform 2D cubic fitting on the input data.
 
-    Args:
-        data (numpy.ndarray): Input 2D data array.
-        N (int): Window size for fitting. Default is 60.
-        nc_start (int): Starting point for fitting. Default is 60.
-        return_artifacts (bool): Whether to return artifacts. Default is False.
-        artifact_width (int): Width of artifact to remove. Default is 50.
-        remove_frames_before (int): Number of frames to remove before artifact. Default is 8.
-        n_stds (int): Number of standard deviations for threshold. Default is 2.
-
-    Returns:
-        tuple: A tuple containing:
-            - v_cleaned (numpy.ndarray): Cleaned 2D data array.
-            - art (numpy.ndarray or None): Artifact 2D array if return_artifacts is True, else None.
-    """
-    # ... (rest of the function code remains the same)
 
 LOOKUP_TABLE = np.array([
     1, 1, 2, 6, 24, 120, 720, 5040, 40320,
@@ -78,58 +132,34 @@ LOOKUP_TABLE = np.array([
     20922789888000, 355687428096000, 6402373705728000,
     121645100408832000, 2432902008176640000], dtype='int64')
 
-@docstring_wrapper
+# @njit
+# def fast_factorial(n):
+#     result = 1
+#     for i in range(1, n + 1):
+#         result *= i
+#     return result
+
 @njit
 def fast_factorial(n):
-    """
-    Compute factorial using a lookup table for faster computation.
-
-    Args:
-        n (int): Input number.
-
-    Returns:
-        int: Factorial of n.
-
-    Raises:
-        ValueError: If n is greater than 20.
-    """
     if n > 20:
         raise ValueError
     return LOOKUP_TABLE[n]
 
-@docstring_wrapper
 @njit
 def fast_median(a):
-    """
-    Compute median of an array using Numba for faster computation.
-
-    Args:
-        a (numpy.ndarray): Input array.
-
-    Returns:
-        float: Median of the input array.
-    """
     return np.median(a)
 
-@docstring_wrapper
 @njit
 def fast_mmean(q, frame):
-    """
-    Compute moving mean.
-
-    Args:
-        q (float): Current moving mean.
-        frame (float): New value.
-
-    Returns:
-        float: Updated moving mean.
-    """
-    q *= .8
+    q*= .8
     q += .2*frame
     return q
 
 
-
+import numpy as np
+from collections import deque
+import itertools
+import time
 
 class ArtifactRemoval:
 
@@ -404,3 +434,243 @@ class ArtifactRemoval:
             return output_data
 
     
+    
+
+
+
+
+
+
+
+
+
+class ArtifactRemoval2:
+
+    def __init__(self, N, nc_start=0, min_val=-100, max_val=100):
+        self.N = N
+        self.nc_start = nc_start
+        self.prev_a = None  # to store the previous coefficients
+        self.prev_nc = nc_start
+        self.v = np.zeros(2*N + 2)
+        self.v_len = self.v.shape[0]
+        self.v_ind = 0
+        self.Wp = np.zeros(4)
+        self.W = np.zeros(4)
+
+        # Precompute
+        self.T = self._comput1e_T(nc_start)
+        self.S = self._compute_S(self.T)
+
+        self.min_val = -100
+        self.max_val = 100
+        # self.S = np.zeros((4, 4)) # Make sure this is inited so it doesn't error
+        # States: init, depeg, fit
+        self.state = 'init'
+        self.init_ind = 0
+    
+
+    def _compute_T(self, nc):
+        T = np.zeros((7))
+        for k in range(7):
+            for n in range(nc - self.N, nc + self.N + 1):
+                T[k] += (n - nc) ** k
+        return T
+
+    def _compute_S(self, T):
+        S = np.zeros((4, 4))
+        for k in range(4):
+            for l in range(4):
+                S[k, l] = T[k + l]
+        return np.linalg.inv(S)
+
+    def _compute_W(self, v, nc):
+        n_points = len(v)
+        W = np.zeros(4)
+        range_start = max(0, nc - self.N)
+        range_end = min(n_points, nc + self.N + 1)
+        for k in range(4):
+            total = 0.0
+            for n in range(range_start, range_end):
+                total += (n - nc) ** k * v[n]
+            W[k] = total
+        return W
+    
+
+    @staticmethod
+    @njit
+    def _compute_W_rec(Wp, v, v_ind, v_size, N):
+        """v_next is v[nc+N + 1]
+        v_prev is v[nc - N]
+        """
+        v_end = (v_ind + N + 1)%v_size
+        v_start = (v_ind - N)%v_size
+        W = np.zeros(4)
+        for k in range(4):
+            cur_sum = 0
+            for l in range(k+1):
+                num = (-1)**(k-l)*fast_factorial(k)
+                den = fast_factorial(l)*fast_factorial(k-l)
+                cur_sum += num/den*Wp[l] 
+            cur_sum += (N**k) * v[v_end] - ((-N - 1)**k) * v[v_start]
+            W[k] = cur_sum
+        return W
+
+    @staticmethod
+    @njit
+    def _compute_a(S, W):
+        a = np.zeros(4)
+        for k in range(4):
+            total = 0.0
+            for l in range(4):
+                total += S[k, l] * W[l]
+            a[k] = total
+        return a
+    
+
+    def fit(self, v, T, S):
+        # Length of points to fit
+        n_points = len(v) - int(self.N+1)
+        v_cleaned = np.zeros(n_points)
+        nc = self.nc_start
+        art = np.zeros(n_points)
+
+        
+        W = self._compute_W(v, nc)
+        a = self._compute_a(self.S, W)
+
+        A = np.zeros(self.nc_start + 1)
+        for n in range(-1, self.nc_start):
+            A[n] = a[0] + a[1] * (n - nc) + a[2] * (n - nc) ** 2 + a[3] * (n - nc) ** 3
+        # v_slice = list(itertools.islice(v, 0, self.nc_start))
+        v_cleaned[:self.nc_start] = v[:self.nc_start] - A[:self.nc_start]
+        art[:self.nc_start] = A[:self.nc_start]
+
+        W = self._compute_W(v, nc)
+        A = np.zeros(2*self.N + 1)
+        for n in range(nc - self.N, nc + self.N):
+            A[n - nc + self.N] = a[0] + a[1] * (n - nc) + a[2] * (n - nc) ** 2 + a[3] * (n - nc) ** 3
+        print(v.shape, A.shape)
+        v_cleaned = v[:-1] - A
+        self.W = W
+        return v_cleaned, art
+
+        # while nc < n_points:
+        #     # W = self._compute_W(v, nc)
+
+        #     W = self._compute_W_rec(W, v, self.v_len, self.v_ind, self.N)
+        #     # a = self._compute_a(self.S, W)
+
+        #     A = np.zeros(2*self.N + 1)
+        #     for n in range(nc - self.N, nc + self.N):
+        #         A[n - nc + self.N] = a[0] + a[1] * (n - nc) + a[2] * (n - nc) ** 2 + a[3] * (n - nc) ** 3
+        #     v_cleaned[nc] = v[nc] - a[0]
+        #     art[nc] = a[0]
+        #     nc += 1
+
+        # self.W = W
+        # return v_cleaned, art
+    
+    
+    def fit_step(self, frame):
+        """ Recursively computes the new W
+        then solves for the artifact of the center frame when the new frame is added
+        """
+        if self.state == 'init':
+            # Fill up v, when it is size 2N+1, run fit
+            # self.v[self.init_ind] = frame
+            self.v[self.v_ind] = frame
+            self.v_ind = (self.v_ind + 1)%self.v_len
+            
+            if self.init_ind >= 2*self.N + 1:
+                self.fit(self.v, self.T, self.S)
+                self.state = 'fit'
+                return 0,0
+            else:
+                self.init_ind += 1
+                return 0,0
+        
+        if self.state == 'fit':
+            # Move v
+            median = np.median(self.v)
+            if frame - median > self.max_val or frame - median < self.min_val:
+                self.state = 'depeg'
+                return 0,0
+            
+            # Put in data
+            self.v[self.v_ind] = frame
+            cur_ind = (self.v_ind - self.N)%self.v_len
+
+            self.W = self._compute_W_rec(self.W, self.v, cur_ind, self.v_len, self.N+1) # Could be N + 1
+            self.v_ind = (self.v_ind + 1)%self.v_len
+            a = self._compute_a(self.S, self.W)
+            return self.v[cur_ind] - a[0], a[0]
+        
+        # If we are saturating
+        if self.state == 'depeg':
+            median = np.median(self.v)
+            if frame - median < self.max_val and frame - median > self.min_val:
+                self.state = 'init'
+                self.init_ind = 0
+                self.v_ind = 0
+                return 1000,0
+            # Insert the median
+            
+            self.v[self.v_ind] = median
+            self.v_ind = (self.v_ind + 1)%self.v_len
+            return 0,0
+
+
+        
+        # Check saturation
+        if frame-median > self.max_val or frame-median < self.min_val:
+            # self.v[:-1] = self.v[1:]
+            # self.v[-1] = median
+            # self.v.append(median)
+            return 0,0
+        #     # return 0
+        #     return 0, 0
+        
+        
+        
+        return self.v[self.N] - a[0], a[0]
+
+
+# Example Usage
+# ar = ArtifactRemoval(5)
+# cleaned_data, artifact = ar.fit(data)
+
+
+
+# # Usage example
+# if __name__ == "__main__":
+#     v = np.arange(500)
+#     v = np.exp(-v/100)
+#     N = 5
+#     clean, art = cubic_fit(v,N, nc_start=N+1)#, nc_start=N)
+
+#     import matplotlib.pyplot as plt
+#     plt.plot(v, 'b', label='Original')
+#     plt.plot(clean, 'g', label='Cleaned')
+#     plt.plot(art, 'r--', label='Artifact')
+#     plt.legend()
+#     plt.show()
+#     #v = cur_data[22:] - np.median(cur_data[22:])
+#     #clean, art = cubic_fit(v, N, nc_start=N+1)
+
+
+class Timer:
+    def __init__(self, name='bob'):
+        self.start_time = None
+        self.name = name
+        self.end_time = -1
+
+    def __enter__(self):
+        self.start_time = time.time()
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        if exc_val:
+            raise exc_val
+        else:
+            self.end_time = time.time() - self.start_time
+            print('{} End time: {:.3f}s'. format(self.name, time.time() - self.start_time)) 

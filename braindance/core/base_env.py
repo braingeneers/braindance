@@ -14,7 +14,7 @@ class BaseEnv:
     def time_elapsed(self):
         '''Returns time since initialization of the environment.'''
         return time.perf_counter() - self.start_time
-
+    
     @property
     def dt(self):
         '''Returns time since the last step.'''
@@ -30,7 +30,7 @@ class BaseEnv:
 
             return True
         return False
-
+    
     def _cleanup(self):
         raise NotImplementedError
 
@@ -42,6 +42,6 @@ class BaseEnv:
 
     def render(self):
         raise NotImplementedError
-
     def close(self):
         raise NotImplementedError
+

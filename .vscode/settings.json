@@ -1,0 +1,6 @@
+{
+  "python.languageServer": "Jedi",
+  "python.analysis.typeCheckingMode": "basic",
+  "python.analysis.autoImportCompletions": true,
+  "python.defaultInterpreterPath": "/Users/hunterschweiger/miniconda3/envs/brain/bin/python"
+}

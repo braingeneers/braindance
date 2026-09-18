@@ -1,4 +1,3 @@
-import flatbuffers
 import time
 
 import numpy as np
@@ -7,112 +6,87 @@ import zmq
 
 from braindance.core.base_env import BaseEnv
 
-
 class OpenEphysEnv(BaseEnv):
     """
     The OpenEphysEnv class extends from the BaseEnv class and implements a specific environment 
-    for interacting with Open Ephys. It wraps functionality from Open Ephys to allow communication 
-    and control through the Falcon Output plugin.
+    for interacting with Open Ephys
     
-    This is essentially a wrapper of https://github.com/open-ephys/open-ephys-python-tools/tree/main/src/open_ephys/control.
+    This is essentially a wraper of https://github.com/open-ephys/open-ephys-python-tools/tree/main/src/open_ephys/control
     """
-
     def __init__(self, max_time_sec=60, verbose=1,
                  ip_address='127.0.0.1', port=3335, start=True):
         """
-        Initializes the OpenEphysEnv.
-
-        Args:
-            max_time_sec (int, optional): The maximum time in seconds for the environment to run. Defaults to 60.
-            verbose (int, optional): Level of verbosity. Defaults to 1.
-            ip_address (str, optional): The IP address for the ZMQ connection. Defaults to '127.0.0.1'.
-            port (int, optional): The port number that must match the Falcon Output plugin. Defaults to 3335.
-            start (bool, optional): If True, starts the recording immediately. Defaults to True.
+        ip_address is address for ZMQ connection
+        port must match the Falcon Output plugin
         """
         super().__init__(max_time_sec=max_time_sec, verbose=verbose)
+        
         self.gui = OpenEphysHTTPServer(ip_address)
-
+        
         # Initialize ZMQ context and socket
+        # (Adapted from https://github.com/open-ephys-plugins/falcon-output/blob/main/clients/Python/test_client.py)
         context = zmq.Context()
         tcp_address = f"tcp://{ip_address}:{port}"
         socket = context.socket(zmq.SUB)
         socket.setsockopt_string(zmq.SUBSCRIBE, "")
         socket.connect(tcp_address)
         self.socket = socket
-
+                
         if start:
             # Time management
             self.gui.record()
             self.start_time = self.cur_time = time.perf_counter()
-
+        
     def step(self, action=None):
-        """
-        Receives data from the Open Ephys system and processes it.
-
-        Args:
-            action (None, optional): Placeholder for future action implementations. Currently, this parameter 
-                                     must be None.
-
-        Returns:
-            tuple: A tuple containing the reshaped 2D array of samples and a boolean indicating 
-                   whether the environment is done.
-
-        Raises:
-            NotImplementedError: If `action` is set to anything other than None.
-        """
+        # Adapted from https://github.com/open-ephys-plugins/falcon-output/blob/main/clients/Python/test_client.py
         if action is not None:
-            raise NotImplementedError(
-                "Param `action` is not implemented yet. Set it to None")
+            raise NotImplementedError("Param `action` is not implemented yet. Set it to None")
 
         message = self.socket.recv()
-
-        try:
+        # Decode the message
+        try: 
             buf = bytearray(message)
             data = ContinuousData.GetRootAsContinuousData(buf, 0)
         except Exception as e:
             print(f"Impossible to parse the packet received. Error: {e}")
             return np.empty((1, 1)), self._check_if_done()
-
+        
+        # print(f"Message id: {data.MessageId()} received {data.NSamples()} samples from {data.NChannels()} channels for stream {data.Stream()}.")
+        
+        # Access fields based on the schema
         num_samples = data.NSamples()
         num_channels = data.NChannels()
         samples_flat = data.SamplesAsNumpy()
-
+        
+        # Check if the total size matches
         total_elements = samples_flat.size
         expected_elements = num_samples * num_channels
 
         if total_elements == expected_elements:
-            samples_reshaped = samples_flat.reshape(
-                (num_channels, num_samples))
+            # Reshape the samples to a 2D array in channel-major order
+            samples_reshaped = samples_flat.reshape((num_channels, num_samples))
             return samples_reshaped.T, self._check_if_done()
         else:
-            print(
-                f"Error: Expected {expected_elements} elements but got {total_elements}.")
+            print(f"Error: Expected {expected_elements} elements but got {total_elements}.")
             return np.empty((1, 1)), self._check_if_done()
-
+    
     def _cleanup(self):
-        """
-        Cleans up the environment by stopping acquisition and setting the system to idle mode.
-        """
         self.gui.acquire()
         self.gui.idle()
 
     def reset(self):
-        """
-        Resets the environment. Currently, this method is not implemented.
-        """
         pass
-
+    
     def close(self):
-        """
-        Closes the environment and performs necessary cleanup operations.
-        """
         self._cleanup()
-
+        
 
 # The below code is taken from https://github.com/open-ephys-plugins/falcon-output/blob/main/clients/Python/ContinuousData.py
 
 # autogenerated flatbuffer, see framework at: https://github.com/open-ephys-plugins/falcon-output/blob/main/clients/C%2B%2B/channel.fbs
 # modified to fit indexing for python
+
+import flatbuffers
 
 
 class ContinuousData(object):

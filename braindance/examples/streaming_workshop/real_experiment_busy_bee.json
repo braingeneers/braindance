@@ -1,0 +1,26 @@
+{
+  "experiment_name": "busy_bee_workshop_smoke",
+  "experiment_notes": "Complete one-cycle, hardware-free workshop representation of braindance_proj/braindance_figs/busy_bee_fig/protocol_example.py. The source defaults to 40 cycles with 600 second recordings and 50-800 replicates; this smoke fixture uses one cycle, 0.04 second recordings, one neuron, and one replicate per frequency so all five source frequency conditions can run against NeuralSimulationSource. The source phase_length=200 is preserved.",
+  "channels": 8,
+  "num_neurons": 1,
+  "grid_shape": [2, 4],
+  "seed": 7,
+  "speed": 100.0,
+  "native_settings": {
+    "verbose": false,
+    "stim_electrodes": [0]
+  },
+  "initial_data": {},
+  "phases": [
+    {"id": "cycle_01_0p5hz_record", "type": "native:phases3.RecordPhaseV3", "params": {"duration": 0.04, "recording_tag": "rec"}},
+    {"id": "cycle_01_0p5hz_stimulate", "type": "native:phases3.NeuralSweepPhaseV3", "params": {"neuron_list": [0], "amp_bounds": [400, 400, 1], "stim_freq": 0.5, "replicates": 1, "phase_length": 200, "order": "nar", "single_connect": true, "tag": "cycle_01_0p5hz"}},
+    {"id": "cycle_01_1hz_record", "type": "native:phases3.RecordPhaseV3", "params": {"duration": 0.04, "recording_tag": "rec"}},
+    {"id": "cycle_01_1hz_stimulate", "type": "native:phases3.NeuralSweepPhaseV3", "params": {"neuron_list": [0], "amp_bounds": [400, 400, 1], "stim_freq": 1.0, "replicates": 1, "phase_length": 200, "order": "nar", "single_connect": true, "tag": "cycle_01_1hz"}},
+    {"id": "cycle_01_2hz_record", "type": "native:phases3.RecordPhaseV3", "params": {"duration": 0.04, "recording_tag": "rec"}},
+    {"id": "cycle_01_2hz_stimulate", "type": "native:phases3.NeuralSweepPhaseV3", "params": {"neuron_list": [0], "amp_bounds": [400, 400, 1], "stim_freq": 2.0, "replicates": 1, "phase_length": 200, "order": "nar", "single_connect": true, "tag": "cycle_01_2hz"}},
+    {"id": "cycle_01_4hz_record", "type": "native:phases3.RecordPhaseV3", "params": {"duration": 0.04, "recording_tag": "rec"}},
+    {"id": "cycle_01_4hz_stimulate", "type": "native:phases3.NeuralSweepPhaseV3", "params": {"neuron_list": [0], "amp_bounds": [400, 400, 1], "stim_freq": 4.0, "replicates": 1, "phase_length": 200, "order": "nar", "single_connect": true, "tag": "cycle_01_4hz"}},
+    {"id": "cycle_01_8hz_record", "type": "native:phases3.RecordPhaseV3", "params": {"duration": 0.04, "recording_tag": "rec"}},
+    {"id": "cycle_01_8hz_stimulate", "type": "native:phases3.NeuralSweepPhaseV3", "params": {"neuron_list": [0], "amp_bounds": [400, 400, 1], "stim_freq": 8.0, "replicates": 1, "phase_length": 200, "order": "nar", "single_connect": true, "tag": "cycle_01_8hz"}}
+  ]
+}

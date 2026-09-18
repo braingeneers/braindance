@@ -1,0 +1,472 @@
+{
+  "datasets": {
+    "closed-loop-small": {
+      "default_version": "3",
+      "description": "Full closed-loop tutorial: original H5 recordings and supporting files, excluding rt_sort_inter intermediates; includes verified middle-phase analysis exports.",
+      "versions": {
+        "1": {
+          "files": [
+            {
+              "path": "2026-04-10-closedloop/25245hs5/002_closed_loop/002_closed_loop_log.csv",
+              "url": "https://s3-west.nrp-nautilus.io/braingeneers/braindance-tutorials/closed-loop-small/1/2026-04-10-closedloop/25245hs5/002_closed_loop/002_closed_loop_log.csv",
+              "bytes": 4856,
+              "sha256": "bf698774889d0ce8c1a718e8039f3d5b57358432c314f03c5fa067cfe6ca9828"
+            },
+            {
+              "path": "2026-04-10-closedloop/25245hs5/002_closed_loop/002_closed_loop_spike_data.pkl",
+              "url": "https://s3-west.nrp-nautilus.io/braingeneers/braindance-tutorials/closed-loop-small/1/2026-04-10-closedloop/25245hs5/002_closed_loop/002_closed_loop_spike_data.pkl",
+              "bytes": 246227,
+              "sha256": "63c89c9a2c55b9cfe780a407ca90b9e9abe55b882dfb8b819b18783f163acc42"
+            },
+            {
+              "path": "2026-04-10-closedloop/25245hs5/closed_loop_plasticity/mapping.csv",
+              "url": "https://s3-west.nrp-nautilus.io/braingeneers/braindance-tutorials/closed-loop-small/1/2026-04-10-closedloop/25245hs5/closed_loop_plasticity/mapping.csv",
+              "bytes": 23267,
+              "sha256": "da2f33e70b70acc05d43430faf77756a317d783060af7d9e12b2ec2b4dba581b"
+            },
+            {
+              "path": "catalog.csv",
+              "url": "https://s3-west.nrp-nautilus.io/braingeneers/braindance-tutorials/closed-loop-small/1/catalog.csv",
+              "bytes": 136,
+              "sha256": "7b05e11eff4f83b13eb6ea885a691c8ffe6853a788497db4f867396177b7fd50"
+            },
+            {
+              "path": "reference.json",
+              "url": "https://s3-west.nrp-nautilus.io/braingeneers/braindance-tutorials/closed-loop-small/1/reference.json",
+              "bytes": 3488,
+              "sha256": "b8d2df07eb089a567c20be9bc5d5231ac315adbb9a10030e4ace77ac51ecbcb9"
+            }
+          ]
+        },
+        "2": {
+          "files": [
+            {
+              "path": "2026-04-10-closedloop/25245hs5/002_closed_loop/002_closed_loop.raw.h5",
+              "bytes": 372059084,
+              "url": "https://s3-west.nrp-nautilus.io/braingeneers/braindance/2026-04-10-closedloop/25245hs5/closed_loop_plasticity/002_closed_loop/002.raw.h5",
+              "sha256": "fa3628b3ace46fd014f7491b33292a0785e9a5e67c6e35e158820f3f2f916954"
+            },
+            {
+              "path": "2026-04-10-closedloop/25245hs5/002_closed_loop/002_closed_loop_log.csv",
+              "url": "https://s3-west.nrp-nautilus.io/braingeneers/braindance-tutorials/closed-loop-small/1/2026-04-10-closedloop/25245hs5/002_closed_loop/002_closed_loop_log.csv",
+              "bytes": 4856,
+              "sha256": "bf698774889d0ce8c1a718e8039f3d5b57358432c314f03c5fa067cfe6ca9828"
+            },
+            {
+              "path": "2026-04-10-closedloop/25245hs5/002_closed_loop/002_closed_loop_spike_data.pkl",
+              "url": "https://s3-west.nrp-nautilus.io/braingeneers/braindance-tutorials/closed-loop-small/1/2026-04-10-closedloop/25245hs5/002_closed_loop/002_closed_loop_spike_data.pkl",
+              "bytes": 246227,
+              "sha256": "63c89c9a2c55b9cfe780a407ca90b9e9abe55b882dfb8b819b18783f163acc42"
+            },
+            {
+              "path": "2026-04-10-closedloop/25245hs5/chip_metadata.json",
+              "bytes": 111,
+              "url": "https://s3-west.nrp-nautilus.io/braingeneers/braindance/2026-04-10-closedloop/25245hs5/chip_metadata.json",
+              "sha256": "5c9e4c0d0ed3764766bc028f71b4a5145e76b056fb1fd27ad582f05459c498cb"
+            },
+            {
+              "path": "2026-04-10-closedloop/25245hs5/closed_loop_plasticity/001_rec/001.raw.h5",
+              "bytes": 366663206,
+              "url": "https://s3-west.nrp-nautilus.io/braingeneers/braindance/2026-04-10-closedloop/25245hs5/closed_loop_plasticity/001_rec/001.raw.h5",
+              "sha256": "afc6e354d0332dd4507e89fff7d718e67535f364c38a56be5d15423e66255350"
+            },
+            {
+              "path": "2026-04-10-closedloop/25245hs5/closed_loop_plasticity/001_rec/001_metadata.json",
+              "bytes": 280,
+              "url": "https://s3-west.nrp-nautilus.io/braingeneers/braindance/2026-04-10-closedloop/25245hs5/closed_loop_plasticity/001_rec/001_metadata.json",
+              "sha256": "6c57b4747365c93484ef612403364bc71f5996db530ee79367556930208c42ca"
+            },
+            {
+              "path": "2026-04-10-closedloop/25245hs5/closed_loop_plasticity/001_rec/001_spike_data.pkl",
+              "bytes": 248573,
+              "url": "https://s3-west.nrp-nautilus.io/braingeneers/braindance/2026-04-10-closedloop/25245hs5/closed_loop_plasticity/001_rec/001_spike_data.pkl",
+              "sha256": "6621b31f858d408fd23bbc9f5e152e35e974d876b6d07c1638e38d9747d89bda"
+            },
+            {
+              "path": "2026-04-10-closedloop/25245hs5/closed_loop_plasticity/001_rec/results/channels_per_neuron.pkl",
+              "bytes": 16511,
+              "url": "https://s3-west.nrp-nautilus.io/braingeneers/braindance/2026-04-10-closedloop/25245hs5/closed_loop_plasticity/001_rec/results/channels_per_neuron.pkl",
+              "sha256": "b311bcc62d9cebb9bbdc5d3ac2d810d009f052c215da3ce942ccba2c13240249"
+            },
+            {
+              "path": "2026-04-10-closedloop/25245hs5/closed_loop_plasticity/001_rec/results/connectivity_matrix.npy",
+              "bytes": 78536,
+              "url": "https://s3-west.nrp-nautilus.io/braingeneers/braindance/2026-04-10-closedloop/25245hs5/closed_loop_plasticity/001_rec/results/connectivity_matrix.npy",
+              "sha256": "352a5e9c9ef9f26d00fc91ee27509c540ea2cffd5bb19bb5b37dfd87792c09ae"
+            },
+            {
+              "path": "2026-04-10-closedloop/25245hs5/closed_loop_plasticity/001_rec/results/data_index.json",
+              "bytes": 1242,
+              "url": "https://s3-west.nrp-nautilus.io/braingeneers/braindance/2026-04-10-closedloop/25245hs5/closed_loop_plasticity/001_rec/results/data_index.json",
+              "sha256": "3d1f10c8a5f94b14bf183a3789b9eafdf474b5bd1ef27975bd2a7080e22d74b7"
+            },
+            {
+              "path": "2026-04-10-closedloop/25245hs5/closed_loop_plasticity/001_rec/results/data_metadata.json",
+              "bytes": 899,
+              "url": "https://s3-west.nrp-nautilus.io/braingeneers/braindance/2026-04-10-closedloop/25245hs5/closed_loop_plasticity/001_rec/results/data_metadata.json",
+              "sha256": "855b511d8995fef6bdc6090df58d1b0805e9ae85bf244c445db86e2c4e1f9095"
+            },
+            {
+              "path": "2026-04-10-closedloop/25245hs5/closed_loop_plasticity/001_rec/results/results.json",
+              "bytes": 72938,
+              "url": "https://s3-west.nrp-nautilus.io/braingeneers/braindance/2026-04-10-closedloop/25245hs5/closed_loop_plasticity/001_rec/results/results.json",
+              "sha256": "07ff87c2c0a7a8c85084853640e57672a788fa8958d4546d084458bdc361495f"
+            },
+            {
+              "path": "2026-04-10-closedloop/25245hs5/closed_loop_plasticity/001_rec/results/rt_sort_object.pkl",
+              "bytes": 2686369,
+              "url": "https://s3-west.nrp-nautilus.io/braingeneers/braindance/2026-04-10-closedloop/25245hs5/closed_loop_plasticity/001_rec/results/rt_sort_object.pkl",
+              "sha256": "1c504bd5bee160192882c479e0e6031c2de6dbceaea0f5d0118be6b786e65ca5"
+            },
+            {
+              "path": "2026-04-10-closedloop/25245hs5/closed_loop_plasticity/001_rec/results/selected_pair.npy",
+              "bytes": 144,
+              "url": "https://s3-west.nrp-nautilus.io/braingeneers/braindance/2026-04-10-closedloop/25245hs5/closed_loop_plasticity/001_rec/results/selected_pair.npy",
+              "sha256": "078b6170bdbc08940f2eeb33730dd7b02b64073a95a8b29f5e8669db63b838a4"
+            },
+            {
+              "path": "2026-04-10-closedloop/25245hs5/closed_loop_plasticity/001_rec/results/spike_data.pkl",
+              "bytes": 248573,
+              "url": "https://s3-west.nrp-nautilus.io/braingeneers/braindance/2026-04-10-closedloop/25245hs5/closed_loop_plasticity/001_rec/results/spike_data.pkl",
+              "sha256": "6621b31f858d408fd23bbc9f5e152e35e974d876b6d07c1638e38d9747d89bda"
+            },
+            {
+              "path": "2026-04-10-closedloop/25245hs5/closed_loop_plasticity/001_rt_spike_data.pkl",
+              "bytes": 248573,
+              "url": "https://s3-west.nrp-nautilus.io/braingeneers/braindance/2026-04-10-closedloop/25245hs5/closed_loop_plasticity/001_rt_spike_data.pkl",
+              "sha256": "6621b31f858d408fd23bbc9f5e152e35e974d876b6d07c1638e38d9747d89bda"
+            },
+            {
+              "path": "2026-04-10-closedloop/25245hs5/closed_loop_plasticity/002_closed_loop/002_log.csv",
+              "bytes": 5017,
+              "url": "https://s3-west.nrp-nautilus.io/braingeneers/braindance/2026-04-10-closedloop/25245hs5/closed_loop_plasticity/002_closed_loop/002_log.csv",
+              "sha256": "3adea4d4460ba459f677295e64fc21422268ed898587aae0311aa35fc28ab942"
+            },
+            {
+              "path": "2026-04-10-closedloop/25245hs5/closed_loop_plasticity/002_closed_loop/002_metadata.json",
+              "bytes": 297,
+              "url": "https://s3-west.nrp-nautilus.io/braingeneers/braindance/2026-04-10-closedloop/25245hs5/closed_loop_plasticity/002_closed_loop/002_metadata.json",
+              "sha256": "e137aec8fd7cf3e288c12c3fc3eadc625b93b4b477e70193be97a26dbeadbb31"
+            },
+            {
+              "path": "2026-04-10-closedloop/25245hs5/closed_loop_plasticity/002_closed_loop/results/data_index.json",
+              "bytes": 491,
+              "url": "https://s3-west.nrp-nautilus.io/braingeneers/braindance/2026-04-10-closedloop/25245hs5/closed_loop_plasticity/002_closed_loop/results/data_index.json",
+              "sha256": "184666f6b34a7d0216b6413000a744fe3a7bfa7071b956d980a349ad30edf95e"
+            },
+            {
+              "path": "2026-04-10-closedloop/25245hs5/closed_loop_plasticity/002_closed_loop/results/data_metadata.json",
+              "bytes": 340,
+              "url": "https://s3-west.nrp-nautilus.io/braingeneers/braindance/2026-04-10-closedloop/25245hs5/closed_loop_plasticity/002_closed_loop/results/data_metadata.json",
+              "sha256": "936f0bce377d359670304dc2e529145f33b582f365531b7f25faf75bf2f78263"
+            },
+            {
+              "path": "2026-04-10-closedloop/25245hs5/closed_loop_plasticity/002_closed_loop/results/results.json",
+              "bytes": 180,
+              "url": "https://s3-west.nrp-nautilus.io/braingeneers/braindance/2026-04-10-closedloop/25245hs5/closed_loop_plasticity/002_closed_loop/results/results.json",
+              "sha256": "fccaae88e31106b49b1d93a9a2ab438eab59e1dc4816635eb6fa4400455739fa"
+            },
+            {
+              "path": "2026-04-10-closedloop/25245hs5/closed_loop_plasticity/002_closed_loop/results/sorted_spikedata.pkl",
+              "bytes": 78112,
+              "url": "https://s3-west.nrp-nautilus.io/braingeneers/braindance/2026-04-10-closedloop/25245hs5/closed_loop_plasticity/002_closed_loop/results/sorted_spikedata.pkl",
+              "sha256": "0c6a10008e5e7a83cb210958eb711a6a84cd81e0f78fdfc9e45e995f7a1af54f"
+            },
+            {
+              "path": "2026-04-10-closedloop/25245hs5/closed_loop_plasticity/003_rec/003.raw.h5",
+              "bytes": 366946472,
+              "url": "https://s3-west.nrp-nautilus.io/braingeneers/braindance/2026-04-10-closedloop/25245hs5/closed_loop_plasticity/003_rec/003.raw.h5",
+              "sha256": "550f46eb6fab5e5b06ff34645a412c2b83af3c39017ae4bd141b83d9af26df34"
+            },
+            {
+              "path": "2026-04-10-closedloop/25245hs5/closed_loop_plasticity/003_rec/003_metadata.json",
+              "bytes": 280,
+              "url": "https://s3-west.nrp-nautilus.io/braingeneers/braindance/2026-04-10-closedloop/25245hs5/closed_loop_plasticity/003_rec/003_metadata.json",
+              "sha256": "e5bcf886f0b17d28bcab2521e3d59e47d63e5e011c716b861db4bf17d2fe4540"
+            },
+            {
+              "path": "2026-04-10-closedloop/25245hs5/closed_loop_plasticity/003_rec/results/data_index.json",
+              "bytes": 391,
+              "url": "https://s3-west.nrp-nautilus.io/braingeneers/braindance/2026-04-10-closedloop/25245hs5/closed_loop_plasticity/003_rec/results/data_index.json",
+              "sha256": "5bbbafad57a48b0d0e5b3238ed3c5b63fc6769b0249ce6587d702cc2095e24e3"
+            },
+            {
+              "path": "2026-04-10-closedloop/25245hs5/closed_loop_plasticity/003_rec/results/data_metadata.json",
+              "bytes": 175,
+              "url": "https://s3-west.nrp-nautilus.io/braingeneers/braindance/2026-04-10-closedloop/25245hs5/closed_loop_plasticity/003_rec/results/data_metadata.json",
+              "sha256": "ca230b14bc8e6ca4154a4080a7e52e50ab9806152a39a97a0340882ed73b1cc3"
+            },
+            {
+              "path": "2026-04-10-closedloop/25245hs5/closed_loop_plasticity/003_rec/results/results.json",
+              "bytes": 171,
+              "url": "https://s3-west.nrp-nautilus.io/braingeneers/braindance/2026-04-10-closedloop/25245hs5/closed_loop_plasticity/003_rec/results/results.json",
+              "sha256": "e4181466878bc4f4fd0632ea133b536fb7bb5ce8d8b6625171f15cde6177b4b4"
+            },
+            {
+              "path": "2026-04-10-closedloop/25245hs5/closed_loop_plasticity/RT_sort.pkl",
+              "bytes": 2685343,
+              "url": "https://s3-west.nrp-nautilus.io/braingeneers/braindance/2026-04-10-closedloop/25245hs5/closed_loop_plasticity/RT_sort.pkl",
+              "sha256": "5ec9e697470c126c0c6081230c692de640ebc1ae461ebb28a43aa31b1c5559d7"
+            },
+            {
+              "path": "2026-04-10-closedloop/25245hs5/closed_loop_plasticity/closed_loop_plasticity_summary.json",
+              "bytes": 116539,
+              "url": "https://s3-west.nrp-nautilus.io/braingeneers/braindance/2026-04-10-closedloop/25245hs5/closed_loop_plasticity/closed_loop_plasticity_summary.json",
+              "sha256": "3dcd40c89ac4462f6bbaac04dd11b4502940207f9c3a114f9694f45ae9be3b93"
+            },
+            {
+              "path": "2026-04-10-closedloop/25245hs5/closed_loop_plasticity/experiment_log.json",
+              "bytes": 113669,
+              "url": "https://s3-west.nrp-nautilus.io/braingeneers/braindance/2026-04-10-closedloop/25245hs5/closed_loop_plasticity/experiment_log.json",
+              "sha256": "e9bb72da3e2c34e8d368ab1c1d282d6ca9702b2b41022a880d964c383cfc5e35"
+            },
+            {
+              "path": "2026-04-10-closedloop/25245hs5/closed_loop_plasticity/mapping.csv",
+              "url": "https://s3-west.nrp-nautilus.io/braingeneers/braindance-tutorials/closed-loop-small/1/2026-04-10-closedloop/25245hs5/closed_loop_plasticity/mapping.csv",
+              "bytes": 23267,
+              "sha256": "da2f33e70b70acc05d43430faf77756a317d783060af7d9e12b2ec2b4dba581b"
+            },
+            {
+              "path": "2026-04-10-closedloop/25245hs5/closed_loop_plasticity/original_mapping.csv",
+              "bytes": 29298,
+              "url": "https://s3-west.nrp-nautilus.io/braingeneers/braindance/2026-04-10-closedloop/25245hs5/closed_loop_plasticity/mapping.csv",
+              "sha256": "97d7b3c58a412c6603b15351e6c7cd4cdb09d4d7f0202a24076503fba9eb01e7"
+            },
+            {
+              "path": "2026-04-10-closedloop/25245hs5/closed_loop_plasticity/spike_info.json",
+              "bytes": 19563,
+              "url": "https://s3-west.nrp-nautilus.io/braingeneers/braindance/2026-04-10-closedloop/25245hs5/closed_loop_plasticity/spike_info.json",
+              "sha256": "35a7629e870c1f98121d294d689bee8a7de765da5dfd03b95d27a8de4f1d00a0"
+            },
+            {
+              "path": "catalog.csv",
+              "url": "https://s3-west.nrp-nautilus.io/braingeneers/braindance-tutorials/closed-loop-small/1/catalog.csv",
+              "bytes": 136,
+              "sha256": "7b05e11eff4f83b13eb6ea885a691c8ffe6853a788497db4f867396177b7fd50"
+            },
+            {
+              "path": "reference.json",
+              "url": "https://s3-west.nrp-nautilus.io/braingeneers/braindance-tutorials/closed-loop-small/1/reference.json",
+              "bytes": 3488,
+              "sha256": "b8d2df07eb089a567c20be9bc5d5231ac315adbb9a10030e4ace77ac51ecbcb9"
+            }
+          ]
+        },
+        "3": {
+          "files": [
+            {
+              "path": "2026-04-10-closedloop/25245hs5/closed_loop_plasticity/002_closed_loop/002.raw.h5",
+              "bytes": 372059084,
+              "url": "https://s3-west.nrp-nautilus.io/braingeneers/braindance/2026-04-10-closedloop/25245hs5/closed_loop_plasticity/002_closed_loop/002.raw.h5",
+              "sha256": "fa3628b3ace46fd014f7491b33292a0785e9a5e67c6e35e158820f3f2f916954"
+            },
+            {
+              "path": "2026-04-10-closedloop/25245hs5/closed_loop_plasticity/002_closed_loop/002_closed_loop_log.csv",
+              "url": "https://s3-west.nrp-nautilus.io/braingeneers/braindance-tutorials/closed-loop-small/1/2026-04-10-closedloop/25245hs5/002_closed_loop/002_closed_loop_log.csv",
+              "bytes": 4856,
+              "sha256": "bf698774889d0ce8c1a718e8039f3d5b57358432c314f03c5fa067cfe6ca9828"
+            },
+            {
+              "path": "2026-04-10-closedloop/25245hs5/closed_loop_plasticity/002_closed_loop/002_closed_loop_spike_data.pkl",
+              "url": "https://s3-west.nrp-nautilus.io/braingeneers/braindance-tutorials/closed-loop-small/1/2026-04-10-closedloop/25245hs5/002_closed_loop/002_closed_loop_spike_data.pkl",
+              "bytes": 246227,
+              "sha256": "63c89c9a2c55b9cfe780a407ca90b9e9abe55b882dfb8b819b18783f163acc42"
+            },
+            {
+              "path": "2026-04-10-closedloop/25245hs5/chip_metadata.json",
+              "bytes": 111,
+              "url": "https://s3-west.nrp-nautilus.io/braingeneers/braindance/2026-04-10-closedloop/25245hs5/chip_metadata.json",
+              "sha256": "5c9e4c0d0ed3764766bc028f71b4a5145e76b056fb1fd27ad582f05459c498cb"
+            },
+            {
+              "path": "2026-04-10-closedloop/25245hs5/closed_loop_plasticity/001_rec/001.raw.h5",
+              "bytes": 366663206,
+              "url": "https://s3-west.nrp-nautilus.io/braingeneers/braindance/2026-04-10-closedloop/25245hs5/closed_loop_plasticity/001_rec/001.raw.h5",
+              "sha256": "afc6e354d0332dd4507e89fff7d718e67535f364c38a56be5d15423e66255350"
+            },
+            {
+              "path": "2026-04-10-closedloop/25245hs5/closed_loop_plasticity/001_rec/001_metadata.json",
+              "bytes": 280,
+              "url": "https://s3-west.nrp-nautilus.io/braingeneers/braindance/2026-04-10-closedloop/25245hs5/closed_loop_plasticity/001_rec/001_metadata.json",
+              "sha256": "6c57b4747365c93484ef612403364bc71f5996db530ee79367556930208c42ca"
+            },
+            {
+              "path": "2026-04-10-closedloop/25245hs5/closed_loop_plasticity/001_rec/001_spike_data.pkl",
+              "bytes": 248573,
+              "url": "https://s3-west.nrp-nautilus.io/braingeneers/braindance/2026-04-10-closedloop/25245hs5/closed_loop_plasticity/001_rec/001_spike_data.pkl",
+              "sha256": "6621b31f858d408fd23bbc9f5e152e35e974d876b6d07c1638e38d9747d89bda"
+            },
+            {
+              "path": "2026-04-10-closedloop/25245hs5/closed_loop_plasticity/001_rec/results/channels_per_neuron.pkl",
+              "bytes": 16511,
+              "url": "https://s3-west.nrp-nautilus.io/braingeneers/braindance/2026-04-10-closedloop/25245hs5/closed_loop_plasticity/001_rec/results/channels_per_neuron.pkl",
+              "sha256": "b311bcc62d9cebb9bbdc5d3ac2d810d009f052c215da3ce942ccba2c13240249"
+            },
+            {
+              "path": "2026-04-10-closedloop/25245hs5/closed_loop_plasticity/001_rec/results/connectivity_matrix.npy",
+              "bytes": 78536,
+              "url": "https://s3-west.nrp-nautilus.io/braingeneers/braindance/2026-04-10-closedloop/25245hs5/closed_loop_plasticity/001_rec/results/connectivity_matrix.npy",
+              "sha256": "352a5e9c9ef9f26d00fc91ee27509c540ea2cffd5bb19bb5b37dfd87792c09ae"
+            },
+            {
+              "path": "2026-04-10-closedloop/25245hs5/closed_loop_plasticity/001_rec/results/data_index.json",
+              "bytes": 1242,
+              "url": "https://s3-west.nrp-nautilus.io/braingeneers/braindance/2026-04-10-closedloop/25245hs5/closed_loop_plasticity/001_rec/results/data_index.json",
+              "sha256": "3d1f10c8a5f94b14bf183a3789b9eafdf474b5bd1ef27975bd2a7080e22d74b7"
+            },
+            {
+              "path": "2026-04-10-closedloop/25245hs5/closed_loop_plasticity/001_rec/results/data_metadata.json",
+              "bytes": 899,
+              "url": "https://s3-west.nrp-nautilus.io/braingeneers/braindance/2026-04-10-closedloop/25245hs5/closed_loop_plasticity/001_rec/results/data_metadata.json",
+              "sha256": "855b511d8995fef6bdc6090df58d1b0805e9ae85bf244c445db86e2c4e1f9095"
+            },
+            {
+              "path": "2026-04-10-closedloop/25245hs5/closed_loop_plasticity/001_rec/results/results.json",
+              "bytes": 72938,
+              "url": "https://s3-west.nrp-nautilus.io/braingeneers/braindance/2026-04-10-closedloop/25245hs5/closed_loop_plasticity/001_rec/results/results.json",
+              "sha256": "07ff87c2c0a7a8c85084853640e57672a788fa8958d4546d084458bdc361495f"
+            },
+            {
+              "path": "2026-04-10-closedloop/25245hs5/closed_loop_plasticity/001_rec/results/rt_sort_object.pkl",
+              "bytes": 2686369,
+              "url": "https://s3-west.nrp-nautilus.io/braingeneers/braindance/2026-04-10-closedloop/25245hs5/closed_loop_plasticity/001_rec/results/rt_sort_object.pkl",
+              "sha256": "1c504bd5bee160192882c479e0e6031c2de6dbceaea0f5d0118be6b786e65ca5"
+            },
+            {
+              "path": "2026-04-10-closedloop/25245hs5/closed_loop_plasticity/001_rec/results/selected_pair.npy",
+              "bytes": 144,
+              "url": "https://s3-west.nrp-nautilus.io/braingeneers/braindance/2026-04-10-closedloop/25245hs5/closed_loop_plasticity/001_rec/results/selected_pair.npy",
+              "sha256": "078b6170bdbc08940f2eeb33730dd7b02b64073a95a8b29f5e8669db63b838a4"
+            },
+            {
+              "path": "2026-04-10-closedloop/25245hs5/closed_loop_plasticity/001_rec/results/spike_data.pkl",
+              "bytes": 248573,
+              "url": "https://s3-west.nrp-nautilus.io/braingeneers/braindance/2026-04-10-closedloop/25245hs5/closed_loop_plasticity/001_rec/results/spike_data.pkl",
+              "sha256": "6621b31f858d408fd23bbc9f5e152e35e974d876b6d07c1638e38d9747d89bda"
+            },
+            {
+              "path": "2026-04-10-closedloop/25245hs5/closed_loop_plasticity/001_rt_spike_data.pkl",
+              "bytes": 248573,
+              "url": "https://s3-west.nrp-nautilus.io/braingeneers/braindance/2026-04-10-closedloop/25245hs5/closed_loop_plasticity/001_rt_spike_data.pkl",
+              "sha256": "6621b31f858d408fd23bbc9f5e152e35e974d876b6d07c1638e38d9747d89bda"
+            },
+            {
+              "path": "2026-04-10-closedloop/25245hs5/closed_loop_plasticity/002_closed_loop/002_log.csv",
+              "bytes": 5017,
+              "url": "https://s3-west.nrp-nautilus.io/braingeneers/braindance/2026-04-10-closedloop/25245hs5/closed_loop_plasticity/002_closed_loop/002_log.csv",
+              "sha256": "3adea4d4460ba459f677295e64fc21422268ed898587aae0311aa35fc28ab942"
+            },
+            {
+              "path": "2026-04-10-closedloop/25245hs5/closed_loop_plasticity/002_closed_loop/002_metadata.json",
+              "bytes": 297,
+              "url": "https://s3-west.nrp-nautilus.io/braingeneers/braindance/2026-04-10-closedloop/25245hs5/closed_loop_plasticity/002_closed_loop/002_metadata.json",
+              "sha256": "e137aec8fd7cf3e288c12c3fc3eadc625b93b4b477e70193be97a26dbeadbb31"
+            },
+            {
+              "path": "2026-04-10-closedloop/25245hs5/closed_loop_plasticity/002_closed_loop/results/data_index.json",
+              "bytes": 491,
+              "url": "https://s3-west.nrp-nautilus.io/braingeneers/braindance/2026-04-10-closedloop/25245hs5/closed_loop_plasticity/002_closed_loop/results/data_index.json",
+              "sha256": "184666f6b34a7d0216b6413000a744fe3a7bfa7071b956d980a349ad30edf95e"
+            },
+            {
+              "path": "2026-04-10-closedloop/25245hs5/closed_loop_plasticity/002_closed_loop/results/data_metadata.json",
+              "bytes": 340,
+              "url": "https://s3-west.nrp-nautilus.io/braingeneers/braindance/2026-04-10-closedloop/25245hs5/closed_loop_plasticity/002_closed_loop/results/data_metadata.json",
+              "sha256": "936f0bce377d359670304dc2e529145f33b582f365531b7f25faf75bf2f78263"
+            },
+            {
+              "path": "2026-04-10-closedloop/25245hs5/closed_loop_plasticity/002_closed_loop/results/results.json",
+              "bytes": 180,
+              "url": "https://s3-west.nrp-nautilus.io/braingeneers/braindance/2026-04-10-closedloop/25245hs5/closed_loop_plasticity/002_closed_loop/results/results.json",
+              "sha256": "fccaae88e31106b49b1d93a9a2ab438eab59e1dc4816635eb6fa4400455739fa"
+            },
+            {
+              "path": "2026-04-10-closedloop/25245hs5/closed_loop_plasticity/002_closed_loop/results/sorted_spikedata.pkl",
+              "bytes": 78112,
+              "url": "https://s3-west.nrp-nautilus.io/braingeneers/braindance/2026-04-10-closedloop/25245hs5/closed_loop_plasticity/002_closed_loop/results/sorted_spikedata.pkl",
+              "sha256": "0c6a10008e5e7a83cb210958eb711a6a84cd81e0f78fdfc9e45e995f7a1af54f"
+            },
+            {
+              "path": "2026-04-10-closedloop/25245hs5/closed_loop_plasticity/003_rec/003.raw.h5",
+              "bytes": 366946472,
+              "url": "https://s3-west.nrp-nautilus.io/braingeneers/braindance/2026-04-10-closedloop/25245hs5/closed_loop_plasticity/003_rec/003.raw.h5",
+              "sha256": "550f46eb6fab5e5b06ff34645a412c2b83af3c39017ae4bd141b83d9af26df34"
+            },
+            {
+              "path": "2026-04-10-closedloop/25245hs5/closed_loop_plasticity/003_rec/003_metadata.json",
+              "bytes": 280,
+              "url": "https://s3-west.nrp-nautilus.io/braingeneers/braindance/2026-04-10-closedloop/25245hs5/closed_loop_plasticity/003_rec/003_metadata.json",
+              "sha256": "e5bcf886f0b17d28bcab2521e3d59e47d63e5e011c716b861db4bf17d2fe4540"
+            },
+            {
+              "path": "2026-04-10-closedloop/25245hs5/closed_loop_plasticity/003_rec/results/data_index.json",
+              "bytes": 391,
+              "url": "https://s3-west.nrp-nautilus.io/braingeneers/braindance/2026-04-10-closedloop/25245hs5/closed_loop_plasticity/003_rec/results/data_index.json",
+              "sha256": "5bbbafad57a48b0d0e5b3238ed3c5b63fc6769b0249ce6587d702cc2095e24e3"
+            },
+            {
+              "path": "2026-04-10-closedloop/25245hs5/closed_loop_plasticity/003_rec/results/data_metadata.json",
+              "bytes": 175,
+              "url": "https://s3-west.nrp-nautilus.io/braingeneers/braindance/2026-04-10-closedloop/25245hs5/closed_loop_plasticity/003_rec/results/data_metadata.json",
+              "sha256": "ca230b14bc8e6ca4154a4080a7e52e50ab9806152a39a97a0340882ed73b1cc3"
+            },
+            {
+              "path": "2026-04-10-closedloop/25245hs5/closed_loop_plasticity/003_rec/results/results.json",
+              "bytes": 171,
+              "url": "https://s3-west.nrp-nautilus.io/braingeneers/braindance/2026-04-10-closedloop/25245hs5/closed_loop_plasticity/003_rec/results/results.json",
+              "sha256": "e4181466878bc4f4fd0632ea133b536fb7bb5ce8d8b6625171f15cde6177b4b4"
+            },
+            {
+              "path": "2026-04-10-closedloop/25245hs5/closed_loop_plasticity/RT_sort.pkl",
+              "bytes": 2685343,
+              "url": "https://s3-west.nrp-nautilus.io/braingeneers/braindance/2026-04-10-closedloop/25245hs5/closed_loop_plasticity/RT_sort.pkl",
+              "sha256": "5ec9e697470c126c0c6081230c692de640ebc1ae461ebb28a43aa31b1c5559d7"
+            },
+            {
+              "path": "2026-04-10-closedloop/25245hs5/closed_loop_plasticity/closed_loop_plasticity_summary.json",
+              "bytes": 116539,
+              "url": "https://s3-west.nrp-nautilus.io/braingeneers/braindance/2026-04-10-closedloop/25245hs5/closed_loop_plasticity/closed_loop_plasticity_summary.json",
+              "sha256": "3dcd40c89ac4462f6bbaac04dd11b4502940207f9c3a114f9694f45ae9be3b93"
+            },
+            {
+              "path": "2026-04-10-closedloop/25245hs5/closed_loop_plasticity/experiment_log.json",
+              "bytes": 113669,
+              "url": "https://s3-west.nrp-nautilus.io/braingeneers/braindance/2026-04-10-closedloop/25245hs5/closed_loop_plasticity/experiment_log.json",
+              "sha256": "e9bb72da3e2c34e8d368ab1c1d282d6ca9702b2b41022a880d964c383cfc5e35"
+            },
+            {
+              "path": "2026-04-10-closedloop/25245hs5/closed_loop_plasticity/mapping.csv",
+              "url": "https://s3-west.nrp-nautilus.io/braingeneers/braindance-tutorials/closed-loop-small/1/2026-04-10-closedloop/25245hs5/closed_loop_plasticity/mapping.csv",
+              "bytes": 23267,
+              "sha256": "da2f33e70b70acc05d43430faf77756a317d783060af7d9e12b2ec2b4dba581b"
+            },
+            {
+              "path": "2026-04-10-closedloop/25245hs5/closed_loop_plasticity/original_mapping.csv",
+              "bytes": 29298,
+              "url": "https://s3-west.nrp-nautilus.io/braingeneers/braindance/2026-04-10-closedloop/25245hs5/closed_loop_plasticity/mapping.csv",
+              "sha256": "97d7b3c58a412c6603b15351e6c7cd4cdb09d4d7f0202a24076503fba9eb01e7"
+            },
+            {
+              "path": "2026-04-10-closedloop/25245hs5/closed_loop_plasticity/spike_info.json",
+              "bytes": 19563,
+              "url": "https://s3-west.nrp-nautilus.io/braingeneers/braindance/2026-04-10-closedloop/25245hs5/closed_loop_plasticity/spike_info.json",
+              "sha256": "35a7629e870c1f98121d294d689bee8a7de765da5dfd03b95d27a8de4f1d00a0"
+            },
+            {
+              "path": "catalog.csv",
+              "content": "proj,chip,experiment,type,duration,n_neurons,data_path,log_path,raw_data_path,mapping_path,results_path\n2026-04-10-closedloop,25245hs5,closed_loop_plasticity/002_closed_loop,closed_loop,60.35,99,2026-04-10-closedloop/25245hs5/closed_loop_plasticity/002_closed_loop/002_closed_loop_spike_data.pkl,2026-04-10-closedloop/25245hs5/closed_loop_plasticity/002_closed_loop/002_closed_loop_log.csv,2026-04-10-closedloop/25245hs5/closed_loop_plasticity/002_closed_loop/002.raw.h5,2026-04-10-closedloop/25245hs5/closed_loop_plasticity/mapping.csv,2026-04-10-closedloop/25245hs5/closed_loop_plasticity/002_closed_loop/results\n",
+              "bytes": 615,
+              "sha256": "f2df03d45db0469a9e4ec5ac26c39c5e9c8501f75b9688b72927073b870d7c02"
+            },
+            {
+              "path": "reference.json",
+              "content": "{\n  \"dataset_version\": \"3\",\n  \"format_version\": 1,\n  \"provenance\": {\n    \"description\": \"Frozen real data from the middle phase of the closed-loop figure experiment; no raw voltage or sorter model included.\",\n    \"source_files\": {\n      \"offline_phase_spikes.npz\": {\n        \"bytes\": 318662,\n        \"sha256\": \"94cdd0f7caed26afc6c1495fd01159765b72b87097846baaf77a0cca2dd39b25\"\n      },\n      \"original_stim_log.csv\": {\n        \"bytes\": 4856,\n        \"sha256\": \"bf698774889d0ce8c1a718e8039f3d5b57358432c314f03c5fa067cfe6ca9828\"\n      },\n      \"raw_electrode_mapping.csv\": {\n        \"bytes\": 23267,\n        \"sha256\": \"da2f33e70b70acc05d43430faf77756a317d783060af7d9e12b2ec2b4dba581b\"\n      }\n    }\n  },\n  \"recordings\": [\n    {\n      \"bin_ms\": 100.0,\n      \"binned_counts_sha256\": \"f42774bb1e69b0b542b1fa4fac7bf2db1f52678673a1647f7e3a61e432b84810\",\n      \"binned_shape\": [\n        604,\n        99\n      ],\n      \"chip\": \"25245hs5\",\n      \"duration_ms\": 60350.0,\n      \"experiment\": \"closed_loop_plasticity/002_closed_loop\",\n      \"mapping_channels_sha256\": \"3b7de3e41fb61c88c9f61abc37a9be8cfc54569a57f7f15b97bd23a1f9dc0b20\",\n      \"mapping_electrodes_sha256\": \"c83d4560d5dfadb21e13a32ae8ccf637ad6fa739a46a4e45908615c00f652835\",\n      \"mapping_rows\": 1018,\n      \"mapping_samples\": {\n        \"134\": {\n          \"channel\": 134.0,\n          \"electrode\": 19393.0,\n          \"x\": 577.5,\n          \"y\": 1540.0\n        },\n        \"148\": {\n          \"channel\": 148.0,\n          \"electrode\": 13912.0,\n          \"x\": 910.0,\n          \"y\": 1102.5\n        }\n      },\n      \"neuron_count\": 99,\n      \"per_neuron_spike_counts\": [\n        121,\n        110,\n        41,\n        197,\n        160,\n        36,\n        0,\n        0,\n        721,\n        416,\n        135,\n        255,\n        43,\n        121,\n        489,\n        324,\n        726,\n        706,\n        624,\n        129,\n        80,\n        14,\n        55,\n        154,\n        3240,\n        243,\n        188,\n        194,\n        116,\n        0,\n        283,\n        0,\n        44,\n        147,\n        140,\n        0,\n        540,\n        1281,\n        0,\n        0,\n        0,\n        210,\n        322,\n        0,\n        1889,\n        73,\n        312,\n        170,\n        578,\n        0,\n        196,\n        688,\n        281,\n        245,\n        563,\n        623,\n        253,\n        545,\n        354,\n        0,\n        519,\n        0,\n        0,\n        432,\n        25,\n        66,\n        189,\n        0,\n        0,\n        74,\n        0,\n        550,\n        14,\n        59,\n        124,\n        1039,\n        48,\n        252,\n        125,\n        240,\n        199,\n        364,\n        83,\n        405,\n        6,\n        158,\n        128,\n        200,\n        106,\n        1199,\n        2363,\n        770,\n        33,\n        184,\n        240,\n        0,\n        152,\n        91,\n        593\n      ],\n      \"proj\": \"2026-04-10-closedloop\",\n      \"sample_spikes_ms\": {\n        \"11\": [\n          165.25,\n          219.65,\n          380.65,\n          1879.15,\n          2123.05\n        ],\n        \"9\": [\n          130.0,\n          232.05,\n          295.7,\n          311.05,\n          2262.9\n        ]\n      },\n      \"spike_count\": 30405,\n      \"spikes_sha256\": \"a5cf15321758a2fd2fc02b0904f66c79adff2e5de762e58bc0a73fe1cc903050\",\n      \"stim_first_time_s\": 22.282353809001503,\n      \"stim_last_time_s\": 60.350297247990966,\n      \"stim_row_count\": 137,\n      \"stim_times_sha256\": \"720059d64e8753be763d5c29b6caf59e6297392757e574b34a946eaf87626d28\"\n    }\n  ]\n}\n",
+              "bytes": 3514,
+              "sha256": "4173230679ce4bbac161c0c3ac97a60db0f5dd89f75738ba1be19086ee7b886b"
+            }
+          ]
+        }
+      }
+    }
+  }
+}
